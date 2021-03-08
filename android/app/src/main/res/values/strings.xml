@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">LetsUp</string>
+    <string moduleConfig="true" name="CodePushDeploymentKey">uiAWchTF27yIbi_i5mZQw1tI8kkOkyMuZiYBW</string>
+</resources>
