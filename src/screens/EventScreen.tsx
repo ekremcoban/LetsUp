@@ -42,7 +42,7 @@ const EventScreen = ({ navigation }) => {
                 title: title,
                 place: place,
                 date: day + '.' + mounth + '.' + dateTemp.getFullYear(),
-                icon: Number(day) % 2 === 0 ? require(`../assets/img/basketbol.png`) : require(`../assets/img/kosu.png`),
+                icon: Number(day) % 2 === 0 ? require(`../assets/img/basketball.png`) : require(`../assets/img/jogging.png`),
             }
             tempData.push(userArr)
         })

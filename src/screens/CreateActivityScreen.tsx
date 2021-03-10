@@ -14,22 +14,6 @@ import CustomButton from '../components/buttons/customButton';
 const { width, height } = window;
 const startPlacePlaceholder = 'Aktivite Başlangıç Konumu İçin Tıklayın';
 
-const Labels = (props) => {
-    const { img, text } = props;
-
-    return (
-        <TouchableOpacity style={styles.bransContainer} >
-            <Image
-                style={styles.img}
-                source={img}
-            />
-            <View style={styles.imgTextView}>
-                <Text style={styles.imgText}>{text}</Text>
-            </View>
-        </TouchableOpacity>
-    )
-}
-
 const CreateActivityScreen = () => {
     const [branchNo, setBranchNo] = useState<number>(1);
     const [title, setTitle] = useState<string>('');
@@ -319,29 +303,44 @@ const CreateActivityScreen = () => {
         <MenuProvider>
             <View style={styles.container}>
                 <View style={styles.firstRow}>
-                    <View style={styles.brans}>
-                        <View style={styles.titleView}>
-                            <Text style={styles.title}>Branş</Text>
+                    <View style={styles.branch}>
+                        <View style={styles.branchTitleView}>
+                            <Text style={styles.branchTitleText}>Branş Seçiniz</Text>
                         </View>
                         <ScrollView horizontal={true}>
-                            <TouchableOpacity onPress={() => setBranchNo(1)}>
-                                <Image style={styles.imgBranch} source={require('../assets/img/kosu.png')} />
-                                <Text style={{ textAlign: 'center', marginLeft: 20, }}>Koşu</Text>
+                            <TouchableOpacity style={styles.branchIcon} onPress={() => setBranchNo(0)}>
+                                <Image style={styles.imgBranch} source={require('../assets/img/jogging.png')} />
+                                <Text style={styles.textBranch}>Jogging</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => setBranchNo(1)}>
-                                <Image style={styles.imgBranch} source={require('../assets/img/basketbol.png')} />
-                                <Text style={{ textAlign: 'center', marginLeft: 20, }}>Basketbol</Text>
+                            <TouchableOpacity style={styles.branchIcon} onPress={() => setBranchNo(1)}>
+                                <Image style={styles.imgBranch} source={require('../assets/img/basketball.png')} />
+                                <Text style={styles.textBranch}>Basketball</Text>
                             </TouchableOpacity>
-                            <Labels img={require('../assets/img/kosu.png')} text='Koşu' onPress={() => setBranchNo(1)} />
-                            <Labels img={require('../assets/img/basketbol.png')} text='Basketbol' onPress={() => setBranchNo(1)} />
-                            <Labels img={require('../assets/img/kosu.png')} text='Koşu' onPress={() => setBranchNo(1)} />
-                            <Labels img={require('../assets/img/basketbol.png')} text='Basketbol' onPress={() => setBranchNo(1)} />
-                            <Labels img={require('../assets/img/kosu.png')} text='Koşu' onPress={() => setBranchNo(1)} />
+                            <TouchableOpacity style={styles.branchIcon} onPress={() => setBranchNo(1)}>
+                                <Image style={styles.imgBranch} source={require('../assets/img/bcycle.png')} />
+                                <Text style={styles.textBranch}>Bcycle</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.branchIcon} onPress={() => setBranchNo(1)}>
+                                <Image style={styles.imgBranch} source={require('../assets/img/hiking.png')} />
+                                <Text style={styles.textBranch}>Hiking</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.branchIcon} onPress={() => setBranchNo(1)}>
+                                <Image style={styles.imgBranch} source={require('../assets/img/tableTennis.png')} />
+                                <Text style={styles.textBranch}>Table Tennis</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.branchIcon} onPress={() => setBranchNo(1)}>
+                                <Image style={styles.imgBranch} source={require('../assets/img/hiking.png')} />
+                                <Text style={styles.textBranch}>Bowling</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.branchIcon} onPress={() => setBranchNo(1)}>
+                                <Image style={styles.imgBranch} source={require('../assets/img/tableTennis.png')} />
+                                <Text style={styles.textBranch}>Frisbee</Text>
+                            </TouchableOpacity>
                         </ScrollView>
                     </View>
                     <View style={styles.border} />
+                    <Text style={styles.activityTitleText}>Etkinlik Adı</Text>
                     <View style={styles.row}>
-                        {/* <Text style={styles.textTitle}>Etkinlik Adı</Text> */}
                         <View style={styles.rowHorizontal}>
                             <TextInput
                                 style={styles.editText}
@@ -354,77 +353,83 @@ const CreateActivityScreen = () => {
                         </View>
                     </View>
                     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                    <View style={branchNo === 0 ? [styles.konum, { height: 120, }] : styles.konum}>
-                        <View style={styles.rowPlace}>
-                            <TouchableOpacity
-                                onPress={setActityStartPlace}
-                            >
-                                <Text style={{ textAlign: 'center' }}>{startPlace}</Text>
-                            </TouchableOpacity>
-                            {warningStartPlace ? <Popover iconName={'alert'} text={'Bu Alanı Boş Bırakamazsınız!'} /> : null}
+                        <View style={branchNo === 0 ? [styles.location, { height: 100, }] : styles.location}>
+                            <View style={styles.rowPlace}>
+                                <TouchableOpacity
+                                    onPress={setActityStartPlace}
+                                >
+                                    <Text style={{ textAlign: 'center' }}>{startPlace}</Text>
+                                </TouchableOpacity>
+                                {warningStartPlace ? <Popover iconName={'alert'} text={'Bu Alanı Boş Bırakamazsınız!'} /> : null}
+                            </View>
+                            {branchNo === 0 && finishPlaceTextInput}
                         </View>
-                        {branchNo === 0 && finishPlaceTextInput}
-                    </View>
                     </TouchableWithoutFeedback>
                     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                    <View style={styles.rowDateTime}>
-                        {dateView}
-                        {timeView}
-                    </View>
+                        <View style={styles.rowDateTime}>
+                            {dateView}
+                            {timeView}
+                        </View>
                     </TouchableWithoutFeedback>
                     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                    <View style={styles.rowTrait}>
-                        <View style={{
-                            flex: 1, flexDirection: 'column', alignItems: 'center',
-                            shadowOpacity: .2, marginLeft: 10, marginEnd: 10, 
-                        }}>
-                            <Text style={{
-                                backgroundColor: '#37CC4A', padding: 5, color: 'white', 
-                                fontSize: 16, width: '80%', height: '50%', textAlign: 'center',
-                            }}>Yaş Aralığı</Text>
-                            <TextInput
-                                style={{  width: '80%', height: '50%', shadowOpacity: .2, marginTop: 5, textAlign: 'center',
-                                marginLeft: 20, marginRight: 20, backgroundColor: '#EEE', borderRadius: 5, }}
-                                onChangeText={text => setAgeStart(text)}
-                                value={ageStart}
-                                keyboardType={'numeric'}
-                                autoCorrect={false}
-                            />
+                        <View style={styles.rowTrait}>
+                            <View style={{
+                                flex: 1, flexDirection: 'column', alignItems: 'center',
+                                shadowOpacity: .2, marginLeft: 10, marginEnd: 10,
+                            }}>
+                                <Text style={{
+                                    backgroundColor: '#37CC4A', padding: 5, color: 'white',
+                                    fontSize: 16, width: '80%', height: '50%', textAlign: 'center',
+                                }}>Yaş Aralığı</Text>
+                                <TextInput
+                                    style={{
+                                        width: '80%', height: '50%', shadowOpacity: .2, marginTop: 5, textAlign: 'center',
+                                        marginLeft: 20, marginRight: 20, backgroundColor: '#EEE', borderRadius: 5,
+                                    }}
+                                    onChangeText={text => setAgeStart(text)}
+                                    value={ageStart}
+                                    keyboardType={'numeric'}
+                                    autoCorrect={false}
+                                />
+                            </View>
+                            <View style={{
+                                flex: 1, flexDirection: 'column', alignItems: 'center',
+                                shadowOpacity: .2, marginLeft: 10, marginEnd: 10,
+                            }}>
+                                <Text style={{
+                                    backgroundColor: '#37CC4A', padding: 5, color: 'white',
+                                    fontSize: 16, width: '80%', height: '50%', textAlign: 'center',
+                                }}>Cinsiyet</Text>
+                                <TextInput
+                                    style={{
+                                        width: '80%', height: '50%', shadowOpacity: .2, marginTop: 5, textAlign: 'center',
+                                        marginLeft: 20, marginRight: 20, backgroundColor: '#EEE', borderRadius: 5,
+                                    }}
+                                    onChangeText={text => setGender(text)}
+                                    value={gender}
+                                    autoCorrect={false}
+                                />
+                            </View>
+                            <View style={{
+                                flex: 1, flexDirection: 'column', alignItems: 'center',
+                                shadowOpacity: .2, marginLeft: 10, marginEnd: 10,
+                            }}>
+                                <Text style={{
+                                    backgroundColor: '#37CC4A', padding: 5, color: 'white',
+                                    fontSize: 16, width: '80%', height: '50%', textAlign: 'center',
+                                }}>Kontenjan</Text>
+                                <TextInput
+                                    style={{
+                                        width: '80%', height: '50%', shadowOpacity: .2, marginTop: 5, textAlign: 'center',
+                                        marginLeft: 20, marginRight: 20, backgroundColor: '#EEE', borderRadius: 5,
+                                    }}
+                                    onChangeText={text => setQuota(text)}
+                                    value={quota}
+                                    keyboardType={'numeric'}
+                                    autoCorrect={false}
+                                />
+                            </View>
                         </View>
-                        <View style={{
-                            flex: 1, flexDirection: 'column', alignItems: 'center',
-                            shadowOpacity: .2, marginLeft: 10, marginEnd: 10, 
-                        }}>
-                            <Text style={{
-                                backgroundColor: '#37CC4A', padding: 5, color: 'white',
-                                fontSize: 16, width: '80%', height: '50%', textAlign: 'center',
-                            }}>Cinsiyet</Text>
-                            <TextInput
-                                style={{  width: '80%', height: '50%', shadowOpacity: .2, marginTop: 5, textAlign: 'center',
-                                marginLeft: 20, marginRight: 20, backgroundColor: '#EEE', borderRadius: 5, }}
-                                onChangeText={text => setGender(text)}
-                                value={gender}
-                                autoCorrect={false}
-                            />
-                        </View>
-                        <View style={{
-                            flex: 1, flexDirection: 'column', alignItems: 'center',
-                            shadowOpacity: .2, marginLeft: 10, marginEnd: 10, 
-                        }}>
-                            <Text style={{
-                                backgroundColor: '#37CC4A', padding: 5, color: 'white', 
-                                fontSize: 16, width: '80%', height: '50%', textAlign: 'center',
-                            }}>Kontenjan</Text>
-                            <TextInput
-                                style={{  width: '80%', height: '50%', shadowOpacity: .2, marginTop: 5, textAlign: 'center',
-                                marginLeft: 20, marginRight: 20, backgroundColor: '#EEE', borderRadius: 5, }}
-                                onChangeText={text => setQuota(text)}
-                                value={quota}
-                                keyboardType={'numeric'}
-                                autoCorrect={false}
-                            />
-                        </View>
-                    </View>
                     </TouchableWithoutFeedback>
                 </View>
                 <View style={styles.secondRow}>
@@ -453,29 +458,43 @@ const styles = StyleSheet.create({
         borderBottomColor: 'white',
         shadowOpacity: 1,
     },
-    brans: {
+    branch: {
         // flex: 1,
-        height: 160,
-        borderBottomWidth: 1,
-        borderBottomColor: 'white',
+        height: '22%',
+        // borderBottomWidth: 1,
+        // backgroundColor: 'yellow',
     },
-    titleView: {
-        flex: 1,
+    branchTitleView: {
         paddingLeft: width * 0.05,
+        justifyContent: 'center',
         paddingTop: 1,
+        height: '22%',
         // backgroundColor: 'red',
     },
-    title: {
-        fontWeight: '700',
-        fontSize: height * 0.03,
+    branchTitleText: {
+        fontSize: width * 0.045,
+        color: 'gray',
     },
-    bransContainer: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        minWidth: width * 0.2,
-        // backgroundColor: 'red'
+    branchIcon: {
+        paddingTop: 10,
+        width: 74,
+        // backgroundColor: 'yellow'
     },
-    konum: {
+    imgBranch: {
+        height: 54,
+        width: 54,
+        alignSelf: 'center',
+        // marginLeft: 20,
+    },
+    textBranch: { 
+        textAlign: 'center',
+    },
+    activityTitleText: {
+        textAlign: 'center',
+        marginTop: 10, 
+        fontSize: width * 0.045,
+    },
+    location: {
         // flex: 1,
         marginTop: 20,
         height: 50,//height - 150,
@@ -501,39 +520,19 @@ const styles = StyleSheet.create({
         height: 100,//height - 150,
         // backgroundColor: 'red',
     },
-    rowTrait: {
-        flexDirection: 'row',
-        height: 70,
-    },
     tarih: {
         flex: 1,
         backgroundColor: 'green',
     },
-    imgBranch: {
-        height: 50,
-        width: 50,
-        marginLeft: 20,
-    },
-    img: {
-        width: height * 0.067,
-        height: height * 0.067,
-    },
-    imgTextView: {
-        // backgroundColor: 'yellow',
-    },
-    imgText: {
-        marginTop: 5,
-        textAlign: 'center'
-    },
     row: {
+        width: '88%',
         height: 50,
         marginTop: 5,
-        paddingLeft: '10%',
-        paddingRight: '10%',
+        alignSelf: 'center',
     },
-    textTitle: {
-        fontSize: 15,
-        fontWeight: '600',
+    rowTrait: {
+        flexDirection: 'row',
+        height: 70,
     },
     rowHorizontal: {
         flex: 1,
