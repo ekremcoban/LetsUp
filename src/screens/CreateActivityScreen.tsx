@@ -10,9 +10,10 @@ import firestore from '@react-native-firebase/firestore';
 import { MenuProvider } from 'react-native-popup-menu';
 import RNGooglePlaces from 'react-native-google-places';
 import CustomButton from '../components/buttons/customButton';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const { width, height } = window;
-const startPlacePlaceholder = 'Aktivite Başlangıç Konumu İçin Tıklayın';
+const startPlacePlaceholder = 'Seçiniz';
 
 const CreateActivityScreen = () => {
     const [branchNo, setBranchNo] = useState<number>(1);
@@ -345,7 +346,7 @@ const CreateActivityScreen = () => {
                             <TextInput
                                 style={styles.editText}
                                 onChangeText={text => setActivityTitle(text)}
-                                placeholder={'Etkinlik Adı Giriniz'}
+                                placeholder={'Etkinlik Adı Seçiniz'}
                                 value={title}
                                 autoCorrect={false}
                             />
@@ -353,7 +354,22 @@ const CreateActivityScreen = () => {
                         </View>
                     </View>
                     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                        <View style={branchNo === 0 ? [styles.location, { height: 100, }] : styles.location}>
+                        <View style={styles.rowLocation}>
+                            <View style={styles.locationView}>
+                                <Text style={styles.locationText}>Konum*</Text>
+                                <Ionicons size={25} name="location" color={'white'} style={styles.locationIcon} />
+                            </View>
+                            <TouchableOpacity
+                                style={{ marginTop: 10 }}
+                                onPress={setActityStartPlace}
+                            >
+                                <Text style={styles.locationGoogleText}>{startPlace}</Text>
+                            </TouchableOpacity>
+                            {warningStartPlace ? <Popover iconName={'alert'} text={'Bu Alanı Boş Bırakamazsınız!'} /> : null}
+
+                        </View>
+
+                        {/* <View style={branchNo === 0 ? [styles.location, { height: 100, }] : styles.location}>
                             <View style={styles.rowPlace}>
                                 <TouchableOpacity
                                     onPress={setActityStartPlace}
@@ -363,7 +379,7 @@ const CreateActivityScreen = () => {
                                 {warningStartPlace ? <Popover iconName={'alert'} text={'Bu Alanı Boş Bırakamazsınız!'} /> : null}
                             </View>
                             {branchNo === 0 && finishPlaceTextInput}
-                        </View>
+                        </View> */}
                     </TouchableWithoutFeedback>
                     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                         <View style={styles.rowDateTime}>
@@ -486,19 +502,46 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         // marginLeft: 20,
     },
-    textBranch: { 
+    textBranch: {
         textAlign: 'center',
     },
     activityTitleText: {
         textAlign: 'center',
-        marginTop: 10, 
+        marginTop: 10,
         fontSize: width * 0.045,
+    },
+    rowLocation: {
+        marginTop: 10,
+        width: '100%',
+        // backgroundColor: 'red'
+    },
+    locationView: {
+        flexDirection: 'row',
+        width: '25%',
+        height: 35,
+        backgroundColor: '#37CC4A',
+        alignSelf: 'center',
+        borderRadius: 10,
+    },
+    locationText: {
+        flex: 1,
+        fontSize: width * 0.045,
+        color: 'white',
+        textAlign: 'center',
+        alignSelf: 'center'
     },
     location: {
         // flex: 1,
         marginTop: 20,
         height: 50,//height - 150,
         // backgroundColor: 'green',
+    },
+    locationIcon: {
+        alignSelf: 'center'
+    },
+    locationGoogleText: {
+        textAlign: 'center', 
+        fontSize: width * 0.04,
     },
     rowPlace: {
         // flex: 1,
