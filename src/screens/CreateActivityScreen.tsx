@@ -177,7 +177,7 @@ const CreateActivityScreen = () => {
     };
 
     const showDateText = () => {
-        let result = "Tarihi Seçiniz";
+        let result = "Seçiniz";
 
         if (activityDate != null
             && (activityDate.getFullYear() > new Date().getFullYear()
@@ -199,7 +199,7 @@ const CreateActivityScreen = () => {
             result += '.' + activityDate.getFullYear().toString();
         }
         else {
-            result = "Tarihi Seçiniz";
+            result = "Seçiniz";
         }
         return result;
     }
@@ -224,14 +224,14 @@ const CreateActivityScreen = () => {
     };
 
     const showTimeText = () => {
-        let result = "Saat Seçiniz";
+        let result = "Seçiniz";
 
         if (activityDate != null && activityTime != null
             && new Date().getFullYear() === activityDate.getFullYear()
             && new Date().getMonth() === activityDate.getMonth()
             && new Date().getDate() === activityDate.getDate()
             && activityTime.getHours() * 60 + activityTime.getMinutes() <= (new Date().getHours() + 2) * 60 + new Date().getMinutes()) {
-            result = 'Saat Seçiniz'
+            result = 'Seçiniz'
         }
         // else if (activityDate != null && activityTime != null && (new Date().getFullYear() !== activityDate.getFullYear()
         //     || new Date().getMonth() !== activityDate.getMonth()
@@ -254,20 +254,18 @@ const CreateActivityScreen = () => {
             }
         }
         else {
-            result = 'Saat Seçiniz'
+            result = 'Seçiniz'
         }
         return result
     }
 
     const dateView = (
-        <View style={{
-            flex: 1, paddingLeft: '10%', paddingRight: '10%', flexDirection: 'row',
-            justifyContent: 'center', alignItems: 'center'
-        }}>
+        <View style={styles.dateTimeSelectedView}>
             {/* <Button title={activityDate === null ? "Show Date Picker" : activityDate.getDate().toString()} onPress={() => setDatePickerVisibility(true)} /> */}
             <CustomButton
                 onPress={showDatePicker}
                 title={showDateText()}
+                styleText={styles.selectedText}
             />
             {warningDate === 1 && <Popover iconName={'alert'} text={'Seçtiğiniz Tarih Güncel Değil!'} />}
             {warningDate === 2 && <Popover iconName={'alert'} text={'Bu Alan Boş Bırakılamaz'} />}
@@ -281,13 +279,11 @@ const CreateActivityScreen = () => {
     )
 
     const timeView = (
-        <View style={{
-            flex: 1, paddingLeft: '10%', paddingRight: '10%', flexDirection: 'row',
-            justifyContent: 'center', alignItems: 'center'
-        }}>
+        <View style={styles.dateTimeSelectedView}>
             <CustomButton
                 onPress={() => setTimePickerVisibility(true)}
                 title={showTimeText()}
+                styleText={styles.selectedText}
             />
             {warningTime === 1 && <Popover iconName={'alert'} text={'En az 2 saat zaman olmalı!'} />}
             {warningTime === 2 && <Popover iconName={'alert'} text={'Bu Alan Boş Bırakılamaz'} />}
@@ -341,7 +337,7 @@ const CreateActivityScreen = () => {
                     </View>
                     <View style={styles.border} />
                     <Text style={styles.activityTitleText}>Etkinlik Adı</Text>
-                    <View style={styles.row}>
+                    <View style={styles.rowActivity}>
                         <View style={styles.rowHorizontal}>
                             <TextInput
                                 style={styles.editText}
@@ -356,94 +352,56 @@ const CreateActivityScreen = () => {
                     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                         <View style={styles.rowLocation}>
                             <View style={styles.locationView}>
-                                <Text style={styles.locationText}>Konum*</Text>
+                                <Text style={styles.locationText}>Location*</Text>
                                 <Ionicons size={25} name="location" color={'white'} style={styles.locationIcon} />
                             </View>
                             <TouchableOpacity
-                                style={{ marginTop: 10 }}
+                                style={{ marginTop: 5 }}
                                 onPress={setActityStartPlace}
                             >
-                                <Text style={styles.locationGoogleText}>{startPlace}</Text>
+                                <Text style={styles.selectedText}>{startPlace}</Text>
                             </TouchableOpacity>
                             {warningStartPlace ? <Popover iconName={'alert'} text={'Bu Alanı Boş Bırakamazsınız!'} /> : null}
-
                         </View>
-
-                        {/* <View style={branchNo === 0 ? [styles.location, { height: 100, }] : styles.location}>
-                            <View style={styles.rowPlace}>
-                                <TouchableOpacity
-                                    onPress={setActityStartPlace}
-                                >
-                                    <Text style={{ textAlign: 'center' }}>{startPlace}</Text>
-                                </TouchableOpacity>
-                                {warningStartPlace ? <Popover iconName={'alert'} text={'Bu Alanı Boş Bırakamazsınız!'} /> : null}
-                            </View>
-                            {branchNo === 0 && finishPlaceTextInput}
-                        </View> */}
                     </TouchableWithoutFeedback>
                     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                         <View style={styles.rowDateTime}>
-                            {dateView}
-                            {timeView}
+                            <View style={styles.dateColView}>
+                                <View style={styles.dateView}>
+                                    <Text style={styles.selectedTitle}>Date*</Text>
+                                    <Ionicons size={22} name="calendar" color={'white'} style={styles.locationIcon} />
+                                </View>
+                                {dateView}
+                            </View>
+                            <View style={styles.timeColView}>
+                                <View style={styles.timeView}>
+                                    <Text style={styles.selectedTitle}>Time*</Text>
+                                    <Ionicons size={22} name="time" color={'white'} style={styles.locationIcon} />
+                                </View>
+                                {timeView}
+                            </View>
                         </View>
                     </TouchableWithoutFeedback>
                     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                        <View style={styles.rowTrait}>
-                            <View style={{
-                                flex: 1, flexDirection: 'column', alignItems: 'center',
-                                shadowOpacity: .2, marginLeft: 10, marginEnd: 10,
-                            }}>
-                                <Text style={{
-                                    backgroundColor: '#37CC4A', padding: 5, color: 'white',
-                                    fontSize: 16, width: '80%', height: '50%', textAlign: 'center',
-                                }}>Yaş Aralığı</Text>
-                                <TextInput
-                                    style={{
-                                        width: '80%', height: '50%', shadowOpacity: .2, marginTop: 5, textAlign: 'center',
-                                        marginLeft: 20, marginRight: 20, backgroundColor: '#EEE', borderRadius: 5,
-                                    }}
-                                    onChangeText={text => setAgeStart(text)}
-                                    value={ageStart}
-                                    keyboardType={'numeric'}
-                                    autoCorrect={false}
-                                />
+                        <View style={styles.rowProperty}>
+                            <View style={styles.ageColView}>
+                                <View style={styles.ageView}>
+                                    <Text style={styles.selectedTitle}>Age Range</Text>
+                                </View>
+                                <Text style={styles.selectedText}>-----</Text>
                             </View>
-                            <View style={{
-                                flex: 1, flexDirection: 'column', alignItems: 'center',
-                                shadowOpacity: .2, marginLeft: 10, marginEnd: 10,
-                            }}>
-                                <Text style={{
-                                    backgroundColor: '#37CC4A', padding: 5, color: 'white',
-                                    fontSize: 16, width: '80%', height: '50%', textAlign: 'center',
-                                }}>Cinsiyet</Text>
-                                <TextInput
-                                    style={{
-                                        width: '80%', height: '50%', shadowOpacity: .2, marginTop: 5, textAlign: 'center',
-                                        marginLeft: 20, marginRight: 20, backgroundColor: '#EEE', borderRadius: 5,
-                                    }}
-                                    onChangeText={text => setGender(text)}
-                                    value={gender}
-                                    autoCorrect={false}
-                                />
+                        
+                            <View style={styles.genderColView}>
+                                <View style={styles.genderView}>
+                                    <Text style={styles.selectedTitle}>Gender</Text>
+                                </View>
+                                <Text style={styles.selectedText}>-----</Text>
                             </View>
-                            <View style={{
-                                flex: 1, flexDirection: 'column', alignItems: 'center',
-                                shadowOpacity: .2, marginLeft: 10, marginEnd: 10,
-                            }}>
-                                <Text style={{
-                                    backgroundColor: '#37CC4A', padding: 5, color: 'white',
-                                    fontSize: 16, width: '80%', height: '50%', textAlign: 'center',
-                                }}>Kontenjan</Text>
-                                <TextInput
-                                    style={{
-                                        width: '80%', height: '50%', shadowOpacity: .2, marginTop: 5, textAlign: 'center',
-                                        marginLeft: 20, marginRight: 20, backgroundColor: '#EEE', borderRadius: 5,
-                                    }}
-                                    onChangeText={text => setQuota(text)}
-                                    value={quota}
-                                    keyboardType={'numeric'}
-                                    autoCorrect={false}
-                                />
+                            <View style={styles.quotaColView}>
+                                <View style={styles.quotaView}>
+                                    <Text style={styles.selectedTitle}>Quota</Text>
+                                </View>
+                                <Text style={styles.selectedText}>-----</Text>
                             </View>
                         </View>
                     </TouchableWithoutFeedback>
@@ -476,7 +434,7 @@ const styles = StyleSheet.create({
     },
     branch: {
         // flex: 1,
-        height: '22%',
+        height: '27%',
         // borderBottomWidth: 1,
         // backgroundColor: 'yellow',
     },
@@ -510,14 +468,20 @@ const styles = StyleSheet.create({
         marginTop: 10,
         fontSize: width * 0.045,
     },
+    rowActivity: {
+        width: '88%',
+        height: 50,
+        marginTop: 5,
+        alignSelf: 'center',
+    },
     rowLocation: {
         marginTop: 10,
-        width: '100%',
+        height: 85,
         // backgroundColor: 'red'
     },
     locationView: {
         flexDirection: 'row',
-        width: '25%',
+        width: '30%',
         height: 35,
         backgroundColor: '#37CC4A',
         alignSelf: 'center',
@@ -530,56 +494,93 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         alignSelf: 'center'
     },
-    location: {
-        // flex: 1,
-        marginTop: 20,
-        height: 50,//height - 150,
-        // backgroundColor: 'green',
-    },
     locationIcon: {
-        alignSelf: 'center'
+        alignSelf: 'center',
+        paddingEnd: 5,
     },
-    locationGoogleText: {
-        textAlign: 'center', 
-        fontSize: width * 0.04,
+    selectedText: {
+        textAlign: 'center',
+        fontSize: width * 0.045,
+        color: 'black',
     },
-    rowPlace: {
-        // flex: 1,
+    dateColView: {
+        width: '30%',
+        // backgroundColor: 'blue'
+    },
+    dateView: {
         flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: 40,//height - 150,
-        // backgroundColor: 'red',
+        height: 35,
+        backgroundColor: '#37CC4A',
+        borderRadius: 10,
     },
-    rowFinishPlace: {
-        // flex: 1,
-        height: 40,//height - 150,
-        // backgroundColor: 'red',
-    },
-    rowDateTime: {
-        // flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        height: 100,//height - 150,
-        // backgroundColor: 'red',
-    },
-    tarih: {
+    selectedTitle: {
         flex: 1,
-        backgroundColor: 'green',
-    },
-    row: {
-        width: '88%',
-        height: 50,
-        marginTop: 5,
+        fontSize: width * 0.045,
+        color: 'white',
+        textAlign: 'center',
         alignSelf: 'center',
     },
-    rowTrait: {
+    dateTimeSelectedView: {
         flexDirection: 'row',
-        height: 70,
+        paddingLeft: '10%',
+        paddingRight: '10%',
+        marginTop: 5,
+        justifyContent: 'center',
+    },
+    timeColView: {
+        width: '30%',
+        // backgroundColor: 'purple'
+    },
+    timeView: {
+        flexDirection: 'row',
+        height: 35,
+        backgroundColor: '#37CC4A',
+        borderRadius: 10,
+    },
+    rowDateTime: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        height: 85,//height - 150,
+        // backgroundColor: 'red',
+    },
+    rowProperty: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        height: 85,
+    },
+    ageColView: {
+        width: '25%',
+        // backgroundColor: 'blue'
+    },
+    ageView: {
+        flexDirection: 'row',
+        height: 35,
+        backgroundColor: '#37CC4A',
+        borderRadius: 10,
+    },
+    genderColView: {
+        width: '25%',
+        // backgroundColor: 'blue'
+    },
+    genderView: {
+        flexDirection: 'row',
+        height: 35,
+        backgroundColor: '#37CC4A',
+        borderRadius: 10,
+    },
+    quotaColView: {
+        width: '25%',
+        // backgroundColor: 'blue'
+    },
+    quotaView: {
+        flexDirection: 'row',
+        height: 35,
+        backgroundColor: '#37CC4A',
+        borderRadius: 10,
     },
     rowHorizontal: {
         flex: 1,
-        marginTop: 10,
+        marginTop: 5,
         alignItems: 'center',
         flexDirection: 'row',
     },

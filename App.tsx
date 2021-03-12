@@ -75,7 +75,7 @@ let App = () => {
           <Stack.Screen name="Home"
             component={EventScreen}
             options={{
-              title: 'Etkinlik Oluştur',
+              title: 'Activity List',
               headerStyle: {
                 backgroundColor: colors.bar,
               },
@@ -88,7 +88,8 @@ let App = () => {
           <Stack.Screen name="CreateActivity"
             component={CreateActivityScreen}
             options={{
-              title: 'Etkinlik Oluştur',
+              title: 'Create Activity',
+              headerBackTitle: '',
               headerStyle: {
                 backgroundColor: colors.bar,
               },
