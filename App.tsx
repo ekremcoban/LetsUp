@@ -16,14 +16,12 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import EventScreen from './src/screens/EventScreen';
 import CreateActivityScreen from './src/screens/CreateActivityScreen';
 import { colors } from './src/utilities/constants/globalValues';
-import { initilizeGlobals } from 'globals/initialize';
 import { ActivityListScreen } from 'screens/activity-list/activity-list.screen';
+import { InitializeSettings } from 'components/initialize-settings/initialize-settings';
 
 let App = () => {
   const [userId, setUserId] = useState('DmwlR3OcI72ouDxUPH79');
   const scheme = useColorScheme();
-
-  initilizeGlobals();
 
   useEffect(() => {
     CodePush.sync();
@@ -72,41 +70,43 @@ let App = () => {
 
   const Stack = createStackNavigator();
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen
-            name="Home"
-            component={ActivityListScreen}
-            options={{
-              title: 'Activity List',
-              headerStyle: {
-                backgroundColor: colors.bar,
-              },
-              headerTintColor: '#fff',
-              headerTitleStyle: {
-                fontWeight: 'bold',
-              },
-            }}
-          />
-          <Stack.Screen
-            name="CreateActivity"
-            component={CreateActivityScreen}
-            options={{
-              title: 'Create Activity',
-              headerBackTitle: '',
-              headerStyle: {
-                backgroundColor: colors.bar,
-              },
-              headerTintColor: '#fff',
-              headerTitleStyle: {
-                fontWeight: 'bold',
-              },
-            }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <InitializeSettings>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen
+              name="Home"
+              component={ActivityListScreen}
+              options={{
+                title: 'Activity List',
+                headerStyle: {
+                  backgroundColor: colors.bar,
+                },
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                },
+              }}
+            />
+            <Stack.Screen
+              name="CreateActivity"
+              component={CreateActivityScreen}
+              options={{
+                title: 'Create Activity',
+                headerBackTitle: '',
+                headerStyle: {
+                  backgroundColor: colors.bar,
+                },
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                },
+              }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </InitializeSettings>
   );
 };
 
