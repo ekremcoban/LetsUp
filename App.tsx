@@ -7,19 +7,23 @@ import {
   useColorScheme,
 } from 'react-native';
 
-import { NavigationContainer} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import CodePush from "react-native-code-push";
+import CodePush from 'react-native-code-push';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import EventScreen from './src/screens/EventScreen';
 import CreateActivityScreen from './src/screens/CreateActivityScreen';
 import { colors } from './src/utilities/constants/globalValues';
+import { initilizeGlobals } from 'globals/initialize';
+import { ActivityListScreen } from 'screens/activity-list/activity-list.screen';
 
 let App = () => {
-  const [userId, setUserId] = useState('DmwlR3OcI72ouDxUPH79')
+  const [userId, setUserId] = useState('DmwlR3OcI72ouDxUPH79');
   const scheme = useColorScheme();
+
+  initilizeGlobals();
 
   useEffect(() => {
     CodePush.sync();
@@ -66,14 +70,14 @@ let App = () => {
     //   return () => subscriber();
   }, []);
 
-
   const Stack = createStackNavigator();
   return (
     <SafeAreaProvider>
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="Home"
-            component={EventScreen}
+          <Stack.Screen
+            name="Home"
+            component={ActivityListScreen}
             options={{
               title: 'Activity List',
               headerStyle: {
@@ -85,7 +89,8 @@ let App = () => {
               },
             }}
           />
-          <Stack.Screen name="CreateActivity"
+          <Stack.Screen
+            name="CreateActivity"
             component={CreateActivityScreen}
             options={{
               title: 'Create Activity',
@@ -105,9 +110,7 @@ let App = () => {
   );
 };
 
-const styles = StyleSheet.create({
-
-});
+const styles = StyleSheet.create({});
 
 let codePushOptions = {
   checkFrequency: CodePush.CheckFrequency.ON_APP_START,
