@@ -3,28 +3,35 @@ import { Alert, SafeAreaView } from 'react-native';
 import { ActivityTypeSelector } from 'components/activity-type-selector/activity-type-selector';
 import { ActivitySelector } from 'components/activity-selector/activity-selector';
 
-import { activities } from './constants';
-import { activityTypes } from 'components/activity-type-selector/constants';
+import { activities, IActivity } from './models';
+import {
+  activityTypes,
+  IActivityType,
+} from 'components/activity-type-selector/models';
 
 export const ActivityListScreen = ({ navigation }) => {
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
 
-  const _activityTypes = activityTypes.map((activityType) => (
+  const _activityTypes = activityTypes.map((activityType: IActivityType) => (
     <ActivityTypeSelector.Item
       key={activityType.id}
       id={activityType.id}
       icon={activityType.image}
-      text={activityType.text}
-      onPress={() => Alert.alert('Tipe basıldı!')}
+      text={polyglot.t(activityType.textKey)}
+      onItemPress={(selecteActivityTypes: number[]) => {
+        Alert.alert('Tipe basıldı! ' + selecteActivityTypes.join(', '));
+      }}
     />
   ));
   _activityTypes.unshift(
     <ActivityTypeSelector.Item
       key={100}
-      id={'100'}
+      id={100}
       icon="basketball"
-      text="Yeni Aktivite"
-      onPress={() => navigation.navigate('CreateActivity')}
+      text="New Activity"
+      onItemPress={(selecteActivityTypes: number[]) => {
+        navigation.navigate('CreateActivity');
+      }}
     />
   );
 
@@ -37,10 +44,10 @@ export const ActivityListScreen = ({ navigation }) => {
         justifyContent: 'flex-start',
       }}
     >
-      <ActivityTypeSelector>{_activityTypes}</ActivityTypeSelector>
+      <ActivityTypeSelector multiple>{_activityTypes}</ActivityTypeSelector>
 
       <ActivitySelector>
-        {activities.map((activity) => (
+        {activities.map((activity: IActivity) => (
           <ActivitySelector.Card
             key={activity.id}
             title={activity.title}

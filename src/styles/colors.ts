@@ -5,6 +5,7 @@ export const colors = {
   creamWhite: '#f5f5f5',
   offWhite: '#dedede',
   catskillWhite: '#F5F7FA',
+  casper: '#BBBDBF',
   black: '#000000',
   offBlack: '#212121',
   brownGrey: '#6b6b6b',

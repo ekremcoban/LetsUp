@@ -1,33 +1,39 @@
 import React, { FC, ReactElement, createContext, useState } from 'react';
-import { Platform, View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 
 import { colors } from 'styles/colors';
 import { normalize } from 'globals/helpers';
-import { activitySelectorImages } from 'assets/images/activity-selector';
+import { activityImages } from 'assets/images/activities';
 
 interface IAcivityTypeSelectorProps {
-  title?: string;
+  multiple?: boolean;
+  toggle?: boolean;
   children:
     | ReactElement<IActivityTypeSelectorItemProps>
     | ReactElement<IActivityTypeSelectorItemProps>[];
 }
+type OnItemPress = (selectedActivityTypes: number[]) => void;
 interface IActivityTypeSelectorItemProps {
   id: number;
   icon: string;
   text?: string;
-  onPress: () => void;
+  onItemPress: OnItemPress;
 }
 interface IAcivityTypeSelectorComposition {
   Item: FC<IActivityTypeSelectorItemProps>;
 }
 
+/**
+ * ActivityTypeContext and useActivityTypeContext
+ * Usage: useActivityTypeContext will be used in the component like; const { selectedActivityType, selectActivityType } = useActivityTypeContext()
+ */
 const ActivityTypeContext = createContext<{
-  selectedActivityType: number | null;
-  selectActivityType: (activityTypeId: number) => void;
+  selectedActivityTypes: number[];
+  toggleActivityType: (toggledActivityTypeId: number, cb?: OnItemPress) => void;
 }>({
-  selectedActivityType: null,
-  selectActivityType: () => {},
+  selectedActivityTypes: [],
+  toggleActivityType: () => {},
 });
 const useActivityTypeContext = () => {
   const context = React.useContext(ActivityTypeContext);
@@ -45,19 +51,41 @@ const useActivityTypeContext = () => {
  */
 const ActivityTypeSelector: FC<IAcivityTypeSelectorProps> &
   IAcivityTypeSelectorComposition = (props: IAcivityTypeSelectorProps) => {
-  const [selectedActivityType, setSelectedActivityType] = useState<
-    number | null
-  >(null);
+  const [selectedActivityTypes, setSelectedActivityTypes] = useState<number[]>(
+    []
+  );
 
   return (
-    <View style={selectorStyles.wrapper}>
-      {!!props.title && <Text>{props.title}</Text>}
+    <View>
       <ScrollView horizontal>
         <ActivityTypeContext.Provider
           value={{
-            selectedActivityType,
-            selectActivityType: (activityTypeId: number) =>
-              setSelectedActivityType(activityTypeId),
+            selectedActivityTypes,
+            toggleActivityType: (
+              toggledActivityTypeId: number,
+              cb?: OnItemPress
+            ) => {
+              const toggledActivityTypeIndex = selectedActivityTypes.findIndex(
+                (id: number) => id === toggledActivityTypeId
+              );
+              let updatedActivityTypes: number[] = [];
+
+              if (toggledActivityTypeIndex === -1) {
+                updatedActivityTypes = props.multiple
+                  ? selectedActivityTypes.concat([toggledActivityTypeId])
+                  : [toggledActivityTypeId];
+              } else if (
+                toggledActivityTypeIndex !== -1 &&
+                (props.multiple || props.toggle)
+              ) {
+                updatedActivityTypes = selectedActivityTypes.filter(
+                  (id: number) => id !== toggledActivityTypeId
+                );
+              }
+
+              !!cb && cb(updatedActivityTypes);
+              setSelectedActivityTypes(updatedActivityTypes);
+            },
           }}
         >
           {props.children}
@@ -74,26 +102,30 @@ const ActivityTypeSelector: FC<IAcivityTypeSelectorProps> &
 const ActivityTypeSelectorItem: FC<IActivityTypeSelectorItemProps> = (
   props: IActivityTypeSelectorItemProps
 ) => {
-  const { selectedActivityType, selectActivityType } = useActivityTypeContext();
+  const {
+    selectedActivityTypes,
+    toggleActivityType,
+  } = useActivityTypeContext();
+
+  const isSelected =
+    selectedActivityTypes.findIndex((id: number) => id === props.id) !== -1;
 
   return (
     <TouchableOpacity
       onPress={() => {
-        selectActivityType(props.id);
-        props.onPress();
+        toggleActivityType(props.id, props.onItemPress);
       }}
     >
       <View style={itemStyles.wrapper}>
-        <View
-          style={selectedActivityType === props.id && itemStyles.iconBorder}
-        >
-          <Image
-            source={activitySelectorImages[props.icon]}
+        <View style={isSelected && itemStyles.iconBorder}>
+          <View
             style={[
-              itemStyles.icon,
-              selectedActivityType === props.id && itemStyles.iconSelected,
+              itemStyles.iconWrapper,
+              isSelected && itemStyles.iconWrapperSelected,
             ]}
-          />
+          >
+            <Image source={activityImages[props.icon]} />
+          </View>
         </View>
         {!!props.text && (
           <Text
@@ -118,48 +150,35 @@ const dynamicStyles = {
     fontSize: normalize(size),
   }),
 };
-const selectorStyles = StyleSheet.create({
-  wrapper: {
-    height: 100,
-    zIndex: 1,
-    paddingTop: 15,
-    backgroundColor: colors.veryLightGrey,
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.black,
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
-        shadowOpacity: 0.4,
-        shadowRadius: 10,
-      },
-      android: {
-        elevation: 8,
-      },
-    }),
-  },
-});
 
 const itemStyles = StyleSheet.create({
   wrapper: {
+    height: 120,
+    width: 75,
     flexDirection: 'column',
     alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: 15,
     marginHorizontal: 5,
   },
   iconBorder: {
-    borderColor: colors.armyGreen,
+    borderColor: colors.limeGreen,
     borderWidth: 3,
     borderRadius: 40,
     padding: 2,
   },
-  icon: {
+  iconWrapper: {
+    width: 70,
+    height: 70,
+    borderRadius: 40,
+    backgroundColor: colors.casper,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconWrapperSelected: {
     width: 60,
     height: 60,
-  },
-  iconSelected: {
-    width: 50,
-    height: 50,
+    backgroundColor: colors.limeGreen,
   },
   text: {
     marginTop: 3,

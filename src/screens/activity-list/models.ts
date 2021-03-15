@@ -1,4 +1,13 @@
-export const activities = [
+export interface IActivity {
+  id: string;
+  image: string;
+  title: string;
+  location: string;
+  date: string;
+  time: string;
+}
+
+export const activities: IActivity[] = [
   {
     id: '1',
     image: 'kosu.png',

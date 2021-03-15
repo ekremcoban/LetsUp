@@ -1,4 +1,13 @@
 {
+  "activity_types": {
+    "basketball": "Basketball",
+    "bicycle": "Bicycle",
+    "bowling": "Bowling",
+    "frisbee": "Frisbee",
+    "hiking": "Hiking",
+    "jogging": "Jogging",
+    "table_tennis": "Table Tennis"
+  },
   "global": {
     "save": "Save"
   }
