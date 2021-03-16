@@ -153,12 +153,11 @@ const dynamicStyles = {
 
 const itemStyles = StyleSheet.create({
   wrapper: {
-    height: 120,
     width: 75,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingTop: 15,
+    paddingVertical: 15,
     marginHorizontal: 5,
   },
   iconBorder: {
@@ -181,8 +180,9 @@ const itemStyles = StyleSheet.create({
     backgroundColor: colors.limeGreen,
   },
   text: {
-    marginTop: 3,
+    marginTop: 4,
     color: colors.black,
+    textAlign: 'center',
   },
 });
 
