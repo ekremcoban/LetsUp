@@ -1,5 +1,5 @@
 import React, { FC, ReactElement } from 'react';
-import { Platform, View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { Icon } from 'react-native-elements';
 
@@ -25,6 +25,7 @@ interface IContentItemProps {
   icon?: string;
   iconPosition?: 'left' | 'right';
   text: string;
+  flex?: number;
 }
 interface IAcivitySelectorComposition {
   Card: React.FC<IActivitySelectorCardProps>;
@@ -65,11 +66,15 @@ const ActivitySelectorCard: FC<IActivitySelectorCardProps> = (
             fontSize={15}
             fontWeight="700"
           />
-          <ContentItem icon="calendar-outline" text={props.date || ''} />
-          <View style={cardStyles.locationTimeWrapper}>
-            <ContentItem icon="location-outline" text={props.location || ''} />
-            <ContentItem icon="time-outline" text={props.time || ''} />
+          <View style={cardStyles.dateTimeWrapper}>
+            <ContentItem
+              flex={2}
+              icon="calendar-outline"
+              text={props.date || ''}
+            />
+            <ContentItem flex={1} icon="time-outline" text={props.time || ''} />
           </View>
+          <ContentItem icon="location-outline" text={props.location || ''} />
         </View>
       </View>
     </TouchableOpacity>
@@ -87,16 +92,22 @@ const ContentItem: FC<IContentItemProps> = (props: IContentItemProps) => {
         !props.iconPosition || props.iconPosition === 'left'
           ? contentItemStyles.wrapperRegular
           : contentItemStyles.wrapperReverse,
+        !!props.flex && dynamicStyles.flex(props.flex),
       ]}
     >
       {!!props.icon && (
-        <Icon name={props.icon} type="ionicon" style={contentItemStyles.icon} />
+        <Icon
+          name={props.icon}
+          type="ionicon"
+          iconStyle={contentItemStyles.icon}
+          size={22}
+        />
       )}
 
       <Text
         style={StyleSheet.flatten([
           contentItemStyles.text,
-          dynamicStyles.fontSize(props.fontSize || 12),
+          dynamicStyles.fontSize(props.fontSize || 11),
           dynamicStyles.fontWeight(props.fontWeight || 'normal'),
         ])}
         ellipsizeMode="tail"
@@ -119,14 +130,17 @@ const dynamicStyles = {
     ({
       fontWeight: weight,
     } as const),
+  flex: (value: number) => ({
+    flex: value,
+  }),
 };
 const selectorStyles = StyleSheet.create({
   wrapper: {
-    backgroundColor: colors.white,
     flex: 1,
   },
   scroll: {
-    padding: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 15,
   },
 });
 
@@ -135,26 +149,13 @@ const cardStyles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 15,
-    marginBottom: 20,
-    backgroundColor: colors.creamWhite,
-
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.black,
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
-        shadowOpacity: 0.46,
-        shadowRadius: 5.14,
-      },
-      android: {
-        elevation: 8,
-      },
-    }),
+    borderRadius: 6,
+    paddingHorizontal: 5,
+    paddingVertical: 10,
+    marginBottom: 15,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.casper,
   },
   icon: {
     width: 80,
@@ -162,11 +163,11 @@ const cardStyles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingLeft: 8,
+    paddingLeft: 15,
     display: 'flex',
     flexDirection: 'column',
   },
-  locationTimeWrapper: {
+  dateTimeWrapper: {
     flexDirection: 'row',
   },
 });

@@ -1,13 +1,15 @@
 import React, { useReducer } from 'react';
-import { Alert, SafeAreaView } from 'react-native';
+import { Alert, SafeAreaView, StyleSheet } from 'react-native';
+import { Divider } from 'react-native-elements';
+
 import { ActivityTypeSelector } from 'components/activity-type-selector/activity-type-selector';
 import { ActivitySelector } from 'components/activity-selector/activity-selector';
-
-import { activities, IActivity } from './models';
 import {
   activityTypes,
   IActivityType,
 } from 'components/activity-type-selector/models';
+import { activities, IActivity } from './models';
+import { colors } from 'styles/colors';
 
 export const ActivityListScreen = ({ navigation }) => {
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
@@ -36,15 +38,10 @@ export const ActivityListScreen = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
-      }}
-    >
+    <SafeAreaView style={styles.wrapper}>
       <ActivityTypeSelector multiple>{_activityTypes}</ActivityTypeSelector>
+
+      <Divider style={styles.divider} />
 
       <ActivitySelector>
         {activities.map((activity: IActivity) => (
@@ -62,3 +59,18 @@ export const ActivityListScreen = ({ navigation }) => {
     </SafeAreaView>
   );
 };
+
+/**
+ * Styles
+ */
+const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+  },
+  divider: {
+    backgroundColor: colors.casper,
+  },
+});
