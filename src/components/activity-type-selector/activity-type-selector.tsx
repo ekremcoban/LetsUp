@@ -1,5 +1,5 @@
 import React, { FC, ReactElement, createContext, useState } from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 
 import { colors } from 'styles/colors';
@@ -110,6 +110,8 @@ const ActivityTypeSelectorItem: FC<IActivityTypeSelectorItemProps> = (
   const isSelected =
     selectedActivityTypes.findIndex((id: number) => id === props.id) !== -1;
 
+  const Icon = activityImages[props.icon];
+
   return (
     <TouchableOpacity
       onPress={() => {
@@ -124,7 +126,7 @@ const ActivityTypeSelectorItem: FC<IActivityTypeSelectorItemProps> = (
               isSelected && itemStyles.iconWrapperSelected,
             ]}
           >
-            <Image source={activityImages[props.icon]} />
+            <Icon height="100%" width="100%" />
           </View>
         </View>
         {!!props.text && (

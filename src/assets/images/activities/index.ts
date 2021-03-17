@@ -1,11 +1,11 @@
-import { ImageSourcePropType } from 'react-native';
+import { Svg } from 'react-native-svg';
 
 export const activityImages: {
-  [key: string]: ImageSourcePropType;
+  [key: string]: Svg;
 } = {
-  basketball: require('./basketball.png'),
-  bicycle: require('./bicycle.png'),
-  hiking: require('./hiking.png'),
-  jogging: require('./jogging.png'),
-  tableTennis: require('./tableTennis.png'),
+  basketball: require('./basketball.svg').default,
+  bicycle: require('./bicycle.svg').default,
+  hiking: require('./hiking.svg').default,
+  jogging: require('./jogging.svg').default,
+  tableTennis: require('./tableTennis.svg').default,
 };
