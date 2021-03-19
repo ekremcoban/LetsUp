@@ -10,18 +10,32 @@ interface IAcivityTypeSelectorProps {
   multiple?: boolean;
   toggle?: boolean;
   children:
-    | ReactElement<IActivityTypeSelectorItemProps>
-    | ReactElement<IActivityTypeSelectorItemProps>[];
+    | ReactElement<IActivityTypeSelectorIconItemProps>
+    | ReactElement<IActivityTypeSelectorIconItemProps>[]
+    | ReactElement<IActivityTypeSelectorTextItemProps>
+    | ReactElement<IActivityTypeSelectorTextItemProps>[];
 }
 type OnItemPress = (selectedActivityTypes: number[]) => void;
-interface IActivityTypeSelectorItemProps {
+
+interface IActivityTypeSelectorItemSharedProps {
   id: number;
-  icon: string;
-  text?: string;
   onItemPress: OnItemPress;
 }
+interface IActivityTypeSelectorIconItemProps
+  extends IActivityTypeSelectorItemSharedProps {
+  icon: string;
+  text?: string;
+}
+
+interface IActivityTypeSelectorTextItemProps
+  extends IActivityTypeSelectorItemSharedProps {
+  text: string;
+  firstItem: boolean;
+  lastItem: boolean;
+}
 interface IAcivityTypeSelectorComposition {
-  Item: FC<IActivityTypeSelectorItemProps>;
+  IconItem: FC<IActivityTypeSelectorIconItemProps>;
+  TextItem: FC<IActivityTypeSelectorTextItemProps>;
 }
 
 /**
@@ -96,11 +110,11 @@ const ActivityTypeSelector: FC<IAcivityTypeSelectorProps> &
 };
 
 /**
- * Item component will be used as children of ActivityTypeSelector
- * Usage: <ActivityTypeSelector> <ActivityTypeSelector.Item /> </ActivityTypeSelector>
+ * IconItem component will be used as children of ActivityTypeSelector
+ * Usage: <ActivityTypeSelector> <ActivityTypeSelector.IconItem /> </ActivityTypeSelector>
  */
-const ActivityTypeSelectorItem: FC<IActivityTypeSelectorItemProps> = (
-  props: IActivityTypeSelectorItemProps
+const ActivityTypeSelectorIconItem: FC<IActivityTypeSelectorIconItemProps> = (
+  props: IActivityTypeSelectorIconItemProps
 ) => {
   const {
     selectedActivityTypes,
@@ -118,12 +132,12 @@ const ActivityTypeSelectorItem: FC<IActivityTypeSelectorItemProps> = (
         toggleActivityType(props.id, props.onItemPress);
       }}
     >
-      <View style={itemStyles.wrapper}>
-        <View style={isSelected && itemStyles.iconBorder}>
+      <View style={iconItemStyles.wrapper}>
+        <View style={isSelected && iconItemStyles.iconBorder}>
           <View
             style={[
-              itemStyles.iconWrapper,
-              isSelected && itemStyles.iconWrapperSelected,
+              iconItemStyles.iconWrapper,
+              isSelected && iconItemStyles.iconWrapperSelected,
             ]}
           >
             <Icon height="100%" width="100%" />
@@ -132,7 +146,7 @@ const ActivityTypeSelectorItem: FC<IActivityTypeSelectorItemProps> = (
         {!!props.text && (
           <Text
             style={StyleSheet.flatten([
-              itemStyles.text,
+              iconItemStyles.text,
               dynamicStyles.fontSize(9),
             ])}
           >
@@ -145,15 +159,63 @@ const ActivityTypeSelectorItem: FC<IActivityTypeSelectorItemProps> = (
 };
 
 /**
+ * TextItem component will be used as children of ActivityTypeSelector
+ * Usage: <ActivityTypeSelector> <ActivityTypeSelector.TextItem /> </ActivityTypeSelector>
+ */
+const ActivityTypeSelectorTextItem: FC<IActivityTypeSelectorTextItemProps> = (
+  props: IActivityTypeSelectorTextItemProps
+) => {
+  const {
+    selectedActivityTypes,
+    toggleActivityType,
+  } = useActivityTypeContext();
+
+  const isSelected =
+    selectedActivityTypes.findIndex((id: number) => id === props.id) !== -1;
+  console.log(props);
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        toggleActivityType(props.id, props.onItemPress);
+      }}
+    >
+      <View
+        style={[
+          textItemStyles.wrapper,
+          isSelected && textItemStyles.wrapperSelected,
+          props.firstItem && textItemStyles.firstItem,
+          props.lastItem && textItemStyles.lastItem,
+        ]}
+      >
+        <Text
+          style={StyleSheet.flatten([
+            textItemStyles.text,
+            isSelected && textItemStyles.textSelected,
+            dynamicStyles.fontSize(11),
+            dynamicStyles.fontWeight('800'),
+          ])}
+        >
+          {props.text}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+/**
  * Styles
  */
 const dynamicStyles = {
   fontSize: (size: number) => ({
     fontSize: normalize(size),
   }),
+  fontWeight: (weight: FontWeight) =>
+    ({
+      fontWeight: weight,
+    } as const),
 };
 
-const itemStyles = StyleSheet.create({
+const iconItemStyles = StyleSheet.create({
   wrapper: {
     width: 75,
     flexDirection: 'column',
@@ -188,5 +250,36 @@ const itemStyles = StyleSheet.create({
   },
 });
 
-ActivityTypeSelector.Item = ActivityTypeSelectorItem;
+const textItemStyles = StyleSheet.create({
+  wrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    marginHorizontal: 5,
+    marginVertical: 15,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.casper,
+    borderRadius: 6,
+  },
+  wrapperSelected: {
+    borderColor: colors.limeGreen,
+  },
+  text: {
+    color: colors.casper,
+  },
+  textSelected: {
+    color: colors.limeGreen,
+  },
+  firstItem: {
+    marginLeft: 10,
+  },
+  lastItem: {
+    marginRight: 10,
+  },
+});
+
+ActivityTypeSelector.IconItem = ActivityTypeSelectorIconItem;
+ActivityTypeSelector.TextItem = ActivityTypeSelectorTextItem;
 export { ActivityTypeSelector };
