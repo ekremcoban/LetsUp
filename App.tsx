@@ -74,7 +74,7 @@ let App = () => {
       <SafeAreaProvider>
         <NavigationContainer>
           <Stack.Navigator>
-            <Stack.Screen
+            {/* <Stack.Screen
               name="Home"
               component={ActivityListScreen}
               options={{
@@ -87,7 +87,7 @@ let App = () => {
                   fontWeight: 'bold',
                 },
               }}
-            />
+            /> */}
             <Stack.Screen
               name="CreateActivity"
               component={CreateActivityScreen}
