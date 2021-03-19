@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
     StyleSheet, View, Text, ScrollView, TouchableOpacity,
-    Image, TextInput, Alert, TouchableWithoutFeedback, Keyboard, TouchableNativeFeedback
+    Image, TextInput, Alert, Keyboard, TouchableNativeFeedback
 } from 'react-native';
 import { window } from '../utilities/constants/globalValues';
 import Popover from '../components/popover';
@@ -11,7 +11,7 @@ import { MenuProvider } from 'react-native-popup-menu';
 import RNGooglePlaces from 'react-native-google-places';
 import CustomButton from '../components/buttons/customButton';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { TouchableHighlight } from 'react-native-gesture-handler';
+import ActionSheetMenu from '../components/actionSheetMenu';
 
 const { width, height } = window;
 const startPlacePlaceholder = 'Seçiniz';
@@ -337,18 +337,11 @@ const CreateActivityScreen2 = () => {
                         </ScrollView>
                     </View>
                     <View style={{ height: height * 0.07, paddingLeft: 15, paddingRight: 15, }}>
-                        <Text style={{ fontWeight: 'bold', paddingBottom: 7 }}>Activity Name*</Text>
-                        <TouchableNativeFeedback onPress={() => console.warn('TEST')}>
-                            <View style={{
-                                height: height * 0.05, borderWidth: 1,
-                                borderRadius: 10, backgroundColor: 'white', justifyContent: 'center'
-                            }}>
-                                <Ionicons size={25} name="caret-down"
-                                    style={{ alignSelf: 'flex-end' }}
-                                />
-                            </View>
-                        </TouchableNativeFeedback>
+                        <ActionSheetMenu
+                            title={'Please Select Gender'}
+                            items={['Man', 'Woman', 'Cancel']} onPress={() => console.warn('EKREM')} />
                     </View>
+
                 </View>
                 <View style={styles.secondRow}>
                     <CustomButton onPress={() => save()}
