@@ -27,10 +27,16 @@ const CreateActivityScreen2 = () => {
     const [warningStartPlace, setWarningStartPlace] = useState<boolean>(false);
     const [warningDate, setWarningDate] = useState<number>(0);
     const [warningTime, setWarningTime] = useState<number>(0);
-    const [activityDate, setActivityDate] = useState<Date>(undefined);
-    const [activityTime, setActivityTime] = useState<Date>(undefined);
-    const [isDatePickerVisible, setDatePickerVisibility] = useState<boolean>(false);
-    const [isTimePickerVisible, setTimePickerVisibility] = useState<boolean>(false);
+    const [activityStartDate, setActivityStartDate] = useState<Date>(undefined);
+    const [activityStartTime, setActivityStartTime] = useState<Date>(undefined);
+    const [activityFinishDate, setActivityFinishDate] = useState<Date>(undefined);
+    const [activityFinishTime, setActivityFinishTime] = useState<Date>(undefined);
+    const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState<boolean>(false);
+    const [isFinishDatePickerVisible, setFinishDatePickerVisibility] = useState<boolean>(false);
+    const [isStartTimePickerVisible, setStartTimePickerVisibility] = useState<boolean>(false);
+    const [isFinishTimePickerVisible, setFinishTimePickerVisibility] = useState<boolean>(false);
+    const [showMore, setShowMore] = useState<boolean>(true);
+    const [showMoreText, setShowMoreText] = useState<boolean>('More...');
     const [ageStart, setAgeStart] = useState<number>(0);
     const [gender, setGender] = useState<string>(null);
     const [quota, setQuota] = useState<number>(0);
@@ -105,14 +111,14 @@ const CreateActivityScreen2 = () => {
                 setWarningStartPlace(true);
             }
 
-            if (activityDate != undefined) {
+            if (activityStartDate != undefined) {
                 setWarningDate(0);
             }
             else {
                 setWarningDate(2);
             }
 
-            if (activityTime != undefined) {
+            if (activityStartTime != undefined) {
                 setWarningTime(0);
             }
             else {
@@ -122,7 +128,7 @@ const CreateActivityScreen2 = () => {
         }
     }
 
-    const openSearchModal = () => {
+    const openStartSearchModal = () => {
         RNGooglePlaces.openAutocompleteModal()
             .then((place) => {
                 console.log(place);
@@ -131,7 +137,17 @@ const CreateActivityScreen2 = () => {
                 // suggestions and it is a simplified Google Place object.
             })
             .catch(error => console.log(error.message)) // error is a Javascript Error object
+    }
 
+    const openFinishSearchModal = () => {
+        RNGooglePlaces.openAutocompleteModal()
+            .then((place) => {
+                console.log(place);
+                setFinishPlace(place.name)
+                // place represents user's selection from the
+                // suggestions and it is a simplified Google Place object.
+            })
+            .catch(error => console.log(error.message)) // error is a Javascript Error object
     }
 
     const openSearchFinishModal = () => {
@@ -153,33 +169,55 @@ const CreateActivityScreen2 = () => {
             <Text style={{ textAlign: 'center' }}>{finishPlace}</Text>
         </TouchableOpacity>
 
-    const showDatePicker = () => {
-        setDatePickerVisibility(true);
+    const showStartDatePicker = () => {
+        setStartDatePickerVisibility(true);
     }
 
-    const handleDateConfirm = (date: Date) => {
-        setActivityDate(date)
-        setDatePickerVisibility(false)
+    const handleStartDateConfirm = (date: Date) => {
+        setActivityStartDate(date)
+        setStartDatePickerVisibility(false)
 
         if (date.getFullYear() > new Date().getFullYear()
             || date.getFullYear() == new Date().getFullYear() && date.getMonth() > new Date().getMonth()
             || (date.getFullYear() == new Date().getFullYear() && date.getMonth() == new Date().getMonth()
                 && date.getDate() >= new Date().getDate())) {
-            setActivityDate(date);
-            setActivityTime(null);
+            setActivityStartDate(date);
+            setActivityStartTime(null);
             setWarningDate(0);
             setWarningTime(0)
 
             // console.warn('dışarda tarih');
         }
         else {
-            setActivityDate(date);
-            setActivityTime(null);
+            setActivityStartDate(date);
+            setActivityStartTime(null);
             setWarningDate(1);
         }
     };
 
-    const showDateText = () => {
+    const handleFinishDateConfirm = (date: Date) => {
+        setActivityFinishDate(date)
+        setFinishDatePickerVisibility(false)
+
+        if (date.getFullYear() > new Date().getFullYear()
+            || date.getFullYear() == new Date().getFullYear() && date.getMonth() > new Date().getMonth()
+            || (date.getFullYear() == new Date().getFullYear() && date.getMonth() == new Date().getMonth()
+                && date.getDate() >= new Date().getDate())) {
+            setActivityFinishDate(date);
+            setActivityFinishTime(null);
+            setWarningDate(0);
+            setWarningTime(0)
+
+            // console.warn('dışarda tarih');
+        }
+        else {
+            setActivityFinishDate(date);
+            setActivityFinishTime(null);
+            setWarningDate(1);
+        }
+    };
+
+    const showDateText = (activityDate: Date) => {
         let result = "Seçiniz";
 
         if (activityDate != null
@@ -207,26 +245,45 @@ const CreateActivityScreen2 = () => {
         return result;
     }
 
-    const handleTimeConfirm = (date: Date) => {
-        setTimePickerVisibility(false)
+    const handleStartTimeConfirm = (date: Date, activityDate: Date) => {
+        setStartTimePickerVisibility(false)
 
         if (activityDate != null
             && activityDate.getFullYear() === new Date().getFullYear()
             && activityDate.getMonth() === new Date().getMonth()
             && activityDate.getDate() === new Date().getDate()
             && date.getHours() * 60 + date.getMinutes() <= (new Date().getHours() + 2) * 60 + new Date().getMinutes()) {
-            setActivityTime(null);
+            setActivityStartTime(null);
             setWarningTime(1);
             // console.warn('En az 2 saat olmalı');
         }
         else {
-            setActivityTime(date);
+            setActivityStartTime(date);
             setWarningTime(0);
             // console.warn('saat');
         }
     };
 
-    const showTimeText = () => {
+    const handleFinishTimeConfirm = (date: Date, activityDate: Date) => {
+        setFinishTimePickerVisibility(false)
+
+        if (activityDate != null
+            && activityDate.getFullYear() === new Date().getFullYear()
+            && activityDate.getMonth() === new Date().getMonth()
+            && activityDate.getDate() === new Date().getDate()
+            && date.getHours() * 60 + date.getMinutes() <= (new Date().getHours() + 2) * 60 + new Date().getMinutes()) {
+            setActivityFinishTime(null);
+            setWarningTime(1);
+            // console.warn('En az 2 saat olmalı');
+        }
+        else {
+            setActivityFinishTime(date);
+            setWarningTime(0);
+            // console.warn('saat');
+        }
+    };
+
+    const showTimeText = (activityDate: Date, activityTime: Date) => {
         let result = "Seçiniz";
 
         if (activityDate != null && activityTime != null
@@ -265,10 +322,20 @@ const CreateActivityScreen2 = () => {
     const changeLocation = () => {
         setIsFinishLocation(!isFinishLocation);
         if (isFinishLocation) {
-            setStartPlace('Please Select');
+            startPlace === 'Start' && setStartPlace('Please Select');
         }
         else {
-            setStartPlace('Start');
+            startPlace === 'Please Select' && setStartPlace('Start');
+        }
+    }
+
+    const changeText = (value: Boolean) => {
+        setShowMore(value);
+        if (!value) {
+            setShowMoreText('Less...');
+        }
+        else {
+            setShowMoreText('More...')
         }
     }
 
@@ -276,17 +343,17 @@ const CreateActivityScreen2 = () => {
         <View style={styles.dateTimeSelectedView}>
             {/* <Button title={activityDate === null ? "Show Date Picker" : activityDate.getDate().toString()} onPress={() => setDatePickerVisibility(true)} /> */}
             <CustomButton
-                onPress={showDatePicker}
-                title={showDateText()}
+                onPress={showStartDatePicker}
+                title={showDateText(activityStartDate)}
                 styleText={styles.selectedText}
             />
             {warningDate === 1 && <Popover iconName={'alert'} text={'Seçtiğiniz Tarih Güncel Değil!'} />}
             {warningDate === 2 && <Popover iconName={'alert'} text={'Bu Alan Boş Bırakılamaz'} />}
             <DateTimePickerModal
-                isVisible={isDatePickerVisible}
+                isVisible={isStartDatePickerVisible}
                 mode="date"
-                onConfirm={handleDateConfirm}
-                onCancel={() => setDatePickerVisibility(false)}
+                onConfirm={handleStartDateConfirm}
+                onCancel={() => setStartDatePickerVisibility(false)}
             />
         </View>
     )
@@ -294,31 +361,249 @@ const CreateActivityScreen2 = () => {
     const timeView = (
         <View style={styles.dateTimeSelectedView}>
             <CustomButton
-                onPress={() => setTimePickerVisibility(true)}
-                title={showTimeText()}
+                onPress={() => setStartTimePickerVisibility(true)}
+                title={showTimeText(activityStartDate, activityStartTime)}
                 styleText={styles.selectedText}
             />
             {warningTime === 1 && <Popover iconName={'alert'} text={'En az 2 saat zaman olmalı!'} />}
             {warningTime === 2 && <Popover iconName={'alert'} text={'Bu Alan Boş Bırakılamaz'} />}
             <DateTimePickerModal
-                isVisible={isTimePickerVisible}
+                isVisible={isStartTimePickerVisible}
                 mode="time"
-                onConfirm={handleTimeConfirm}
-                onCancel={() => setTimePickerVisibility(false)}
+                onConfirm={handleStartTimeConfirm}
+                onCancel={() => setStartTimePickerVisibility(false)}
             />
         </View>
     )
 
-    const finishLocation = (
-        <>
-            <View style={{flex: 1, backgroundColor: '#EEE'}} />
-            <View style={{ flex: 10, alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontSize: width * 0.045, }}>{finishPlace}</Text>
+    const location = (
+        <TouchableNativeFeedback onPress={openStartSearchModal}>
+            <View style={{
+                height: height * 0.06, borderWidth: 1, flexDirection: 'row', alignSelf: 'center',
+                borderRadius: 10, borderColor: '#CCC', backgroundColor: 'white', justifyContent: 'center',
+            }}>
+                <View style={{ flex: 10, alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontSize: width * 0.045, }}>{startPlace}</Text>
+                </View>
+                <Ionicons size={25} name="caret-down"
+                    style={{ alignSelf: 'center', color: '#CCC' }}
+                />
             </View>
-            <Ionicons size={25} name="caret-down"
-                style={{ alignSelf: 'center', color: '#CCC' }}
-            />
-        </>
+        </TouchableNativeFeedback>
+    )
+
+    const finishLocation = (
+        <View style={{
+            flexDirection: 'row',
+            // backgroundColor: 'yellow'
+        }}>
+            <TouchableNativeFeedback onPress={openStartSearchModal}>
+                <View style={{
+                    height: height * 0.06, borderWidth: 1, flexDirection: 'row', alignSelf: 'center',
+                    borderRadius: 10, borderColor: '#CCC', backgroundColor: 'white',
+                    justifyContent: 'space-between', flex: 10,
+                }}>
+                    <View style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                        // backgroundColor: 'red'
+                    }}>
+                        <Text style={{ fontSize: width * 0.045, textAlign: 'center' }}>{startPlace}</Text>
+                    </View>
+                    <Ionicons size={25} name="caret-down"
+                        style={{ alignSelf: 'center', color: '#CCC', backgroundColor: 'white', }}
+                    />
+                </View>
+            </TouchableNativeFeedback>
+            <View style={{ flex: 1, backgroundColor: '#EEE', }} />
+            <TouchableNativeFeedback onPress={openFinishSearchModal}>
+                <View style={{
+                    height: height * 0.06, borderWidth: 1, flexDirection: 'row', alignSelf: 'center',
+                    borderRadius: 10, borderColor: '#CCC', backgroundColor: 'white',
+                    justifyContent: 'space-between', flex: 10
+                }}>
+                    <View style={{
+                        flex: 1, justifyContent: 'center',
+                    }}>
+                        <Text style={{ fontSize: width * 0.045, textAlign: 'center' }}>{finishPlace}</Text>
+                    </View>
+                    <Ionicons size={25} name="caret-down"
+                        style={{ alignSelf: 'center', color: '#CCC' }}
+                    />
+                </View>
+            </TouchableNativeFeedback>
+        </View>
+    )
+
+    const more = (
+        <TouchableNativeFeedback onPress={() => changeText(!showMore)}>
+            <View style={{
+                flexDirection: 'row-reverse',
+                margin: 15,
+                // backgroundColor: 'red'
+            }}>
+                <Text
+                    style={{
+                        textDecorationLine: 'underline',
+                        fontWeight: 'bold',
+                    }}>{showMoreText}</Text>
+            </View>
+        </TouchableNativeFeedback>
+    )
+
+    const showFinishDateTime = (
+        <View style={{ flexDirection: 'row', marginTop: 10, }}>
+            <View style={{
+                flex: 10,
+                height: height * 0.1, paddingLeft: 15,
+                // backgroundColor: 'red',
+            }}>
+                <Text style={{ fontWeight: 'bold', paddingBottom: 7, paddingLeft: 10 }}>Finish Date</Text>
+                <TouchableNativeFeedback onPress={() => setFinishDatePickerVisibility(true)}>
+                    <View style={{
+                        height: height * 0.06, borderWidth: 1, flexDirection: 'row', alignSelf: 'center',
+                        borderRadius: 10, backgroundColor: 'white', justifyContent: 'center', borderColor: '#CCC'
+                    }}>
+                        <View style={{ width: '90%', alignItems: 'center', justifyContent: 'center' }}>
+                            <Text style={{ fontSize: width * 0.045, }}>{showDateText(activityFinishDate)}</Text>
+                        </View>
+                        <Ionicons size={25} name="caret-down"
+                            style={{ alignSelf: 'center', color: '#CCC' }}
+                        />
+                        <DateTimePickerModal
+                            isVisible={isFinishDatePickerVisible}
+                            mode="date"
+                            onConfirm={handleFinishDateConfirm}
+                            onCancel={() => setFinishDatePickerVisibility(false)}
+                        />
+                    </View>
+                </TouchableNativeFeedback>
+            </View>
+            <View style={{ flex: 1, backgroundColor: '#EEE', }} />
+            <View style={{
+                flex: 10,
+                height: height * 0.08, paddingRight: 15,
+                // backgroundColor: 'red',
+            }}>
+                <Text style={{ fontWeight: 'bold', paddingBottom: 7, paddingLeft: 10 }}>Finish Time</Text>
+                <TouchableNativeFeedback onPress={() => setFinishTimePickerVisibility(true)}>
+                    <View style={{
+                        height: height * 0.06, borderWidth: 1, flexDirection: 'row', alignSelf: 'center',
+                        borderRadius: 10, backgroundColor: 'white', justifyContent: 'center', borderColor: '#CCC'
+                    }}>
+                        <View style={{ width: '90%', alignItems: 'center', justifyContent: 'center' }}>
+                            <Text style={{ fontSize: width * 0.045, }}>{showTimeText(activityFinishDate, activityFinishTime)}</Text>
+                        </View>
+                        <Ionicons size={25} name="caret-down"
+                            style={{ alignSelf: 'center', color: '#CCC' }}
+                        />
+                        <DateTimePickerModal
+                            isVisible={isFinishTimePickerVisible}
+                            mode="time"
+                            onConfirm={handleFinishTimeConfirm}
+                            onCancel={() => setFinishTimePickerVisibility(false)}
+                        />
+                    </View>
+                </TouchableNativeFeedback>
+            </View>
+        </View>
+    )
+
+    const showGender = (
+        <View style={{
+            height: height * 0.1,
+            paddingLeft: 15, paddingRight: 15,
+            marginTop: 10
+            // backgroundColor: 'red' 
+        }}
+        >
+            <ActionSheetMenu
+                label={'Gender'}
+                title={'Select'}
+                items={[
+                    'Man', 'Woman',
+                    'Cancel']} onPress={() => console.log('TEST')} />
+        </View>
+    )
+
+    const showAge = (
+        <View style={{ flexDirection: 'row', marginTop: 10, }}>
+            <View style={{
+                flex: 10,
+                height: height * 0.1, paddingLeft: 15,
+                // backgroundColor: 'red',
+            }}>
+                <ActionSheetMenu
+                    label={'Age Min'}
+                    title={'Select'}
+                    items={[
+                        '7', '8', '9',
+                        '10', '11', '12', '13', '14', '15', '16', '17', '18', '19',
+                        '20', '21', '22', '23', '24', '25', '26', '27', '28', '29',
+                        '30', '31', '32', '33', '34', '35', '36', '37', '38', '39',
+                        '40', '41', '42', '43', '44', '45', '46', '47', '48', '49',
+                        '50', '51', '52', '53', '54', '55', '56', '57', '58', '59',
+                        '60', '61', '62', '63', '64', '65', '66', '67', '68', '69',
+                        '70', '71', '72', '73', '74', '75', '76', '77',
+                        'Cancel']} onPress={() => console.log('TEST')} />
+            </View>
+            <View style={{ flex: 1, backgroundColor: '#EEE', }} />
+            <View style={{
+                flex: 10,
+                height: height * 0.08, paddingRight: 15,
+                // backgroundColor: 'red',
+            }}>
+                <ActionSheetMenu
+                    label={'Age Max'}
+                    title={'Select'}
+                    items={[
+                        '7', '8', '9',
+                        '10', '11', '12', '13', '14', '15', '16', '17', '18', '19',
+                        '20', '21', '22', '23', '24', '25', '26', '27', '28', '29',
+                        '30', '31', '32', '33', '34', '35', '36', '37', '38', '39',
+                        '40', '41', '42', '43', '44', '45', '46', '47', '48', '49',
+                        '50', '51', '52', '53', '54', '55', '56', '57', '58', '59',
+                        '60', '61', '62', '63', '64', '65', '66', '67', '68', '69',
+                        '70', '71', '72', '73', '74', '75', '76', '77',
+                        'Cancel']} onPress={() => console.log('TEST')} />
+            </View>
+        </View>
+    )
+
+    const showQuota = (
+        <View style={{ flexDirection: 'row', marginTop: 10, }}>
+            <View style={{
+                flex: 10,
+                height: height * 0.08, paddingLeft: 15,
+                // backgroundColor: 'red',
+            }}>
+                <ActionSheetMenu
+                    label={'Quota Min'}
+                    title={'Select'}
+                    items={[
+                        '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                        '10', '11', '12', '13', '14', '15', '16', '17', '18', '19',
+                        '20', '21', '22', '23', '24', '25', '26', '27', '28', '29',
+                        '30', 'more',
+                        'Cancel']} onPress={() => console.log('TEST')} />
+            </View>
+            <View style={{ flex: 1, backgroundColor: '#EEE', }} />
+            <View style={{
+                flex: 10,
+                height: height * 0.08, paddingRight: 15,
+                // backgroundColor: 'red',
+            }}>
+                <ActionSheetMenu
+                    label={'Quota Max'}
+                    title={'Select'}
+                    items={[
+                        '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                        '10', '11', '12', '13', '14', '15', '16', '17', '18', '19',
+                        '20', '21', '22', '23', '24', '25', '26', '27', '28', '29',
+                        '30', 'more',
+                        'Cancel']} onPress={() => console.log('TEST')} />
+            </View>
+        </View>
     )
 
     return (
@@ -360,7 +645,11 @@ const CreateActivityScreen2 = () => {
                             </TouchableOpacity>
                         </ScrollView>
                     </View>
-                    <View style={{ height: height * 0.07, paddingLeft: 15, paddingRight: 15, }}>
+                    <ScrollView>
+                    <View style={{
+                        height: height * 0.1, paddingLeft: 15, paddingRight: 15,
+                    }}
+                    >
                         <ActionSheetMenu
                             label={'Activity Name*'}
                             title={'Select'}
@@ -372,16 +661,19 @@ const CreateActivityScreen2 = () => {
                                 'Test 7', 'Test 8',
                                 'Test 9', 'Test 10',
                                 'Test 11', 'Test 12',
-                                'Cancel']} onPress={() => console.warn('EKREM')} />
+                                'Cancel']} onPress={() => console.log('TEST')} />
                     </View>
                     <View style={{
-                        height: height * 0.12, paddingLeft: 15,
-                        paddingTop: 5,
+                        height: height * 0.1,
+                        paddingLeft: 15,
                         paddingRight: 15,
-                        // backgroundColor: 'red'
+                        // backgroundColor: 'yellow',
+                        justifyContent: 'center'
                     }}>
                         <View style={{
-                            flexDirection: 'row', height: height * 0.04,
+                            flexDirection: 'row',
+                            height: height * 0.03,
+                            marginBottom: 5,
                             // backgroundColor: 'orange', 
                             alignItems: 'center',
                         }}>
@@ -389,33 +681,89 @@ const CreateActivityScreen2 = () => {
                                 <Text style={{ fontWeight: 'bold' }}>Location*</Text>
                             </View>
                             <View style={{
-                                flex: 1, alignItems: 'flex-end',
+                                flex: 1,
+                                alignItems: 'flex-end',
                                 paddingRight: 10,
                             }}>
                                 <Text>Add Finish Location</Text>
                             </View>
                             <BouncyCheckbox
+                            size={20}
                                 textColor="#000"
                                 fillColor={colors.bar}
                                 onPress={(checked) => changeLocation()}
                             />
                         </View>
-                        <TouchableNativeFeedback onPress={openSearchModal}>
-                            <View style={{
-                                height: height * 0.05, borderWidth: 1, flexDirection: 'row', alignSelf: 'center',
-                                borderRadius: 10, backgroundColor: 'white', justifyContent: 'center', borderColor: '#CCC'
-                            }}>
-                                <View style={{ flex: 10, alignItems: 'center', justifyContent: 'center' }}>
-                                    <Text style={{ fontSize: width * 0.045, }}>{startPlace}</Text>
-                                </View>
-                                <Ionicons size={25} name="caret-down"
-                                    style={{ alignSelf: 'center', color: '#CCC' }}
-                                />
-                                {isFinishLocation && finishLocation}
-                            </View>
-
-                        </TouchableNativeFeedback>
+                        {isFinishLocation ? finishLocation : location}
                     </View>
+                    <View style={{
+                        flexDirection: 'row',
+                        height: height * 0.1,
+                        marginTop: 10,
+                        // backgroundColor: 'yellow',
+                    }}>
+                        <View style={{
+                            flex: 10,
+                            // height: height * 0.1, 
+                            paddingLeft: 15,
+                            // backgroundColor: 'red',
+                        }}>
+                            <Text style={{ fontWeight: 'bold', paddingBottom: 7, paddingLeft: 10 }}>Start Date*</Text>
+                            <TouchableNativeFeedback onPress={() => setStartDatePickerVisibility(true)}>
+                                <View style={{
+                                    height: height * 0.06, borderWidth: 1, flexDirection: 'row', alignSelf: 'center',
+                                    borderRadius: 10, backgroundColor: 'white', justifyContent: 'center', borderColor: '#CCC'
+                                }}>
+                                    <View style={{ width: '90%', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Text style={{ fontSize: width * 0.045, }}>{showDateText(activityStartDate)}</Text>
+                                    </View>
+                                    <Ionicons size={25} name="caret-down"
+                                        style={{ alignSelf: 'center', color: '#CCC' }}
+                                    />
+                                    <DateTimePickerModal
+                                        isVisible={isStartDatePickerVisible}
+                                        mode="date"
+                                        onConfirm={handleStartDateConfirm}
+                                        onCancel={() => setStartDatePickerVisibility(false)}
+                                    />
+                                </View>
+                            </TouchableNativeFeedback>
+                        </View>
+                        <View style={{ flex: 1, backgroundColor: '#EEE', }} />
+                        <View style={{
+                            flex: 10,
+                            height: height * 0.1,
+                            paddingRight: 15,
+                            // backgroundColor: 'red',
+                        }}>
+                            <Text style={{ fontWeight: 'bold', paddingBottom: 7, paddingLeft: 10 }}>Start Time*</Text>
+                            <TouchableNativeFeedback onPress={() => setStartTimePickerVisibility(true)}>
+                                <View style={{
+                                    height: height * 0.06, borderWidth: 1, flexDirection: 'row', alignSelf: 'center',
+                                    borderRadius: 10, backgroundColor: 'white', justifyContent: 'center', borderColor: '#CCC'
+                                }}>
+                                    <View style={{ width: '90%', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Text style={{ fontSize: width * 0.045, }}>{showTimeText(activityStartDate, activityStartTime)}</Text>
+                                    </View>
+                                    <Ionicons size={25} name="caret-down"
+                                        style={{ alignSelf: 'center', color: '#CCC' }}
+                                    />
+                                    <DateTimePickerModal
+                                        isVisible={isStartTimePickerVisible}
+                                        mode="time"
+                                        onConfirm={handleStartTimeConfirm}
+                                        onCancel={() => setStartTimePickerVisibility(false)}
+                                    />
+                                </View>
+                            </TouchableNativeFeedback>
+                        </View>
+                    </View>
+                        {showMore ? more : showFinishDateTime}
+                        {!showMore && showGender}
+                        {!showMore && showAge}
+                        {!showMore && showQuota}
+                        {!showMore && more}
+                        </ScrollView>
                 </View>
                 <View style={styles.secondRow}>
                     <CustomButton onPress={() => save()}
@@ -433,11 +781,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#EEE'
     },
     firstRow: {
-        flex: 5,
+        flex: 10,
     },
     secondRow: {
         flex: 1,
         justifyContent: 'center',
+        // backgroundColor: 'red'
     },
     border: {
         borderBottomWidth: 1,
@@ -446,7 +795,7 @@ const styles = StyleSheet.create({
     },
     branch: {
         // flex: 1,
-        height: '22%',
+        height: '24%',
         // borderBottomWidth: 1,
         // backgroundColor: 'yellow',
     },

@@ -28,7 +28,7 @@ class ActionSheetMenu extends Component {
         <Text style={{ fontWeight: 'bold', paddingBottom: 7, paddingLeft: 10 }}>{this.props.label}</Text>
         <TouchableNativeFeedback onPress={() => this.ActionSheet.show()}>
           <View style={{
-            height: height * 0.05, borderWidth: 1, flexDirection: 'row', alignSelf: 'center',
+            height: height * 0.06, borderWidth: 1, flexDirection: 'row', alignSelf: 'center',
             borderRadius: 10, backgroundColor: 'white', justifyContent: 'center', borderColor: '#CCC'
           }}>
             <View style={{ width: '90%', alignItems: 'center', justifyContent: 'center' }}>
