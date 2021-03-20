@@ -14,7 +14,7 @@ import firestore from '@react-native-firebase/firestore';
 import CodePush from 'react-native-code-push';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import EventScreen from './src/screens/EventScreen';
-import CreateActivityScreen from './src/screens/CreateActivityScreen2';
+import CreateActivityScreen2 from './src/screens/CreateActivityScreen2';
 import { colors } from './src/utilities/constants/globalValues';
 import { ActivityListScreen } from 'screens/activity-list/activity-list.screen';
 import { InitializeSettings } from 'components/initialize-settings/initialize-settings';
@@ -74,7 +74,7 @@ let App = () => {
       <SafeAreaProvider>
         <NavigationContainer>
           <Stack.Navigator>
-            {/* <Stack.Screen
+            <Stack.Screen
               name="Home"
               component={ActivityListScreen}
               options={{
@@ -87,10 +87,10 @@ let App = () => {
                   fontWeight: 'bold',
                 },
               }}
-            /> */}
+            />
             <Stack.Screen
               name="CreateActivity"
-              component={CreateActivityScreen}
+              component={CreateActivityScreen2}
               options={{
                 title: 'Create Activity',
                 headerBackTitle: '',
