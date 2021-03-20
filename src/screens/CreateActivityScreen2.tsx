@@ -3,7 +3,7 @@ import {
     StyleSheet, View, Text, ScrollView, TouchableOpacity,
     Image, TextInput, Alert, Keyboard, TouchableNativeFeedback
 } from 'react-native';
-import { window } from '../utilities/constants/globalValues';
+import { colors, window } from '../utilities/constants/globalValues';
 import Popover from '../components/popover';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import firestore from '@react-native-firebase/firestore';
@@ -12,15 +12,17 @@ import RNGooglePlaces from 'react-native-google-places';
 import CustomButton from '../components/buttons/customButton';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ActionSheetMenu from '../components/actionSheetMenu';
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 
 const { width, height } = window;
-const startPlacePlaceholder = 'Seçiniz';
+const startPlacePlaceholder = 'Please Select';
 
 const CreateActivityScreen2 = () => {
     const [branchNo, setBranchNo] = useState<number>(1);
     const [title, setTitle] = useState<string>('');
     const [startPlace, setStartPlace] = useState<string>(startPlacePlaceholder);
-    const [finishPlace, setFinishPlace] = useState<string>('Aktivite Bitiş Konumu İçin Tıklayın');
+    const [isFinishLocation, setIsFinishLocation] = useState(false)
+    const [finishPlace, setFinishPlace] = useState<string>('Finish');
     const [warningTitle, setWarningTitle] = useState<boolean>(false);
     const [warningStartPlace, setWarningStartPlace] = useState<boolean>(false);
     const [warningDate, setWarningDate] = useState<number>(0);
@@ -124,12 +126,12 @@ const CreateActivityScreen2 = () => {
         RNGooglePlaces.openAutocompleteModal()
             .then((place) => {
                 console.log(place);
-                p = place.name;
+                setStartPlace(place.name)
                 // place represents user's selection from the
                 // suggestions and it is a simplified Google Place object.
             })
             .catch(error => console.log(error.message)) // error is a Javascript Error object
-            .finally(a => setStartPlace(p))
+
     }
 
     const openSearchFinishModal = () => {
@@ -260,6 +262,16 @@ const CreateActivityScreen2 = () => {
         return result
     }
 
+    const changeLocation = () => {
+        setIsFinishLocation(!isFinishLocation);
+        if (isFinishLocation) {
+            setStartPlace('Please Select');
+        }
+        else {
+            setStartPlace('Start');
+        }
+    }
+
     const dateView = (
         <View style={styles.dateTimeSelectedView}>
             {/* <Button title={activityDate === null ? "Show Date Picker" : activityDate.getDate().toString()} onPress={() => setDatePickerVisibility(true)} /> */}
@@ -295,6 +307,18 @@ const CreateActivityScreen2 = () => {
                 onCancel={() => setTimePickerVisibility(false)}
             />
         </View>
+    )
+
+    const finishLocation = (
+        <>
+            <View style={{flex: 1, backgroundColor: '#EEE'}} />
+            <View style={{ flex: 10, alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ fontSize: width * 0.045, }}>{finishPlace}</Text>
+            </View>
+            <Ionicons size={25} name="caret-down"
+                style={{ alignSelf: 'center', color: '#CCC' }}
+            />
+        </>
     )
 
     return (
@@ -338,10 +362,60 @@ const CreateActivityScreen2 = () => {
                     </View>
                     <View style={{ height: height * 0.07, paddingLeft: 15, paddingRight: 15, }}>
                         <ActionSheetMenu
-                            title={'Please Select Gender'}
-                            items={['Man', 'Woman', 'Cancel']} onPress={() => console.warn('EKREM')} />
+                            label={'Activity Name*'}
+                            title={'Select'}
+                            items={['Bisiklet Bizim İşimiz', 'Koşmaya Var Mısın?',
+                                'Bisiklet Turu', 'Basketbol Maçı',
+                                'Test 1', 'Test 2',
+                                'Test 3', 'Test 4',
+                                'Test 5', 'Test 6',
+                                'Test 7', 'Test 8',
+                                'Test 9', 'Test 10',
+                                'Test 11', 'Test 12',
+                                'Cancel']} onPress={() => console.warn('EKREM')} />
                     </View>
+                    <View style={{
+                        height: height * 0.12, paddingLeft: 15,
+                        paddingTop: 5,
+                        paddingRight: 15,
+                        // backgroundColor: 'red'
+                    }}>
+                        <View style={{
+                            flexDirection: 'row', height: height * 0.04,
+                            // backgroundColor: 'orange', 
+                            alignItems: 'center',
+                        }}>
+                            <View style={{ flex: 1, paddingLeft: 10 }}>
+                                <Text style={{ fontWeight: 'bold' }}>Location*</Text>
+                            </View>
+                            <View style={{
+                                flex: 1, alignItems: 'flex-end',
+                                paddingRight: 10,
+                            }}>
+                                <Text>Add Finish Location</Text>
+                            </View>
+                            <BouncyCheckbox
+                                textColor="#000"
+                                fillColor={colors.bar}
+                                onPress={(checked) => changeLocation()}
+                            />
+                        </View>
+                        <TouchableNativeFeedback onPress={openSearchModal}>
+                            <View style={{
+                                height: height * 0.05, borderWidth: 1, flexDirection: 'row', alignSelf: 'center',
+                                borderRadius: 10, backgroundColor: 'white', justifyContent: 'center', borderColor: '#CCC'
+                            }}>
+                                <View style={{ flex: 10, alignItems: 'center', justifyContent: 'center' }}>
+                                    <Text style={{ fontSize: width * 0.045, }}>{startPlace}</Text>
+                                </View>
+                                <Ionicons size={25} name="caret-down"
+                                    style={{ alignSelf: 'center', color: '#CCC' }}
+                                />
+                                {isFinishLocation && finishLocation}
+                            </View>
 
+                        </TouchableNativeFeedback>
+                    </View>
                 </View>
                 <View style={styles.secondRow}>
                     <CustomButton onPress={() => save()}
@@ -356,6 +430,7 @@ const CreateActivityScreen2 = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#EEE'
     },
     firstRow: {
         flex: 5,
@@ -371,7 +446,7 @@ const styles = StyleSheet.create({
     },
     branch: {
         // flex: 1,
-        height: '20%',
+        height: '22%',
         // borderBottomWidth: 1,
         // backgroundColor: 'yellow',
     },
