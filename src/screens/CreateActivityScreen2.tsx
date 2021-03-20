@@ -531,6 +531,7 @@ const CreateActivityScreen2 = () => {
             <View style={{
                 flex: 10,
                 height: height * 0.1, paddingLeft: 15,
+                paddingRight: 5,
                 // backgroundColor: 'red',
             }}>
                 <ActionSheetMenu
@@ -576,6 +577,7 @@ const CreateActivityScreen2 = () => {
                 flex: 10,
                 height: height * 0.08, paddingLeft: 15,
                 marginBottom: 10,
+                paddingRight: 5,
                 // backgroundColor: 'red',
             }}>
                 <ActionSheetMenu
