@@ -14,28 +14,38 @@ import { colors } from 'styles/colors';
 export const ActivityListScreen = ({ navigation }) => {
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
 
-  const _activityTypes = activityTypes.map((activityType: IActivityType) => (
-    <ActivityTypeSelector.Item
-      key={activityType.id}
-      id={activityType.id}
-      icon={activityType.image}
-      text={polyglot.t(activityType.textKey)}
-      onItemPress={(selecteActivityTypes: number[]) => {
-        Alert.alert('Tipe basıldı! ' + selecteActivityTypes.join(', '));
-      }}
-    />
-  ));
-  _activityTypes.unshift(
-    <ActivityTypeSelector.Item
-      key={100}
-      id={100}
-      icon="basketball"
-      text="New Activity"
-      onItemPress={(selecteActivityTypes: number[]) => {
-        navigation.navigate('CreateActivity');
-      }}
-    />
+  const _activityTypes = activityTypes.map(
+    (activityType: IActivityType, index: number) => (
+      <ActivityTypeSelector.TextItem
+        key={activityType.id}
+        id={activityType.id}
+        firstItem={index === 0}
+        lastItem={index === activityTypes.length - 1}
+        // icon={activityType.image}
+        text={polyglot.t(activityType.textKey)}
+        onItemPress={(selecteActivityTypes: number[]) => {
+          if (selecteActivityTypes == 0) {
+            navigation.navigate('CreateActivity')
+          }
+          else {
+            Alert.alert('Tipe basıldı! ' + selecteActivityTypes.join(', '));
+          }
+          
+        }}
+      />
+    )
   );
+  // _activityTypes.unshift(
+  //   <ActivityTypeSelector.IconItem
+  //     key={100}
+  //     id={100}
+  //     icon="basketball"
+  //     text="New Activity"
+  //     onItemPress={(selecteActivityTypes: number[]) => {
+  //       navigation.navigate('CreateActivity');
+  //     }}
+  //   />
+  // );
 
   return (
     <SafeAreaView style={styles.wrapper}>
