@@ -31,7 +31,7 @@ class ActionSheetMenu extends Component {
             height: height * 0.06, borderWidth: 1, flexDirection: 'row', alignSelf: 'center',
             borderRadius: 10, backgroundColor: 'white', justifyContent: 'center', borderColor: '#CCC'
           }}>
-            <View style={{ width: '90%', alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}>
               <Text style={{fontSize: width * 0.045,}}>{this.state.activityName}</Text>
             </View>
             <Ionicons size={25} name="caret-down"

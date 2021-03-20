@@ -455,7 +455,7 @@ const CreateActivityScreen2 = () => {
         <View style={{ flexDirection: 'row', marginTop: 10, }}>
             <View style={{
                 flex: 10,
-                height: height * 0.1, paddingLeft: 15,
+                height: height * 0.1, paddingLeft: 10,
                 // backgroundColor: 'red',
             }}>
                 <Text style={{ fontWeight: 'bold', paddingBottom: 7, paddingLeft: 10 }}>Finish Date</Text>
@@ -482,7 +482,7 @@ const CreateActivityScreen2 = () => {
             <View style={{ flex: 1, backgroundColor: '#EEE', }} />
             <View style={{
                 flex: 10,
-                height: height * 0.08, paddingRight: 15,
+                height: height * 0.08, paddingRight: 12,
                 // backgroundColor: 'red',
             }}>
                 <Text style={{ fontWeight: 'bold', paddingBottom: 7, paddingLeft: 10 }}>Finish Time</Text>
@@ -644,124 +644,125 @@ const CreateActivityScreen2 = () => {
                         </ScrollView>
                     </View>
                     <ScrollView>
-                    <View style={{
-                        height: height * 0.1, paddingLeft: 15, paddingRight: 15,
-                    }}
-                    >
-                        <ActionSheetMenu
-                            label={'Activity Name*'}
-                            title={'Select'}
-                            items={['Bisiklet Bizim İşimiz', 'Koşmaya Var Mısın?',
-                                'Bisiklet Turu', 'Basketbol Maçı',
-                                'Test 1', 'Test 2',
-                                'Test 3', 'Test 4',
-                                'Test 5', 'Test 6',
-                                'Test 7', 'Test 8',
-                                'Test 9', 'Test 10',
-                                'Test 11', 'Test 12',
-                                'Cancel']} onPress={() => console.log('TEST')} />
-                    </View>
-                    <View style={{
-                        height: height * 0.1,
-                        paddingLeft: 15,
-                        paddingRight: 15,
-                        // backgroundColor: 'yellow',
-                        justifyContent: 'center'
-                    }}>
+                        <View style={{
+                            height: height * 0.1, paddingLeft: 15, paddingRight: 15,
+                        }}
+                        >
+                            <ActionSheetMenu
+                                label={'Activity Name*'}
+                                title={'Select'}
+                                items={['Bisiklet Bizim İşimiz', 'Koşmaya Var Mısın?',
+                                    'Bisiklet Turu', 'Basketbol Maçı',
+                                    'Test 1', 'Test 2',
+                                    'Test 3', 'Test 4',
+                                    'Test 5', 'Test 6',
+                                    'Test 7', 'Test 8',
+                                    'Test 9', 'Test 10',
+                                    'Test 11', 'Test 12',
+                                    'Cancel']} onPress={() => console.log('TEST')} />
+                        </View>
+                        <View style={{
+                            height: height * 0.11,
+                            paddingLeft: 10,
+                            paddingRight: 10,
+                            marginTop: 5,
+                            // backgroundColor: 'yellow',
+                            justifyContent: 'center'
+                        }}>
+                            <View style={{
+                                flexDirection: 'row',
+                                height: height * 0.03,
+                                marginBottom: 5,
+                                // backgroundColor: 'orange', 
+                                alignItems: 'center',
+                            }}>
+                                <View style={{ flex: 1, paddingLeft: 10 }}>
+                                    <Text style={{ fontWeight: 'bold' }}>Location*</Text>
+                                </View>
+                                <View style={{
+                                    flex: 1,
+                                    alignItems: 'flex-end',
+                                    paddingRight: 10,
+                                }}>
+                                    <Text>Add Finish Location</Text>
+                                </View>
+                                <BouncyCheckbox
+                                    size={20}
+                                    textColor="#000"
+                                    fillColor={colors.bar}
+                                    onPress={(checked) => changeLocation()}
+                                />
+                            </View>
+                            {isFinishLocation ? finishLocation : location}
+                        </View>
                         <View style={{
                             flexDirection: 'row',
-                            height: height * 0.03,
-                            marginBottom: 5,
-                            // backgroundColor: 'orange', 
-                            alignItems: 'center',
-                        }}>
-                            <View style={{ flex: 1, paddingLeft: 10 }}>
-                                <Text style={{ fontWeight: 'bold' }}>Location*</Text>
-                            </View>
-                            <View style={{
-                                flex: 1,
-                                alignItems: 'flex-end',
-                                paddingRight: 10,
-                            }}>
-                                <Text>Add Finish Location</Text>
-                            </View>
-                            <BouncyCheckbox
-                            size={20}
-                                textColor="#000"
-                                fillColor={colors.bar}
-                                onPress={(checked) => changeLocation()}
-                            />
-                        </View>
-                        {isFinishLocation ? finishLocation : location}
-                    </View>
-                    <View style={{
-                        flexDirection: 'row',
-                        height: height * 0.1,
-                        marginTop: 10,
-                        // backgroundColor: 'yellow',
-                    }}>
-                        <View style={{
-                            flex: 10,
-                            // height: height * 0.1, 
-                            paddingLeft: 15,
-                            // backgroundColor: 'red',
-                        }}>
-                            <Text style={{ fontWeight: 'bold', paddingBottom: 7, paddingLeft: 10 }}>Start Date*</Text>
-                            <TouchableNativeFeedback onPress={() => setStartDatePickerVisibility(true)}>
-                                <View style={{
-                                    height: height * 0.06, borderWidth: 1, flexDirection: 'row', alignSelf: 'center',
-                                    borderRadius: 10, backgroundColor: 'white', justifyContent: 'center', borderColor: '#CCC'
-                                }}>
-                                    <View style={{ width: '90%', alignItems: 'center', justifyContent: 'center' }}>
-                                        <Text style={{ fontSize: width * 0.045, }}>{showDateText(activityStartDate)}</Text>
-                                    </View>
-                                    <Ionicons size={25} name="caret-down"
-                                        style={{ alignSelf: 'center', color: '#CCC' }}
-                                    />
-                                    <DateTimePickerModal
-                                        isVisible={isStartDatePickerVisible}
-                                        mode="date"
-                                        onConfirm={handleStartDateConfirm}
-                                        onCancel={() => setStartDatePickerVisibility(false)}
-                                    />
-                                </View>
-                            </TouchableNativeFeedback>
-                        </View>
-                        <View style={{ flex: 1, backgroundColor: '#EEE', }} />
-                        <View style={{
-                            flex: 10,
                             height: height * 0.1,
-                            paddingRight: 15,
+                            marginTop: 5,
                             // backgroundColor: 'red',
                         }}>
-                            <Text style={{ fontWeight: 'bold', paddingBottom: 7, paddingLeft: 10 }}>Start Time*</Text>
-                            <TouchableNativeFeedback onPress={() => setStartTimePickerVisibility(true)}>
-                                <View style={{
-                                    height: height * 0.06, borderWidth: 1, flexDirection: 'row', alignSelf: 'center',
-                                    borderRadius: 10, backgroundColor: 'white', justifyContent: 'center', borderColor: '#CCC'
-                                }}>
-                                    <View style={{ width: '90%', alignItems: 'center', justifyContent: 'center' }}>
-                                        <Text style={{ fontSize: width * 0.045, }}>{showTimeText(activityStartDate, activityStartTime)}</Text>
+                            <View style={{
+                                flex: 10,
+                                // height: height * 0.1, 
+                                paddingLeft: 10,
+                                // backgroundColor: 'red',
+                            }}>
+                                <Text style={{ fontWeight: 'bold', paddingBottom: 7, paddingLeft: 10 }}>Start Date*</Text>
+                                <TouchableNativeFeedback onPress={() => setStartDatePickerVisibility(true)}>
+                                    <View style={{
+                                        height: height * 0.06, borderWidth: 1, flexDirection: 'row', alignSelf: 'center',
+                                        borderRadius: 10, backgroundColor: 'white', justifyContent: 'center', borderColor: '#CCC'
+                                    }}>
+                                        <View style={{ width: '90%', alignItems: 'center', justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: width * 0.045, }}>{showDateText(activityStartDate)}</Text>
+                                        </View>
+                                        <Ionicons size={25} name="caret-down"
+                                            style={{ alignSelf: 'center', color: '#CCC' }}
+                                        />
+                                        <DateTimePickerModal
+                                            isVisible={isStartDatePickerVisible}
+                                            mode="date"
+                                            onConfirm={handleStartDateConfirm}
+                                            onCancel={() => setStartDatePickerVisibility(false)}
+                                        />
                                     </View>
-                                    <Ionicons size={25} name="caret-down"
-                                        style={{ alignSelf: 'center', color: '#CCC' }}
-                                    />
-                                    <DateTimePickerModal
-                                        isVisible={isStartTimePickerVisible}
-                                        mode="time"
-                                        onConfirm={handleStartTimeConfirm}
-                                        onCancel={() => setStartTimePickerVisibility(false)}
-                                    />
-                                </View>
-                            </TouchableNativeFeedback>
+                                </TouchableNativeFeedback>
+                            </View>
+                            <View style={{ flex: 1, backgroundColor: '#EEE', }} />
+                            <View style={{
+                                flex: 10,
+                                height: height * 0.1,
+                                paddingRight: 12,
+                                // backgroundColor: 'red',
+                            }}>
+                                <Text style={{ fontWeight: 'bold', paddingBottom: 7, paddingLeft: 10 }}>Start Time*</Text>
+                                <TouchableNativeFeedback onPress={() => setStartTimePickerVisibility(true)}>
+                                    <View style={{
+                                        height: height * 0.06, borderWidth: 1, flexDirection: 'row', alignSelf: 'center',
+                                        borderRadius: 10, backgroundColor: 'white', justifyContent: 'center', borderColor: '#CCC'
+                                    }}>
+                                        <View style={{ width: '90%', alignItems: 'center', justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: width * 0.045, }}>{showTimeText(activityStartDate, activityStartTime)}</Text>
+                                        </View>
+                                        <Ionicons size={25} name="caret-down"
+                                            style={{ alignSelf: 'center', color: '#CCC' }}
+                                        />
+                                        <DateTimePickerModal
+                                            isVisible={isStartTimePickerVisible}
+                                            mode="time"
+                                            onConfirm={handleStartTimeConfirm}
+                                            onCancel={() => setStartTimePickerVisibility(false)}
+                                        />
+                                    </View>
+                                </TouchableNativeFeedback>
+                            </View>
                         </View>
-                    </View>
                         {showMore ? more : showFinishDateTime}
                         {!showMore && showGender}
                         {!showMore && showAge}
                         {!showMore && showQuota}
                         {!showMore && more}
-                        </ScrollView>
+                    </ScrollView>
                 </View>
                 <View style={styles.secondRow}>
                     <CustomButton onPress={() => save()}
@@ -793,7 +794,7 @@ const styles = StyleSheet.create({
     },
     branch: {
         // flex: 1,
-        height: '20%',
+        height: '18%',
         // borderBottomWidth: 1,
         // backgroundColor: 'yellow',
     },
