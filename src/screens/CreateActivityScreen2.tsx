@@ -575,6 +575,7 @@ const CreateActivityScreen2 = () => {
             <View style={{
                 flex: 10,
                 height: height * 0.08, paddingLeft: 15,
+                marginBottom: 10,
                 // backgroundColor: 'red',
             }}>
                 <ActionSheetMenu
@@ -611,9 +612,6 @@ const CreateActivityScreen2 = () => {
             <View style={styles.container}>
                 <View style={styles.firstRow}>
                     <View style={styles.branch}>
-                        <View style={styles.branchTitleView}>
-                            <Text style={styles.branchTitleText}>Branş Seçiniz</Text>
-                        </View>
                         <ScrollView horizontal={true}>
                             <TouchableOpacity style={styles.branchIcon} onPress={() => setBranchNo(0)}>
                                 <Image style={styles.imgBranch} source={require('../assets/img/jogging.png')} />
@@ -767,7 +765,7 @@ const CreateActivityScreen2 = () => {
                 </View>
                 <View style={styles.secondRow}>
                     <CustomButton onPress={() => save()}
-                        title='Etkinlik Oluştur'
+                        title='Create Activity'
                     />
                 </View>
             </View >
@@ -795,7 +793,7 @@ const styles = StyleSheet.create({
     },
     branch: {
         // flex: 1,
-        height: '24%',
+        height: '20%',
         // borderBottomWidth: 1,
         // backgroundColor: 'yellow',
     },
