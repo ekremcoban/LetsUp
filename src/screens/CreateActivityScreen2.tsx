@@ -455,7 +455,9 @@ const CreateActivityScreen2 = () => {
         <View style={{ flexDirection: 'row', marginTop: 10, }}>
             <View style={{
                 flex: 10,
-                height: height * 0.1, paddingLeft: 10,
+                height: height * 0.1, 
+                paddingLeft: 10,
+                paddingRight: 5,
                 // backgroundColor: 'red',
             }}>
                 <Text style={{ fontWeight: 'bold', paddingBottom: 7, paddingLeft: 10 }}>Finish Date</Text>
@@ -512,7 +514,7 @@ const CreateActivityScreen2 = () => {
     const showGender = (
         <View style={{
             height: height * 0.1,
-            paddingLeft: 15, paddingRight: 15,
+            paddingLeft: 5, paddingRight: 5,
             marginTop: 10
             // backgroundColor: 'red' 
         }}
@@ -575,7 +577,8 @@ const CreateActivityScreen2 = () => {
         <View style={{ flexDirection: 'row', marginTop: 10, }}>
             <View style={{
                 flex: 10,
-                height: height * 0.08, paddingLeft: 15,
+                height: height * 0.08, 
+                paddingLeft: 15,
                 marginBottom: 10,
                 paddingRight: 5,
                 // backgroundColor: 'red',
@@ -593,7 +596,8 @@ const CreateActivityScreen2 = () => {
             <View style={{ flex: 1, backgroundColor: '#EEE', }} />
             <View style={{
                 flex: 10,
-                height: height * 0.08, paddingRight: 15,
+                height: height * 0.08, 
+                paddingRight: 15,
                 // backgroundColor: 'red',
             }}>
                 <ActionSheetMenu
@@ -647,7 +651,7 @@ const CreateActivityScreen2 = () => {
                     </View>
                     <ScrollView>
                         <View style={{
-                            height: height * 0.1, paddingLeft: 15, paddingRight: 15,
+                            height: height * 0.1, paddingLeft: 5, paddingRight: 5,
                         }}
                         >
                             <ActionSheetMenu
@@ -709,11 +713,12 @@ const CreateActivityScreen2 = () => {
                                 paddingLeft: 10,
                                 // backgroundColor: 'red',
                             }}>
-                                <Text style={{ fontWeight: 'bold', paddingBottom: 7, paddingLeft: 10 }}>Start Date*</Text>
+                                <Text style={{ fontWeight: 'bold', paddingBottom: 7, paddingLeft: 10, }}>Start Date*</Text>
                                 <TouchableNativeFeedback onPress={() => setStartDatePickerVisibility(true)}>
                                     <View style={{
                                         height: height * 0.06, borderWidth: 1, flexDirection: 'row', alignSelf: 'center',
-                                        borderRadius: 10, backgroundColor: 'white', justifyContent: 'center', borderColor: '#CCC'
+                                        borderRadius: 10, backgroundColor: 'white', justifyContent: 'center', 
+                                        borderColor: '#CCC', paddingRight: 5,
                                     }}>
                                         <View style={{ width: '90%', alignItems: 'center', justifyContent: 'center' }}>
                                             <Text style={{ fontSize: width * 0.045, }}>{showDateText(activityStartDate)}</Text>
