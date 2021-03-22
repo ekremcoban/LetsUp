@@ -186,7 +186,7 @@ const CreateActivityScreen2 = () => {
             setWarningDate(0);
             setWarningTime(0)
 
-            // console.warn('dışarda tarih');
+             console.warn('dışarda tarih');
         }
         else {
             setActivityStartDate(date);
