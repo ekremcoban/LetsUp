@@ -1,4 +1,4 @@
-import {ScaledSize} from 'react-native';
+import { ScaledSize } from 'react-native';
 import Polyglot from 'node-polyglot';
 
 declare global {

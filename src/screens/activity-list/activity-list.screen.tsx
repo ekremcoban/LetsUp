@@ -24,13 +24,7 @@ export const ActivityListScreen = ({ navigation }) => {
         // icon={activityType.image}
         text={polyglot.t(activityType.textKey)}
         onItemPress={(selecteActivityTypes: number[]) => {
-          if (selecteActivityTypes == 0) {
-            navigation.navigate('CreateActivity')
-          }
-          else {
-            Alert.alert('Tipe basıldı! ' + selecteActivityTypes.join(', '));
-          }
-          
+            Alert.alert('Tipe basıldı! ' + selecteActivityTypes.join(', '));    
         }}
       />
     )

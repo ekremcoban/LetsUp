@@ -5,7 +5,6 @@ export interface IActivityType {
 }
 
 export const activityTypes: IActivityType[] = [
-  { id: 0, image: 'new', textKey: 'new' },
   { id: 1, image: 'basketball', textKey: 'activity_types.basketball' },
   { id: 2, image: 'bicycle', textKey: 'activity_types.bicycle' },
   { id: 3, image: 'hiking', textKey: 'activity_types.hiking' },

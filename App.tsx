@@ -9,15 +9,20 @@ import {
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import CodePush from 'react-native-code-push';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import EventScreen from './src/screens/EventScreen';
-import CreateActivityScreen2 from './src/screens/CreateActivityScreen2';
+import CreateActivityScreen from './src/screens/CreateActivityScreen';
 import { colors } from './src/utilities/constants/globalValues';
 import { ActivityListScreen } from 'screens/activity-list/activity-list.screen';
 import { InitializeSettings } from 'components/initialize-settings/initialize-settings';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import ProfilScreen from 'screens/ProfilScreen';
+import MyActivitiesScreen from 'screens/MyActivitiesScreen';
+import NotificationScreen from 'screens/NotificationScreen';
 
 let App = () => {
   const [userId, setUserId] = useState('DmwlR3OcI72ouDxUPH79');
@@ -69,6 +74,55 @@ let App = () => {
   }, []);
 
   const Stack = createStackNavigator();
+  const Tab = createBottomTabNavigator();
+
+  const Home = () => {
+    return (
+      <SafeAreaProvider>
+        <Tab.Navigator
+          initialRouteName={'Activity List'}
+        >
+          <Tab.Screen name="Activity List" component={ActivityListScreen}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name={'home-outline'} size={25} color={colors.bar} />
+              ),
+            }}
+          />
+          <Tab.Screen name="Profil" component={ProfilScreen}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name={'person-outline'} size={25} color={colors.bar} />
+              ),
+            }}
+          />
+           <Tab.Screen name="Create Activity" component={CreateActivityScreen}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name={'add-circle-outline'} size={25} color={colors.bar} />
+              ),
+            }}
+          />
+          <Tab.Screen name="My Activities" component={MyActivitiesScreen}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name={'heart-outline'} size={25} color={colors.bar} />
+              ),
+            }}
+          />
+          <Tab.Screen name="Notification" component={NotificationScreen}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name={'notifications-outline'} size={25} color={colors.bar} />
+              ),
+              
+            }}
+          />
+        </Tab.Navigator>
+      </SafeAreaProvider>
+    );
+  }
+
   return (
     <InitializeSettings>
       <SafeAreaProvider>
@@ -76,24 +130,9 @@ let App = () => {
           <Stack.Navigator>
             <Stack.Screen
               name="Home"
-              component={ActivityListScreen}
+              component={Home}
               options={{
                 title: 'Activity List',
-                headerStyle: {
-                  backgroundColor: colors.bar,
-                },
-                headerTintColor: '#fff',
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                },
-              }}
-            />
-            <Stack.Screen
-              name="CreateActivity"
-              component={CreateActivityScreen2}
-              options={{
-                title: 'Create Activity',
-                headerBackTitle: '',
                 headerStyle: {
                   backgroundColor: colors.bar,
                 },
