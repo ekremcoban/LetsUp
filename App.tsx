@@ -81,41 +81,61 @@ let App = () => {
       <SafeAreaProvider>
         <Tab.Navigator
           initialRouteName={'Activity List'}
+          tabBarOptions={{
+            activeTintColor: colors.bar,
+            inactiveTintColor: 'gray',
+          }}
         >
           <Tab.Screen name="Activity List" component={ActivityListScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
-                <Ionicons name={'home-outline'} size={25} color={colors.bar} />
+                <Ionicons name={'home'} size={30} color={color} />
               ),
             }}
           />
           <Tab.Screen name="Profil" component={ProfilScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
-                <Ionicons name={'person-outline'} size={25} color={colors.bar} />
+                <Ionicons name={'person'} size={30} color={color} />
               ),
             }}
           />
-           <Tab.Screen name="Create Activity" component={CreateActivityScreen}
+          <Tab.Screen name="Create Activity" component={CreateActivityScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
-                <Ionicons name={'add-circle-outline'} size={25} color={colors.bar} />
+                <View
+                  style={{
+                    flex: 1,
+                    position: 'absolute',
+                    bottom: 0, // space from bottombar
+                    height: 60,
+                    width: 60,
+                    borderRadius: 55,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                   backgroundColor: 'white',
+                  }}
+                >
+                  <Ionicons name={'add-circle'} size={65} color={color}
+                  style={{bottom: 5}}
+                  />
+                </View>
               ),
             }}
           />
           <Tab.Screen name="My Activities" component={MyActivitiesScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
-                <Ionicons name={'heart-outline'} size={25} color={colors.bar} />
+                <Ionicons name={'heart'} size={30} color={color} />
               ),
             }}
           />
           <Tab.Screen name="Notification" component={NotificationScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
-                <Ionicons name={'notifications-outline'} size={25} color={colors.bar} />
+                <Ionicons name={'notifications'} size={30} color={color} />
               ),
-              
+
             }}
           />
         </Tab.Navigator>

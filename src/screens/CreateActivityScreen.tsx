@@ -790,7 +790,7 @@ const styles = StyleSheet.create({
         flex: 10,
     },
     secondRow: {
-        flex: 1,
+        flex: 2,
         justifyContent: 'center',
         // backgroundColor: 'red'
     },
