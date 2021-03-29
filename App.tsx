@@ -89,14 +89,14 @@ let App = () => {
           <Tab.Screen name="Activity List" component={ActivityListScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
-                <Ionicons name={'home'} size={30} color={color} />
+                <Ionicons name={'home'} size={25} color={color} />
               ),
             }}
           />
           <Tab.Screen name="Profil" component={ProfilScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
-                <Ionicons name={'person'} size={30} color={color} />
+                <Ionicons name={'person'} size={25} color={color} />
               ),
             }}
           />
@@ -126,14 +126,14 @@ let App = () => {
           <Tab.Screen name="My Activities" component={MyActivitiesScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
-                <Ionicons name={'heart'} size={30} color={color} />
+                <Ionicons name={'heart'} size={25} color={color} />
               ),
             }}
           />
           <Tab.Screen name="Notification" component={NotificationScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
-                <Ionicons name={'notifications'} size={30} color={color} />
+                <Ionicons name={'notifications'} size={25} color={color} />
               ),
 
             }}
