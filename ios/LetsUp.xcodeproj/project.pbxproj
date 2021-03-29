@@ -261,6 +261,7 @@
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
 				6FF62F117CB3B995E1D276A7 /* [CP] Copy Pods Resources */,
+				7F2A1EE3DB65923137A52A99 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -284,6 +285,7 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				27142273645E935E04C75BC1 /* [CP] Copy Pods Resources */,
 				A4CF4F486CFE109E1C92306D /* [CP-User] [RNFB] Core Configuration */,
+				93ADA3B9CD51C34FBB6208A6 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -579,6 +581,24 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-LetsUp-LetsUpTests/Pods-LetsUp-LetsUpTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		7F2A1EE3DB65923137A52A99 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-LetsUp-LetsUpTests/Pods-LetsUp-LetsUpTests-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL/OpenSSL.framework/OpenSSL",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-LetsUp-LetsUpTests/Pods-LetsUp-LetsUpTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		8DCDAE6480399FD5B6EC4C84 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -599,6 +619,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		93ADA3B9CD51C34FBB6208A6 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-LetsUp/Pods-LetsUp-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL/OpenSSL.framework/OpenSSL",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-LetsUp/Pods-LetsUp-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A4CF4F486CFE109E1C92306D /* [CP-User] [RNFB] Core Configuration */ = {
