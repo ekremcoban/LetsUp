@@ -10,8 +10,10 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
+    "@gregfrench/react-native-wheel-picker": "^1.2.12",
     "@react-native-community/datetimepicker": "^3.0.9",
     "@react-native-community/masked-view": "^0.1.10",
+    "@react-native-community/picker": "^1.8.1",
     "@react-native-firebase/app": "^8.4.7",
     "@react-native-firebase/auth": "^9.3.2",
     "@react-native-firebase/firestore": "^7.9.1",
@@ -23,6 +25,7 @@
     "node-polyglot": "^2.4.0",
     "react": "16.13.1",
     "react-native": "0.63.3",
+    "react-native-actions-sheet": "^0.4.2",
     "react-native-actionsheet": "^2.4.2",
     "react-native-bouncy-checkbox": "^2.0.0-beta.1",
     "react-native-code-push": "^7.0.0",

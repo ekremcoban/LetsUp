@@ -1,4 +1,8 @@
 rootProject.name = 'LetsUp'
+include ':@react-native-community_picker'
+project(':@react-native-community_picker').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/picker/android')
+include ':@gregfrench_react-native-wheel-picker'
+project(':@gregfrench_react-native-wheel-picker').projectDir = new File(rootProject.projectDir, '../node_modules/@gregfrench/react-native-wheel-picker/android')
 include ':react-native-google-places'
 project(':react-native-google-places').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-google-places/android')
 include ':react-native-google-places'

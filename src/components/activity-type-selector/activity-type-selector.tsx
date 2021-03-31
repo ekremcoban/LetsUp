@@ -172,7 +172,7 @@ const ActivityTypeSelectorTextItem: FC<IActivityTypeSelectorTextItemProps> = (
 
   const isSelected =
     selectedActivityTypes.findIndex((id: number) => id === props.id) !== -1;
-  console.log(props);
+
   return (
     <TouchableOpacity
       onPress={() => {

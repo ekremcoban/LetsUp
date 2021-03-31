@@ -9,6 +9,8 @@
     "table_tennis": "Table Tennis"
   },
   "global": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
     "save": "Save"
   }
 }
