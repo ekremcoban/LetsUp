@@ -14,8 +14,7 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import CodePush from 'react-native-code-push';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import EventScreen from './src/screens/EventScreen';
-import CreateActivityScreen from './src/screens/CreateActivityScreen';
+import CreateActivityScreen from './src/screens/create-activity/create-activity.screen';
 import { colors } from './src/utilities/constants/globalValues';
 import { ActivityListScreen } from 'screens/activity-list/activity-list.screen';
 import { InitializeSettings } from 'components/initialize-settings/initialize-settings';
@@ -86,21 +85,27 @@ let App = () => {
             inactiveTintColor: 'gray',
           }}
         >
-          <Tab.Screen name="Activity List" component={ActivityListScreen}
+          <Tab.Screen
+            name="Activity List"
+            component={ActivityListScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name={'home'} size={25} color={color} />
               ),
             }}
           />
-          <Tab.Screen name="Profil" component={ProfilScreen}
+          <Tab.Screen
+            name="Profil"
+            component={ProfilScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name={'person'} size={25} color={color} />
               ),
             }}
           />
-          <Tab.Screen name="Create Activity" component={CreateActivityScreen}
+          <Tab.Screen
+            name="Create Activity"
+            component={CreateActivityScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
                 <View
@@ -113,35 +118,41 @@ let App = () => {
                     borderRadius: 55,
                     justifyContent: 'center',
                     alignItems: 'center',
-                   backgroundColor: 'white',
+                    backgroundColor: 'white',
                   }}
                 >
-                  <Ionicons name={'add-circle'} size={65} color={color}
-                  style={{bottom: 5}}
+                  <Ionicons
+                    name={'add-circle'}
+                    size={65}
+                    color={color}
+                    style={{ bottom: 5 }}
                   />
                 </View>
               ),
             }}
           />
-          <Tab.Screen name="My Activities" component={MyActivitiesScreen}
+          <Tab.Screen
+            name="My Activities"
+            component={MyActivitiesScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name={'heart'} size={25} color={color} />
               ),
             }}
           />
-          <Tab.Screen name="Notification" component={NotificationScreen}
+          <Tab.Screen
+            name="Notification"
+            component={NotificationScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name={'notifications'} size={25} color={color} />
               ),
-
             }}
           />
         </Tab.Navigator>
       </SafeAreaProvider>
     );
-  }
+  };
 
   return (
     <InitializeSettings>

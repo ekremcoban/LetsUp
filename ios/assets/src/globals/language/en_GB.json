@@ -8,9 +8,28 @@
     "jogging": "Jogging",
     "table_tennis": "Table Tennis"
   },
+  "components": {
+    "selector": {
+      "default_placeholder": "Please select"
+    }
+  },
   "global": {
     "cancel": "Cancel",
     "confirm": "Confirm",
     "save": "Save"
+  },
+  "screens": {
+    "create_activity": {
+      "action_sheets": {
+        "age_range": {
+          "title": "Pick age range"
+        }
+      },
+      "inputs": {
+        "age_range": {
+          "label": "Age Range"
+        }
+      }
+    }
   }
 }
