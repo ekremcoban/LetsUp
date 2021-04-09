@@ -14,15 +14,24 @@ interface ISelector {
 export const Selector = (props: ISelector) => {
   return (
     <>
-      {!!props.label && <Text style={styles.label}>{props.label}</Text>}
+      {/* {!!props.label && <Text style={styles.label}>{props.label}</Text>} */}
       <TouchableNativeFeedback onPress={props.onPress}>
         <View style={styles.inputWrapper}>
           <View style={styles.textWrapper}>
-            <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
-              {props.text ||
-                props.placeholder ||
-                polyglot.t('components.selector.default_placeholder')}
+            <Text style={[styles.label, !!props.text && styles.labelWithText]}>
+              {props.label}
             </Text>
+            {!!props.text && (
+              <Text
+                style={[styles.text]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {props.text ||
+                  props.placeholder ||
+                  polyglot.t('components.selector.default_placeholder')}
+              </Text>
+            )}
           </View>
           <Ionicons size={25} name="chevron-down-outline" style={styles.icon} />
         </View>
@@ -46,17 +55,27 @@ const styles = StyleSheet.create({
   },
   textWrapper: {
     flex: 1,
-    alignItems: 'center',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    alignItems: 'flex-start',
     justifyContent: 'center',
   },
   text: {
     fontSize: 18,
+    color: colors.offBlack,
   },
   icon: {
     color: colors.casper,
   },
   label: {
-    fontWeight: 'bold',
-    paddingBottom: 7,
+    fontWeight: '500',
+    fontSize: 18,
+    color: colors.brownGrey,
+    // paddingBottom: 7,
+  },
+  labelWithText: {
+    fontSize: 10,
+    color: colors.nobel,
+    // paddingBottom: 7,
   },
 });

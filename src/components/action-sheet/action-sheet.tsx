@@ -1,13 +1,13 @@
 import React, { ReactNode, forwardRef } from 'react';
 import { StyleSheet, SafeAreaView, View, Text } from 'react-native';
-import ReactNativeActionsSheet from 'react-native-actions-sheet';
+import ReactNativeRawBottomSheet from 'react-native-raw-bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from 'components/buttons/button';
 import { colors } from 'styles/colors';
 import { normalize } from 'globals/helpers';
 
-export { ReactNativeActionsSheet as IActionSheet };
+export { ReactNativeRawBottomSheet as IActionSheet };
 interface IActionSheetProps {
   title: string;
   children: ReactNode;
@@ -16,15 +16,20 @@ interface IActionSheetProps {
 }
 
 export const ActionSheet = forwardRef<
-  ReactNativeActionsSheet,
+  ReactNativeRawBottomSheet,
   IActionSheetProps
 >((props, ref) => {
   const insets = useSafeAreaInsets();
 
   return (
-    <ReactNativeActionsSheet
+    <ReactNativeRawBottomSheet
       ref={ref}
-      containerStyle={{ backgroundColor: 'transparent' }}
+      height={!!props.onCancel ? 420 : 360}
+      customStyles={{
+        container: {
+          backgroundColor: 'transparent',
+        },
+      }}
     >
       <SafeAreaView>
         <View
@@ -65,7 +70,7 @@ export const ActionSheet = forwardRef<
           )}
         </View>
       </SafeAreaView>
-    </ReactNativeActionsSheet>
+    </ReactNativeRawBottomSheet>
   );
 });
 

@@ -36,23 +36,11 @@ export const ActivityListScreen = ({ navigation }) => {
     <ActivityTypeSelector.TextItem
       key={99}
       id={99}
-      firstItem={false}
+      firstItem={true}
       lastItem={false}
       text="Actionsheet"
       onItemPress={(selecteActivityTypes: number[]) => {
-        ageActionSheetRef.current?.setModalVisible();
-      }}
-    />
-  );
-  _activityTypes.unshift(
-    <ActivityTypeSelector.TextItem
-      key={100}
-      id={100}
-      firstItem={true}
-      lastItem={false}
-      text="New Activity"
-      onItemPress={(selecteActivityTypes: number[]) => {
-        navigation.navigate('CreateActivity');
+        ageActionSheetRef.current?.open();
       }}
     />
   );

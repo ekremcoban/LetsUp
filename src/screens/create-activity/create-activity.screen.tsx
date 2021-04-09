@@ -888,7 +888,7 @@ const CreateActivityScreen2 = () => {
                 <View style={styles.row}>
                   <View style={styles.column}>
                     <Selector
-                      onPress={() => genderActionSheetRef.current?.show()}
+                      onPress={() => genderActionSheetRef.current?.open()}
                       label={polyglot.t(
                         'screens.create_activity.inputs.gender.label'
                       )}
@@ -906,7 +906,7 @@ const CreateActivityScreen2 = () => {
 
                   <View style={{ flex: 1, paddingHorizontal: 5 }}>
                     <Selector
-                      onPress={() => ageActionSheetRef.current?.show()}
+                      onPress={() => ageActionSheetRef.current?.open()}
                       label={polyglot.t(
                         'screens.create_activity.inputs.age.label'
                       )}
@@ -920,7 +920,7 @@ const CreateActivityScreen2 = () => {
 
                   <View style={{ flex: 1, paddingHorizontal: 5 }}>
                     <Selector
-                      onPress={() => quotaActionSheetRef.current?.show()}
+                      onPress={() => quotaActionSheetRef.current?.open()}
                       label={polyglot.t(
                         'screens.create_activity.inputs.quota.label'
                       )}
@@ -949,10 +949,10 @@ const CreateActivityScreen2 = () => {
           onSelect={([min, max]: [number, number]) => {
             // TODO: Validate selected age values
             setSelectedAgeRange([min, max]);
-            ageActionSheetRef.current?.setModalVisible(false);
+            ageActionSheetRef.current?.close();
           }}
           onCancel={() => {
-            ageActionSheetRef.current?.setModalVisible(false);
+            ageActionSheetRef.current?.close();
           }}
         />
         <QuotaActionSheet
@@ -960,20 +960,20 @@ const CreateActivityScreen2 = () => {
           onSelect={([min, max]: [number, number]) => {
             // TODO: Validate selected quota values
             setSelectedQuotaRange([min, max]);
-            quotaActionSheetRef.current?.setModalVisible(false);
+            quotaActionSheetRef.current?.close();
           }}
           onCancel={() => {
-            quotaActionSheetRef.current?.setModalVisible(false);
+            quotaActionSheetRef.current?.close();
           }}
         />
         <GenderActionSheet
           ref={genderActionSheetRef}
           onSelect={(genderValue: string) => {
             setSelectedGenderValue(genderValue);
-            genderActionSheetRef.current?.setModalVisible(false);
+            genderActionSheetRef.current?.close();
           }}
           onCancel={() => {
-            genderActionSheetRef.current?.setModalVisible(false);
+            genderActionSheetRef.current?.close();
           }}
         />
       </View>
