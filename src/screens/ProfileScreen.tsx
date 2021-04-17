@@ -28,7 +28,7 @@ class ProfilScreen extends Component {
     }).addTo(mymap);
     
     `)
-    }, 1000);
+    }, 1500);
   }
 
 

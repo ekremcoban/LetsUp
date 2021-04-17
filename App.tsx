@@ -22,6 +22,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import ProfileScreen from 'screens/ProfileScreen';
 import MyActivitiesScreen from 'screens/MyActivitiesScreen';
 import NotificationScreen from 'screens/NotificationScreen';
+import ActivityInfoScreen from 'screens/ActivityInfoScreen';
 
 let App = () => {
   const [userId, setUserId] = useState('DmwlR3OcI72ouDxUPH79');
@@ -164,6 +165,20 @@ let App = () => {
               component={Home}
               options={{
                 title: 'Activity List',
+                headerStyle: {
+                  backgroundColor: colors.bar,
+                },
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                },
+              }}
+            />
+          <Stack.Screen
+              name="Activity Info"
+              component={ActivityInfoScreen}
+              options={{
+                title: 'Activity Info',
                 headerStyle: {
                   backgroundColor: colors.bar,
                 },

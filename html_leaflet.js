@@ -20,10 +20,6 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(mymap);
 
-L.marker([41.01809926611338, 29.00856835843875]).addTo(mymap)
-.bindPopup('Start Point')
-.openPopup();
-
 	
 </script>
 </body>

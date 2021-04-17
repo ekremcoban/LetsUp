@@ -60,7 +60,7 @@ export const ActivityListScreen = ({ navigation }) => {
             location={activity.location}
             date={activity.date}
             time={activity.time}
-            onPress={() => Alert.alert('Karta basıldı!')}
+            onPress={() => navigation.navigate('Activity Info')}
           />
         ))}
       </ActivitySelector>
