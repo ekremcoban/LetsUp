@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Image } from 'react-native';
+import { StyleSheet, View, Text, Image, ScrollView, TouchableNativeFeedback } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { WebView } from 'react-native-webview';
 import html_script from '../../html_leaflet';
 
-const { width, height } = window
 
 class ActivityInfoScreen extends Component {
+    state = {
+        isJoin: true,
+        isStar: false,
+    }
 
     componentDidMount() {
         setTimeout(() => {
@@ -31,6 +34,28 @@ class ActivityInfoScreen extends Component {
     }
 
     render() {
+        const join = (
+            <View style={styles.viewbuttonAction}>
+                <Ionicons
+                    size={20}
+                    name="hand-left-outline"
+                    style={{ color: 'white' }}
+                />
+                <Text style={styles.textButtonAction}>Join</Text>
+            </View>
+        )
+
+        const leave = (
+            <View style={[styles.viewbuttonAction, {backgroundColor: 'red'}]}>
+                <Ionicons
+                    size={20}
+                    name="hand-left"
+                    style={{ color: 'white' }}
+                />
+                <Text style={styles.textButtonAction}>Leave</Text>
+            </View>
+        )
+
         return (
             <>
                 <View style={styles.viewTitle}>
@@ -44,71 +69,71 @@ class ActivityInfoScreen extends Component {
                     <View style={styles.viewTitleStar}>
                         <Ionicons
                             size={25}
-                            name="star-outline"
-                            style={{ color: '#BBBDBF' }}
+                            name={this.state.isStar ? "star" : "star-outline"}
+                            style={{ color: 'orange' }}
+                            onPress={() => this.setState(prev => ({isStar: !prev.isStar}))}
                         />
                     </View>
                 </View>
 
                 <View style={styles.viewOwner}>
                     <View style={styles.viewIconPic}>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('Profile Info')}>
-                        <Image
-                            source={require('assets/images/activities/profile.png')}
-                            style={styles.imgIconPic}
-                        />
-                        </TouchableOpacity>
+                        <TouchableNativeFeedback onPress={() => this.props.navigation.navigate('Profile Info')}>
+                            <Image
+                                source={require('assets/images/activities/profile.png')}
+                                style={styles.imgIconPic}
+                            />
+                        </TouchableNativeFeedback>
                     </View>
                     <View style={styles.viewOwnerName}>
+                    <TouchableNativeFeedback onPress={() => this.props.navigation.navigate('Profile Info')}>
                         <Text style={styles.textOwnerName}>Maria Sharapova</Text>
+                        </TouchableNativeFeedback>
                     </View>
                     <View style={styles.viewAction}>
-                        <TouchableOpacity>
-                            <View style={styles.viewbuttonAction}>
-                                <Ionicons
-                                    size={20}
-                                    name="hand-left-outline"
-                                    style={{ color: 'white' }}
-                                />
-                                <Text style={styles.textButtonAction}>JOIN</Text>
-                            </View>
+                        <TouchableOpacity onPress={() => this.setState(prev => ({isJoin: !prev.isJoin}))}>
+                            {this.state.isJoin ? join : leave}
                         </TouchableOpacity>
                     </View>
                 </View>
 
                 <View style={styles.viewLocation}>
                     <Text style={styles.textLocationTitle}>Location</Text>
-                    <View style={styles.containerLocation}>
-                        <View style={styles.viewLocationLeft}>
-                            <View style={styles.viewStartLabel}>
-                                <Text style={styles.textStartLabel}>Start</Text>
+                    <View style={styles.scrollview}>
+                        <ScrollView showsVerticalScrollIndicator={true}>
+                            <View style={styles.containerLocation}>
+                                <View style={styles.viewLocationLeft}>
+                                    <View style={styles.viewStartLabel}>
+                                        <Text style={styles.textStartLabel}>Start</Text>
+                                    </View>
+                                </View>
+                                <Text style={styles.textLocationStart}>Organize Sanayi Bölgesi Ataşehir, Kayışdağı</Text>
                             </View>
-                        </View>
-                        <Text style={styles.textLocationStart}>Organize Sanayi Bölgesi Ataşehir, Kayışdağı</Text>
-                    </View>
-                    <View style={styles.containerLocation}>
-                        <View style={styles.viewLocationLeft}>
-                            <View style={styles.viewNodeLabel}>
-                                <Text style={styles.textNodeLabel}>1</Text>
+                            <View style={styles.containerLocation}>
+                                <View style={styles.viewLocationLeft}>
+                                    <View style={styles.viewNodeLabel}>
+                                        <Text style={styles.textNodeLabel}>1</Text>
+                                    </View>
+                                </View>
+                                <Text style={styles.textLocationNode}>Organize Sanayi Bölgesi Ataşehir, 2. Cadde</Text>
                             </View>
-                        </View>
-                        <Text style={styles.textLocationNode}>Organize Sanayi Bölgesi Ataşehir, 2. Cadde</Text>
-                    </View>
-                    <View style={styles.containerLocation}>
-                        <View style={styles.viewLocationLeft}>
-                            <View style={styles.viewNodeLabel}>
-                                <Text style={styles.textNodeLabel}>2</Text>
+                            <View style={styles.containerLocation}>
+                                <View style={styles.viewLocationLeft}>
+                                    <View style={styles.viewNodeLabel}>
+                                        <Text style={styles.textNodeLabel}>2</Text>
+                                    </View>
+                                </View>
+                                <Text style={styles.textLocationNode}>Organize Sanayi Bölgesi Ataşehir, 3. Cadde</Text>
                             </View>
-                        </View>
-                        <Text style={styles.textLocationNode}>Organize Sanayi Bölgesi Ataşehir, 3. Cadde</Text>
-                    </View>
-                    <View style={styles.containerLocation}>
-                        <View style={styles.viewLocationLeft}>
-                            <View style={styles.viewFinishLabel}>
-                                <Text style={styles.textFinishLabel}>Finish</Text>
+                            <View style={styles.containerLocation}>
+                                <View style={styles.viewLocationLeft}>
+                                    <View style={styles.viewFinishLabel}>
+                                        <Text style={styles.textFinishLabel}>Finish</Text>
+                                    </View>
+                                </View>
+                                <Text style={styles.textLocationStart}>Organize Sanayi Bölgesi Ataşehir, Kayışdağı</Text>
                             </View>
-                        </View>
-                        <Text style={styles.textLocationStart}>Organize Sanayi Bölgesi Ataşehir, Kayışdağı</Text>
+                        </ScrollView>
                     </View>
                 </View>
 
@@ -158,7 +183,8 @@ const styles = StyleSheet.create({
     },
     textTitle: {
         fontSize: 28,//width * 0.07,
-        fontWeight: '700',
+        fontWeight: '600',
+        color: '#515151',
         textAlign: 'center',
     },
     viewTitleStar: {
@@ -169,8 +195,8 @@ const styles = StyleSheet.create({
 
     viewOwner: {
         flex: 1,
-        marginStart: 40,
-        marginEnd: 40,
+        marginStart: 20,
+        marginEnd: 20,
         flexDirection: 'row',
         // backgroundColor: 'orange',
     },
@@ -206,14 +232,15 @@ const styles = StyleSheet.create({
     },
     textButtonAction: {
         color: 'white',
-        fontSize: 16, //width * 0.04,
+        fontSize: 20,
+        fontWeight: '500',
     },
 
     viewLocation: {
         flex: 3,
         marginTop: 10,
-        marginStart: 40,
-        marginEnd: 40,
+        marginStart: 20,
+        marginEnd: 20,
         borderTopWidth: 1,
         borderColor: '#C4C4C4',
         // backgroundColor: 'purple',
@@ -222,6 +249,12 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         fontWeight: '700',
         color: '#515151',
+        fontSize: 18,
+    },
+    scrollview: {
+        height: 60,
+        borderEndWidth: 1,
+        borderColor: '#BBBDBF',
     },
     containerLocation: {
         flexDirection: 'row',
@@ -229,9 +262,11 @@ const styles = StyleSheet.create({
     },
     viewLocationLeft: {
         width: 40,
+        alignItems: 'flex-end',
         // backgroundColor: 'red',
     },
     viewStartLabel: {
+        width: 40,
         backgroundColor: '#37CC4A',
         justifyContent: 'center',
         alignItems: 'center',
@@ -239,10 +274,10 @@ const styles = StyleSheet.create({
     },
     textStartLabel: {
         color: 'white',
-        fontSize: 12,//width * 0.03,
+        fontSize: 14,
     },
     textLocationStart: {
-        fontSize: 12, //width * 0.03,
+        fontSize: 14,
         paddingLeft: 5,
         color: '#515151',
     },
@@ -255,14 +290,15 @@ const styles = StyleSheet.create({
     },
     textNodeLabel: {
         color: 'white',
-        fontSize: 12, //width * 0.03,
+        fontSize: 14,
     },
     textLocationNode: {
-        fontSize: 10,//width * 0.025,
+        fontSize: 12,
         paddingLeft: 5,
         color: '#515151',
     },
     viewFinishLabel: {
+        width: 40,
         backgroundColor: 'red',
         justifyContent: 'center',
         alignItems: 'center',
@@ -270,20 +306,19 @@ const styles = StyleSheet.create({
     },
     textFinishLabel: {
         color: 'white',
-        fontSize: 12, //width * 0.03,
+        fontSize: 14, //width * 0.03,
     },
 
     viewDate: {
         flex: 2,
-        marginTop: 20,
-        marginStart: 40,
-        marginEnd: 40,
+        marginStart: 20,
+        marginEnd: 20,
         // backgroundColor: 'blue',
     },
     textDateTitle: {
-        paddingTop: 10,
         fontWeight: '700',
         color: '#515151',
+        fontSize: 18,
     },
     textDate: {
         paddingTop: 5,
@@ -316,9 +351,11 @@ const styles = StyleSheet.create({
     featureTitle: {
         fontWeight: '700',
         color: '#515151',
+        fontSize: 18,
     },
     featureText: {
-        fontWeight: '300'
+        fontWeight: '300',
+        fontSize: 16,
     },
 
     viewMap: {

@@ -62,7 +62,7 @@ export const ActivityListScreen = () => {
             location={activity.location}
             date={activity.date}
             time={activity.time}
-            onPress={() => navigation.navigate('Activity Info')}
+            onPress={() => navigation.navigate('Activity')}
           />
         ))}
       </ActivitySelector>

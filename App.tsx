@@ -23,7 +23,7 @@ import ProfileScreen from 'screens/ProfileScreen';
 import ProfileInfoScreen from 'screens/ProfileInfoScreen';
 import MyActivitiesScreen from 'screens/MyActivitiesScreen';
 import NotificationScreen from 'screens/NotificationScreen';
-import ActivityInfoScreen from 'screens/ActivityInfoScreen';
+import ActivityScreen from 'screens/ActivityScreen';
 
 let App = () => {
   const [userId, setUserId] = useState('DmwlR3OcI72ouDxUPH79');
@@ -175,11 +175,11 @@ let App = () => {
                 },
               }}
             />
-          <Stack.Screen
-              name="Activity Info"
-              component={ActivityInfoScreen}
+            <Stack.Screen
+              name="Activity"
+              component={ActivityScreen}
               options={{
-                title: 'Activity Info',
+                title: 'Activity',
                 headerStyle: {
                   backgroundColor: colors.bar,
                 },
