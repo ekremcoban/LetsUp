@@ -46,7 +46,7 @@ class ActivityInfoScreen extends Component {
         )
 
         const leave = (
-            <View style={[styles.viewbuttonAction, {backgroundColor: 'red'}]}>
+            <View style={[styles.viewbuttonAction, { backgroundColor: 'red' }]}>
                 <Ionicons
                     size={20}
                     name="hand-left"
@@ -71,7 +71,7 @@ class ActivityInfoScreen extends Component {
                             size={25}
                             name={this.state.isStar ? "star" : "star-outline"}
                             style={{ color: 'orange' }}
-                            onPress={() => this.setState(prev => ({isStar: !prev.isStar}))}
+                            onPress={() => this.setState(prev => ({ isStar: !prev.isStar }))}
                         />
                     </View>
                 </View>
@@ -86,12 +86,12 @@ class ActivityInfoScreen extends Component {
                         </TouchableNativeFeedback>
                     </View>
                     <View style={styles.viewOwnerName}>
-                    <TouchableNativeFeedback onPress={() => this.props.navigation.navigate('Profile Info')}>
-                        <Text style={styles.textOwnerName}>Maria Sharapova</Text>
+                        <TouchableNativeFeedback onPress={() => this.props.navigation.navigate('Profile Info')}>
+                            <Text style={styles.textOwnerName}>Maria Sharapova</Text>
                         </TouchableNativeFeedback>
                     </View>
                     <View style={styles.viewAction}>
-                        <TouchableOpacity onPress={() => this.setState(prev => ({isJoin: !prev.isJoin}))}>
+                        <TouchableOpacity onPress={() => this.setState(prev => ({ isJoin: !prev.isJoin }))}>
                             {this.state.isJoin ? join : leave}
                         </TouchableOpacity>
                     </View>
@@ -107,7 +107,15 @@ class ActivityInfoScreen extends Component {
                                         <Text style={styles.textStartLabel}>Start</Text>
                                     </View>
                                 </View>
-                                <Text style={styles.textLocationStart}>Organize Sanayi Bölgesi Ataşehir, Kayışdağı</Text>
+                                <View style={styles.containerLeft}>
+                                    <Text style={styles.textLocationStart}>Organize Sanayi Bölgesi Ataşehir</Text>
+                                </View>
+                                <View style={styles.containerRight}>
+                                    <Ionicons
+                                        size={15}
+                                        name={"navigate"}
+                                    />
+                                </View>
                             </View>
                             <View style={styles.containerLocation}>
                                 <View style={styles.viewLocationLeft}>
@@ -115,7 +123,15 @@ class ActivityInfoScreen extends Component {
                                         <Text style={styles.textNodeLabel}>1</Text>
                                     </View>
                                 </View>
-                                <Text style={styles.textLocationNode}>Organize Sanayi Bölgesi Ataşehir, 2. Cadde</Text>
+                                <View style={styles.containerLeft}>
+                                    <Text style={styles.textLocationStart}>Organize Sanayi Bölgesi Ataşehir, 2. Cadde</Text>
+                                </View>
+                                <View style={styles.containerRight}>
+                                    <Ionicons
+                                        size={15}
+                                        name={"navigate"}
+                                    />
+                                </View>
                             </View>
                             <View style={styles.containerLocation}>
                                 <View style={styles.viewLocationLeft}>
@@ -123,7 +139,15 @@ class ActivityInfoScreen extends Component {
                                         <Text style={styles.textNodeLabel}>2</Text>
                                     </View>
                                 </View>
-                                <Text style={styles.textLocationNode}>Organize Sanayi Bölgesi Ataşehir, 3. Cadde</Text>
+                                <View style={styles.containerLeft}>
+                                    <Text style={styles.textLocationStart}>Organize Sanayi Bölgesi</Text>
+                                </View>
+                                <View style={styles.containerRight}>
+                                    <Ionicons
+                                        size={15}
+                                        name={"navigate"}
+                                    />
+                                </View>
                             </View>
                             <View style={styles.containerLocation}>
                                 <View style={styles.viewLocationLeft}>
@@ -131,7 +155,15 @@ class ActivityInfoScreen extends Component {
                                         <Text style={styles.textFinishLabel}>Finish</Text>
                                     </View>
                                 </View>
-                                <Text style={styles.textLocationStart}>Organize Sanayi Bölgesi Ataşehir, Kayışdağı</Text>
+                                <View style={styles.containerLeft}>
+                                    <Text style={styles.textLocationStart}>Maltepe Belediyesi</Text>
+                                </View>
+                                <View style={styles.containerRight}>
+                                    <Ionicons
+                                        size={15}
+                                        name={"navigate"}
+                                    />
+                                </View>
                             </View>
                         </ScrollView>
                     </View>
@@ -259,6 +291,13 @@ const styles = StyleSheet.create({
     containerLocation: {
         flexDirection: 'row',
         paddingTop: 10,
+    },
+    containerLeft: { 
+        flex: 1, 
+    },
+    containerRight: { 
+        paddingRight: 5, 
+        justifyContent: 'center', 
     },
     viewLocationLeft: {
         width: 40,
