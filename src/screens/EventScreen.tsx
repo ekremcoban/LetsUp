@@ -6,13 +6,15 @@ import { SearchBar } from 'react-native-elements';
 import firestore from '@react-native-firebase/firestore';
 import { Icon } from 'react-native-elements';
 import auth from '@react-native-firebase/auth';
+import { useNavigation } from '@react-navigation/native';
 
 const { width, height } = window
 
 // let data = [
 let now = new Date()
 
-const EventScreen = ({ navigation }) => {
+const EventScreen = () => {
+    const navigation = useNavigation();
     const [search, setSearch] = useState<string>();
     const [period, setPeriod] = useState<Object>();
     const [data, setData] = useState<Object>();

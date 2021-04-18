@@ -20,6 +20,7 @@ import { ActivityListScreen } from 'screens/activity-list/activity-list.screen';
 import { InitializeSettings } from 'components/initialize-settings/initialize-settings';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ProfileScreen from 'screens/ProfileScreen';
+import ProfileInfoScreen from 'screens/ProfileInfoScreen';
 import MyActivitiesScreen from 'screens/MyActivitiesScreen';
 import NotificationScreen from 'screens/NotificationScreen';
 import ActivityInfoScreen from 'screens/ActivityInfoScreen';
@@ -164,7 +165,7 @@ let App = () => {
               name="Home"
               component={Home}
               options={{
-                title: 'Activity List',
+                title: 'Lets Up',
                 headerStyle: {
                   backgroundColor: colors.bar,
                 },
@@ -179,6 +180,20 @@ let App = () => {
               component={ActivityInfoScreen}
               options={{
                 title: 'Activity Info',
+                headerStyle: {
+                  backgroundColor: colors.bar,
+                },
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                },
+              }}
+            />
+            <Stack.Screen
+              name="Profile Info"
+              component={ProfileInfoScreen}
+              options={{
+                title: 'Profile Info',
                 headerStyle: {
                   backgroundColor: colors.bar,
                 },

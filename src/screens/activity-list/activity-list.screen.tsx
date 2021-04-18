@@ -12,10 +12,12 @@ import {
 } from 'components/activity-type-selector/models';
 import { activities, IActivity } from './models';
 import { colors } from 'styles/colors';
+import { useNavigation } from '@react-navigation/native';
 
 const ageActionSheetRef = createRef<IActionSheet>();
 
-export const ActivityListScreen = ({ navigation }) => {
+export const ActivityListScreen = () => {
+  const navigation = useNavigation();
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
 
   const _activityTypes = activityTypes.map(

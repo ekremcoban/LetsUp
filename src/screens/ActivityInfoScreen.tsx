@@ -52,10 +52,12 @@ class ActivityInfoScreen extends Component {
 
                 <View style={styles.viewOwner}>
                     <View style={styles.viewIconPic}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('Profile Info')}>
                         <Image
                             source={require('assets/images/activities/profile.png')}
                             style={styles.imgIconPic}
                         />
+                        </TouchableOpacity>
                     </View>
                     <View style={styles.viewOwnerName}>
                         <Text style={styles.textOwnerName}>Maria Sharapova</Text>
