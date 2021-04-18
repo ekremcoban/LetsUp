@@ -71,8 +71,7 @@ const CreateActivityScreen2 = () => {
     isFinishTimePickerVisible,
     setFinishTimePickerVisibility,
   ] = useState<boolean>(false);
-  const [showMore, setShowMore] = useState<boolean>(false);
-  const [showMoreText, setShowMoreText] = useState<boolean>('More...');
+
   const [ageStart, setAgeStart] = useState<number>(0);
   const [selectedAgeRange, setSelectedAgeRange] = useState<
     [number | null, number | null]
@@ -392,15 +391,6 @@ const CreateActivityScreen2 = () => {
       startPlace === 'Start' && setStartPlace('Please Select');
     } else {
       startPlace === 'Please Select' && setStartPlace('Start');
-    }
-  };
-
-  const changeText = (value: Boolean) => {
-    setShowMore(value);
-    if (!value) {
-      setShowMoreText('Less...');
-    } else {
-      setShowMoreText('More...');
     }
   };
 
@@ -881,10 +871,8 @@ const CreateActivityScreen2 = () => {
               </View>
             </View>
 
-            {!!showMore && (
               <View>
                 {showFinishDateTime}
-
                 <View style={styles.row}>
                   <View style={styles.column}>
                     <Selector
@@ -933,11 +921,6 @@ const CreateActivityScreen2 = () => {
                   </View>
                 </View>
               </View>
-            )}
-            <MoreLess
-              onPress={(isExpanded) => setShowMore(isExpanded)}
-              initialExpanded={showMore}
-            />
           </ScrollView>
         </View>
         <View style={styles.secondRow}>
@@ -988,6 +971,8 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
+    paddingLeft: 5,
+    paddingEnd: 5,
   },
   column: {
     flex: 1,

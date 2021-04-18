@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
         // backgroundColor: 'red',
     },
     textTitle: {
-        fontSize: width * 0.07,
+        fontSize: 28,//width * 0.07,
         fontWeight: '700',
         textAlign: 'center',
     },
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center'
     },
     textOwnerName: {
-        fontSize: width * 0.03,
+        fontSize: 12,//width * 0.03,
     },
     viewAction: {
         flex: 2,
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     },
     textButtonAction: {
         color: 'white',
-        fontSize: width * 0.04,
+        fontSize: 16, //width * 0.04,
     },
 
     viewLocation: {
@@ -237,10 +237,10 @@ const styles = StyleSheet.create({
     },
     textStartLabel: {
         color: 'white',
-        fontSize: width * 0.03,
+        fontSize: 12,//width * 0.03,
     },
     textLocationStart: {
-        fontSize: width * 0.03,
+        fontSize: 12, //width * 0.03,
         paddingLeft: 5,
         color: '#515151',
     },
@@ -253,10 +253,10 @@ const styles = StyleSheet.create({
     },
     textNodeLabel: {
         color: 'white',
-        fontSize: width * 0.03,
+        fontSize: 12, //width * 0.03,
     },
     textLocationNode: {
-        fontSize: width * 0.025,
+        fontSize: 10,//width * 0.025,
         paddingLeft: 5,
         color: '#515151',
     },
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     },
     textFinishLabel: {
         color: 'white',
-        fontSize: width * 0.03,
+        fontSize: 12, //width * 0.03,
     },
 
     viewDate: {
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     textDate: {
         paddingTop: 5,
         color: '#515151',
-        fontSize: width * 0.04,
+        fontSize: 16, //width * 0.04,
     },
 
     viewFeatures: {

@@ -1,98 +1,269 @@
-import React, { Component, useState, } from 'react';
+import React, { Component, useState, createRef } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
-  SafeAreaView,
+  Image,
   StyleSheet,
   StatusBar,
 } from 'react-native';
-import { renderers } from 'react-native-popup-menu';
-import { WebView } from 'react-native-webview';
-import html_script from '../../html_leaflet';
+import { TextInput } from 'react-native-gesture-handler';
+import { Selector } from 'components/selector/selector';
+import { IActionSheet } from '../components/action-sheet/action-sheet';
+import { getSelectedGender } from 'models/genders';
+import ActionSheetMenu from '../components/actionSheetMenu';
+import { GenderActionSheet } from '../screens/create-activity/action-sheets/gender.action-sheet';
 
-class ProfilScreen extends Component {
+const genderActionSheetRef = createRef<IActionSheet>();
 
-  componentDidMount() {
-    setTimeout(() => {
-      console.log('timer')
-      this.refs['mapRef'].injectJavaScript(`
-    L.Routing.control({
-      show: false,
-      waypoints: [
-        L.latLng(41.01809926611338, 29.00856835843875),
-        L.latLng(40.88688641127476, 29.186640955537502),
-        L.latLng(40.81831905125059, 29.285431003343092),
-        L.latLng(40.81191220859712, 29.365444423703714)
-      ]
-    }).addTo(mymap);
-    
-    `)
-    }, 1500);
-  }
+const ProfilScreen = () => {
+  const [nickName, onChangeNickName] = React.useState("");
+  const [fullName, onChangeFullName] = React.useState("");
+  const [selectedGenderValue, setSelectedGenderValue] = useState<string | null>(
+    null
+  );
 
-
-  goToPosition = (latitude, longitude,) => {
-    this.refs['mapRef'].injectJavaScript(`
-    L.marker([41.01809926611338, 29.00856835843875]).addTo(mymap)
-    .bindPopup('Start Point')
-    .openPopup();
-    
-    `)
-  }
-
-  render() {
-    return (
-      <>
-        <Text>Profil Sayfası Test</Text>
-        <WebView ref={'mapRef'} source={{ html: html_script }} style={{ width: '100%', }} />
-        <View style={styles.ButtonArea}>
-          <TouchableOpacity style={styles.Button} onPress={() => this.goToPosition(40.927598, 29.145154)}>
-            <Text style={styles.ButtonText}>Belgrade</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.Button} onPress={() => this.goToPosition(40.927278, 29.142592)}>
-            <Text style={styles.ButtonText}>Madrid</Text>
-          </TouchableOpacity>
-          {/* <TouchableOpacity style={styles.Button} onPress={() => this.goToPosition(54.464180, -110.182259)}>
-            <Text style={styles.ButtonText}>Madrid</Text>
-          </TouchableOpacity> */}
+  return (
+    <>
+      <View style={styles.viewImg}>
+        <TouchableOpacity style={{ alignSelf: 'flex-end' }}>
+          <View style={styles.viewbuttonAction}>
+            <Text style={styles.textButtonAction}>CREATE</Text>
+          </View>
+        </TouchableOpacity>
+        <Image
+          source={require('assets/img/userphoto.png')}
+          style={styles.icon}
+        />
+      </View>
+      <View style={styles.viewInfo}>
+        <View style={styles.viewNickName}>
+          <Text style={styles.textNickName}>Nickname*</Text>
+          <View
+            style={{
+              height: 30,
+              paddingLeft: 5,
+              paddingRight: 5,
+            }}
+          >
+            <TextInput
+              style={styles.input}
+              onChangeText={onChangeNickName}
+              value={nickName}
+            />
+          </View>
         </View>
-        {/* <WebView source={{ uri: 'https://reactnative.dev/' }} /> */}
-      </>
-    )
-  }
 
+        <View style={styles.viewFullName}>
+          <Text style={styles.textFullName}>Full Name*</Text>
+          <View
+            style={{
+              height: 30,
+              paddingLeft: 5,
+              paddingRight: 5,
+            }}
+          >
+            <TextInput
+              style={styles.input}
+              onChangeText={onChangeFullName}
+              value={fullName}
+            />
+          </View>
+        </View>
+
+        <View style={styles.viewFeature1}>
+          <View style={styles.viewAge}>
+          <Selector
+              onPress={() => genderActionSheetRef.current?.open()}
+              label={polyglot.t(
+                'screens.create_activity.inputs.gender.label'
+              )}
+              text={(() => {
+                const selectedGender = getSelectedGender(
+                  selectedGenderValue
+                );
+                if (!selectedGender) {
+                  return undefined;
+                }
+                return polyglot.t(selectedGender.text);
+              })()}
+            />
+          </View>
+          <View style={styles.viewGender}>
+            <Selector
+              onPress={() => genderActionSheetRef.current?.open()}
+              label={polyglot.t(
+                'screens.create_activity.inputs.gender.label'
+              )}
+              text={(() => {
+                const selectedGender = getSelectedGender(
+                  selectedGenderValue
+                );
+                if (!selectedGender) {
+                  return undefined;
+                }
+                return polyglot.t(selectedGender.text);
+              })()}
+            />
+          </View>
+        </View>
+
+        <View style={styles.viewFeature2}>
+          <View style={styles.viewAge}>
+          <Selector
+              onPress={() => genderActionSheetRef.current?.open()}
+              label={polyglot.t(
+                'screens.create_activity.inputs.gender.label'
+              )}
+              text={(() => {
+                const selectedGender = getSelectedGender(
+                  selectedGenderValue
+                );
+                if (!selectedGender) {
+                  return undefined;
+                }
+                return polyglot.t(selectedGender.text);
+              })()}
+            />
+          </View>
+          <View style={styles.viewGender}>
+            <Selector
+              onPress={() => genderActionSheetRef.current?.open()}
+              label={polyglot.t(
+                'screens.create_activity.inputs.gender.label'
+              )}
+              text={(() => {
+                const selectedGender = getSelectedGender(
+                  selectedGenderValue
+                );
+                if (!selectedGender) {
+                  return undefined;
+                }
+                return polyglot.t(selectedGender.text);
+              })()}
+            />
+          </View>
+        </View>
+
+        <View style={styles.viewFeature3}>
+        <ActionSheetMenu
+                label={'Branch Name*'}
+                title={'Select'}
+                items={[
+                  'Jogging',
+                  'Basketball',
+                  'Bcycle',
+                  'Hiking',
+                  'Table Tennis',
+                  'Bowling',
+                  'Frisbee',
+                  'Cancel',
+                ]}
+                onPress={() => console.log('TEST')}
+              />
+        </View>
+        <GenderActionSheet
+          ref={genderActionSheetRef}
+          onSelect={(genderValue: string) => {
+            setSelectedGenderValue(genderValue);
+            genderActionSheetRef.current?.close();
+          }}
+          onCancel={() => {
+            genderActionSheetRef.current?.close();
+          }}
+        />
+      </View>
+    </>
+  )
 }
 
 export default ProfilScreen;
 
 const styles = StyleSheet.create({
-  Container: {
+  viewImg: {
     flex: 1,
     padding: 10,
-    backgroundColor: 'grey'
-
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  Webview: {
-    flex: 2,
-
-  },
-  ButtonArea: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center'
-  },
-  Button: {
+  viewbuttonAction: {
+    height: 40,
     width: 80,
-    padding: 10,
-    borderRadius: 10,
-    backgroundColor: 'black',
-    alignItems: 'center'
+    marginTop: 10,
+    flexDirection: 'row',
+    backgroundColor: '#37CC4A',
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  ButtonText: {
+  textButtonAction: {
     color: 'white',
+    fontSize: 16,
     fontWeight: 'bold',
-    fontSize: 14,
-  }
+  },
+  icon: {
+    width: 100,
+    height: 100,
+  },
+
+  viewInfo: {
+    flex: 3,
+    padding: 12,
+    // backgroundColor: 'orange'
+  },
+  viewNickName: {
+    flex: .7,
+    // backgroundColor: 'red'
+  },
+  textNickName: {
+    paddingStart: 5,
+    fontWeight: 'bold'
+  },
+  input: {
+    height: 40,
+    marginTop: 5,
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: '#DADADA',
+    backgroundColor: 'white'
+  },
+
+  viewFullName: {
+    flex: .6,
+    // backgroundColor: 'yellow'
+  },
+  textFullName: {
+    paddingStart: 5,
+    fontWeight: 'bold'
+  },
+
+  viewFeature1: {
+    flex: .6,
+    paddingLeft: 5,
+    paddingEnd: 5,
+    alignItems: 'center',
+    flexDirection: 'row',
+    // backgroundColor: 'orange'
+  },
+  viewAge: {
+    flex: 1,
+    paddingRight: 5,
+  },
+  viewGender: {
+    flex: 1,
+    paddingLeft: 5,
+  },
+
+  viewFeature2: {
+    flex: .7,
+    paddingLeft: 5,
+    paddingEnd: 5,
+    alignItems: 'center',
+    flexDirection: 'row',
+    // backgroundColor: 'red'
+  },
+
+  viewFeature3: {
+    flex: 1,
+  },
 });

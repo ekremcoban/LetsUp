@@ -18,16 +18,40 @@
     "confirm": "Confirm",
     "save": "Save"
   },
+  "lists": {
+    "genders": {
+      "female": "Female",
+      "male": "Male"
+    }
+  },
   "screens": {
     "create_activity": {
       "action_sheets": {
-        "age_range": {
+        "age": {
           "title": "Pick age range"
+        },
+        "gender": {
+          "title": "Pick gender"
+        },
+        "quota": {
+          "title": "Pick quota range"
+        }
+      },
+      "components": {
+        "more_less": {
+          "less": "Less...",
+          "more": "More..."
         }
       },
       "inputs": {
-        "age_range": {
-          "label": "Age Range"
+        "age": {
+          "label": "Age"
+        },
+        "gender": {
+          "label": "Gender"
+        },
+        "quota": {
+          "label": "Quota"
         }
       }
     }
