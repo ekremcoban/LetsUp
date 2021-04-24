@@ -12,16 +12,19 @@ import { Selector } from 'components/selector/selector';
 import { IActionSheet } from '../components/action-sheet/action-sheet';
 import { getSelectedGender } from 'models/genders';
 import ActionSheetMenu from '../components/actionSheetMenu';
-import { GenderActionSheet } from '../screens/create-activity/action-sheets/gender.action-sheet';
+import { GenderActionSheet } from './create-activity/action-sheets/gender.action-sheet';
+import { AgeActionSheet } from './create-activity/action-sheets/age.action-sheet';
 
 const genderActionSheetRef = createRef<IActionSheet>();
+const ageActionSheetRef = createRef<IActionSheet>();
 
-const ProfilScreen = () => {
+const CreateProfilScreen = () => {
   const [nickName, onChangeNickName] = React.useState("");
   const [fullName, onChangeFullName] = React.useState("");
   const [selectedGenderValue, setSelectedGenderValue] = useState<string | null>(
     null
   );
+  const [selectedAge, setSelectedAge] = useState<number>();
 
   return (
     <>
@@ -73,20 +76,12 @@ const ProfilScreen = () => {
 
         <View style={styles.viewFeature1}>
           <View style={styles.viewAge}>
-          <Selector
-              onPress={() => genderActionSheetRef.current?.open()}
+            <Selector
+              onPress={() => ageActionSheetRef.current?.open()}
               label={polyglot.t(
-                'screens.create_activity.inputs.gender.label'
+                'screens.create_activity.inputs.age.label'
               )}
-              text={(() => {
-                const selectedGender = getSelectedGender(
-                  selectedGenderValue
-                );
-                if (!selectedGender) {
-                  return undefined;
-                }
-                return polyglot.t(selectedGender.text);
-              })()}
+              text={selectedAge}
             />
           </View>
           <View style={styles.viewGender}>
@@ -110,7 +105,7 @@ const ProfilScreen = () => {
 
         <View style={styles.viewFeature2}>
           <View style={styles.viewAge}>
-          <Selector
+            <Selector
               onPress={() => genderActionSheetRef.current?.open()}
               label={polyglot.t(
                 'screens.create_activity.inputs.gender.label'
@@ -146,21 +141,21 @@ const ProfilScreen = () => {
         </View>
 
         <View style={styles.viewFeature3}>
-        <ActionSheetMenu
-                label={'Branch Name*'}
-                title={'Select'}
-                items={[
-                  'Jogging',
-                  'Basketball',
-                  'Bcycle',
-                  'Hiking',
-                  'Table Tennis',
-                  'Bowling',
-                  'Frisbee',
-                  'Cancel',
-                ]}
-                onPress={() => console.log('TEST')}
-              />
+          <ActionSheetMenu
+            label={'Branch Name*'}
+            title={'Select'}
+            items={[
+              'Jogging',
+              'Basketball',
+              'Bcycle',
+              'Hiking',
+              'Table Tennis',
+              'Bowling',
+              'Frisbee',
+              'Cancel',
+            ]}
+            onPress={() => console.log('TEST')}
+          />
         </View>
         <GenderActionSheet
           ref={genderActionSheetRef}
@@ -172,12 +167,23 @@ const ProfilScreen = () => {
             genderActionSheetRef.current?.close();
           }}
         />
+        <AgeActionSheet
+          ref={ageActionSheetRef}
+          onSelect={(number: number) => {
+            // TODO: Validate selected age values
+            setSelectedAge(number);
+            ageActionSheetRef.current?.close();
+          }}
+          onCancel={() => {
+            ageActionSheetRef.current?.close();
+          }}
+        />
       </View>
     </>
   )
 }
 
-export default ProfilScreen;
+export default CreateProfilScreen;
 
 const styles = StyleSheet.create({
   viewImg: {

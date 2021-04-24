@@ -7,13 +7,14 @@ import {
 import { Picker } from 'components/picker/picker';
 
 interface IAgeActionSheetProps {
-  onSelect: (values: number) => void;
+  onSelect: (values: [number, number]) => void;
   onCancel: () => void;
 }
 
-export const AgeActionSheet = forwardRef<IActionSheet, IAgeActionSheetProps>(
+export const AgeRangeActionSheet = forwardRef<IActionSheet, IAgeActionSheetProps>(
   (props, ref) => {
-    const [selectedtAge, setSelectedAge] = useState(20);
+    const [selectedMin, setSelectedMin] = useState(20);
+    const [selectedMax, setSelectedMax] = useState(24);
     const [ages] = useState(
       Array(71)
         .fill(null)
@@ -24,15 +25,21 @@ export const AgeActionSheet = forwardRef<IActionSheet, IAgeActionSheetProps>(
       <ActionSheet
         ref={ref}
         onSelect={() => {
-          props.onSelect(selectedtAge);
+          props.onSelect([selectedMin, selectedMax]);
         }}
         onCancel={props.onCancel}
         title={polyglot.t('screens.create_activity.action_sheets.age.title')}
       >
         <Picker
           items={ages.map((age) => ({ value: age, text: `${age}` }))}
-          selectedValue={selectedtAge}
-          onValueChange={setSelectedAge}
+          selectedValue={selectedMin}
+          onValueChange={setSelectedMin}
+        />
+
+        <Picker
+          items={ages.map((age) => ({ value: age, text: `${age}` }))}
+          selectedValue={selectedMax}
+          onValueChange={setSelectedMax}
         />
       </ActionSheet>
     );

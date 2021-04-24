@@ -21,7 +21,7 @@ import CustomButton from '../../components/buttons/customButton';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ActionSheetMenu from '../../components/actionSheetMenu';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
-import { AgeActionSheet } from './action-sheets/age.action-sheet';
+import { AgeRangeActionSheet } from './action-sheets/ageRange.action-sheet';
 import { IActionSheet } from 'components/action-sheet/action-sheet';
 import { Selector } from 'components/selector/selector';
 import { ActivityTypeSelector } from 'components/activity-type-selector/activity-type-selector';
@@ -37,7 +37,7 @@ import { getSelectedGender } from 'models/genders';
 const { width, height } = window;
 const startPlacePlaceholder = 'Please Select';
 
-const ageActionSheetRef = createRef<IActionSheet>();
+const ageRangeActionSheetRef = createRef<IActionSheet>();
 const quotaActionSheetRef = createRef<IActionSheet>();
 const genderActionSheetRef = createRef<IActionSheet>();
 
@@ -894,7 +894,7 @@ const CreateActivityScreen2 = () => {
 
                   <View style={{ flex: 1, paddingHorizontal: 5 }}>
                     <Selector
-                      onPress={() => ageActionSheetRef.current?.open()}
+                      onPress={() => ageRangeActionSheetRef.current?.open()}
                       label={polyglot.t(
                         'screens.create_activity.inputs.age.label'
                       )}
@@ -927,15 +927,15 @@ const CreateActivityScreen2 = () => {
           <CustomButton onPress={() => save()} title="Create Activity" />
         </View>
 
-        <AgeActionSheet
-          ref={ageActionSheetRef}
+        <AgeRangeActionSheet
+          ref={ageRangeActionSheetRef}
           onSelect={([min, max]: [number, number]) => {
             // TODO: Validate selected age values
             setSelectedAgeRange([min, max]);
-            ageActionSheetRef.current?.close();
+            ageRangeActionSheetRef.current?.close();
           }}
           onCancel={() => {
-            ageActionSheetRef.current?.close();
+            ageRangeActionSheetRef.current?.close();
           }}
         />
         <QuotaActionSheet

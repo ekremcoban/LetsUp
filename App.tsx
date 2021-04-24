@@ -19,7 +19,7 @@ import { colors } from './src/utilities/constants/globalValues';
 import { ActivityListScreen } from 'screens/activity-list/activity-list.screen';
 import { InitializeSettings } from 'components/initialize-settings/initialize-settings';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import ProfileScreen from 'screens/ProfileScreen';
+import CreateProfileScreen from 'screens/CreateProfileScreen';
 import ProfileInfoScreen from 'screens/ProfileInfoScreen';
 import MyActivitiesScreen from 'screens/MyActivitiesScreen';
 import NotificationScreen from 'screens/NotificationScreen';
@@ -98,7 +98,7 @@ let App = () => {
           />
           <Tab.Screen
             name="Profil"
-            component={ProfileScreen}
+            component={CreateProfileScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name={'person'} size={25} color={color} />

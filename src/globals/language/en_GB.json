@@ -54,6 +54,13 @@
           "label": "Quota"
         }
       }
+    },
+    "create_profile": {
+      "action_sheets": {
+        "age": {
+          "title": "Age"
+        }
+      }
     }
   }
 }
