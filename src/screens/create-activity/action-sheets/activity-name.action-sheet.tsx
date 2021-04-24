@@ -5,18 +5,18 @@ import {
   IActionSheet,
 } from 'components/action-sheet/action-sheet';
 import { Picker } from 'components/picker/picker';
-import { genders } from 'models/genders';
+import { activityNames } from 'models/activity-names';
 
-interface IGenderActionSheetProps {
+interface IActivityNameActionSheetProps {
   onSelect: (value: number) => void;
   onCancel: () => void;
 }
 
-export const GenderActionSheet = forwardRef<
+export const ActivityNameActionSheet = forwardRef<
   IActionSheet,
-  IGenderActionSheetProps
+  IActivityNameActionSheetProps
 >((props, ref) => {
-  const [selectedValue, setSelectedValue] = useState(genders[0].value);
+  const [selectedValue, setSelectedValue] = useState(activityNames[0].value);
 
   return (
     <ActionSheet
@@ -25,12 +25,15 @@ export const GenderActionSheet = forwardRef<
         props.onSelect(selectedValue);
       }}
       onCancel={props.onCancel}
-      title={polyglot.t('screens.create_activity.action_sheets.gender.title')}
+      title={polyglot.t(
+        'screens.create_activity.action_sheets.activity_name.title'
+      )}
     >
       <Picker
-        items={genders.map((gender) => ({
-          value: gender.value,
-          text: polyglot.t(gender.text),
+        fluid
+        items={activityNames.map((activityName) => ({
+          value: activityName.value,
+          text: polyglot.t(activityName.text),
         }))}
         selectedValue={selectedValue}
         onValueChange={setSelectedValue}

@@ -8,44 +8,66 @@ interface ISelector {
   placeholder?: string;
   text?: string;
   label?: string;
+  labelPosition?: 'left' | 'center';
+  noIcon?: boolean;
   onPress: () => void;
 }
 
 export const Selector = (props: ISelector) => {
   return (
-    <>
-      {/* {!!props.label && <Text style={styles.label}>{props.label}</Text>} */}
+    <View style={styles.wrapper}>
+      {!!props.label && (
+        <Text
+          style={[
+            styles.label,
+            props.labelPosition === 'left' && styles.labelLeft,
+            props.labelPosition === 'center' && styles.labelCenter,
+          ]}
+        >
+          {props.label}
+        </Text>
+      )}
       <TouchableNativeFeedback onPress={props.onPress}>
         <View style={styles.inputWrapper}>
           <View style={styles.textWrapper}>
-            <Text style={[styles.label, !!props.text && styles.labelWithText]}>
-              {props.label}
+            <Text
+              style={[styles.text, !props.text && styles.placeholder]}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {props.text ||
+                props.placeholder ||
+                polyglot.t('components.selector.default_placeholder')}
             </Text>
-            {!!props.text && (
-              <Text
-                style={[styles.text]}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {props.text ||
-                  props.placeholder ||
-                  polyglot.t('components.selector.default_placeholder')}
-              </Text>
-            )}
           </View>
-          <Ionicons size={25} name="chevron-down-outline" style={styles.icon} />
+          {!props.noIcon && (
+            <Ionicons
+              size={30}
+              name="chevron-down-outline"
+              style={styles.icon}
+            />
+          )}
         </View>
       </TouchableNativeFeedback>
-    </>
+    </View>
   );
+};
+
+Selector.defaultProps = {
+  labelPosition: 'left',
+  noIcon: false,
 };
 
 /**
  * Styles
  */
 const styles = StyleSheet.create({
+  wrapper: {
+    flexDirection: 'column',
+  },
   inputWrapper: {
-    height: 50,
+    height: 40,
+    paddingHorizontal: 5,
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
@@ -56,22 +78,31 @@ const styles = StyleSheet.create({
   textWrapper: {
     flex: 1,
     paddingVertical: 5,
-    paddingHorizontal: 10,
-    alignItems: 'flex-start',
+    paddingHorizontal: 5,
+    alignItems: 'center',
     justifyContent: 'center',
   },
   text: {
-    fontSize: 18,
+    fontSize: 16,
     color: colors.offBlack,
+  },
+  placeholder: {
+    color: colors.casper,
   },
   icon: {
     color: colors.casper,
   },
   label: {
     fontWeight: '500',
-    fontSize: 18,
-    color: colors.brownGrey,
-    // paddingBottom: 7,
+    fontSize: 16,
+    color: colors.mortar,
+    paddingBottom: 2,
+  },
+  labelLeft: {
+    alignSelf: 'flex-start',
+  },
+  labelCenter: {
+    alignSelf: 'center',
   },
   labelWithText: {
     fontSize: 10,

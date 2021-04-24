@@ -1,4 +1,16 @@
 {
+  "activity_names": {
+    "0": "Bisiklet Bizim İşimiz",
+    "1": "Koşmaya Var Mısın?",
+    "2": "Bisiklet Turu",
+    "3": "Basketbol Maçı",
+    "4": "Test 1",
+    "5": "Test 2",
+    "6": "Test 3",
+    "7": "Test 4",
+    "8": "Test 5",
+    "9": "Test 6"
+  },
   "activity_types": {
     "basketball": "Basketball",
     "bicycle": "Bicycle",
@@ -10,7 +22,7 @@
   },
   "components": {
     "selector": {
-      "default_placeholder": "Please select"
+      "default_placeholder": "Select"
     }
   },
   "global": {
@@ -27,6 +39,9 @@
   "screens": {
     "create_activity": {
       "action_sheets": {
+        "activity_name": {
+          "title": "Pick activity name"
+        },
         "age": {
           "title": "Pick age range"
         },
@@ -44,14 +59,29 @@
         }
       },
       "inputs": {
+        "activity_name": {
+          "label": "Activity Name"
+        },
         "age": {
           "label": "Age"
+        },
+        "date": {
+          "label": "Date"
         },
         "gender": {
           "label": "Gender"
         },
+        "location": {
+          "add_more": "Add More",
+          "label": "Location"
+        },
         "quota": {
           "label": "Quota"
+        },
+        "time": {
+          "label": "Time",
+          "placeholder_finish": "Finish",
+          "placeholder_start": "Start"
         }
       }
     },

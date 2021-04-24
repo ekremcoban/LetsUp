@@ -12,6 +12,7 @@ interface IPicker {
   }>;
   selectedValue: any;
   onValueChange: (value: any) => void;
+  fluid?: boolean;
   width?: number;
   height?: number;
   fontSize?: number;
@@ -20,7 +21,10 @@ interface IPicker {
 export const Picker: FC<IPicker> = (props) => {
   return (
     <ReactNativeWheelPicker
-      style={{ width: props.width, height: props.height }}
+      style={{
+        width: !!props.fluid ? '100%' : props.width,
+        height: props.height,
+      }}
       lineColor={colors.black} //to set top and bottom line color (Without gradients)
       lineGradientColorFrom={colors.white} //to set top and bottom starting gradient line color
       lineGradientColorTo={colors.black} //to set top and bottom ending gradient
