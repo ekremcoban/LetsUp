@@ -13,7 +13,7 @@ interface IAgeActionSheetProps {
 
 export const AgeActionSheet = forwardRef<IActionSheet, IAgeActionSheetProps>(
   (props, ref) => {
-    const [selectedtAge, setSelectedAge] = useState(20);
+    const [selectedtAge, setSelectedAge] = useState(35);
     const [ages] = useState(
       Array(71)
         .fill(null)

@@ -14,9 +14,13 @@ import { getSelectedGender } from 'models/genders';
 import ActionSheetMenu from '../components/actionSheetMenu';
 import { GenderActionSheet } from './create-activity/action-sheets/gender.action-sheet';
 import { AgeActionSheet } from './create-activity/action-sheets/age.action-sheet';
+import { HeightActionSheet } from './create-activity/action-sheets/height.action-sheet';
+import { WeightActionSheet } from './create-activity/action-sheets/weight.action-sheet';
 
 const genderActionSheetRef = createRef<IActionSheet>();
 const ageActionSheetRef = createRef<IActionSheet>();
+const heightActionSheetRef = createRef<IActionSheet>();
+const weightActionSheetRef = createRef<IActionSheet>();
 
 const CreateProfilScreen = () => {
   const [nickName, onChangeNickName] = React.useState("");
@@ -25,6 +29,12 @@ const CreateProfilScreen = () => {
     null
   );
   const [selectedAge, setSelectedAge] = useState<number>();
+  const [selectedHeight, setSelectedHeight] = useState<
+    [number | null, number | null]
+  >([null, null]);
+  const [selectedWeight, setSelectedWeight] = useState<
+  [number | null, number | null]
+>([null, null]);
 
   return (
     <>
@@ -79,7 +89,7 @@ const CreateProfilScreen = () => {
             <Selector
               onPress={() => ageActionSheetRef.current?.open()}
               label={polyglot.t(
-                'screens.create_activity.inputs.age.label'
+                'screens.create_profile.action_sheets.age.title'
               )}
               text={selectedAge}
             />
@@ -88,7 +98,7 @@ const CreateProfilScreen = () => {
             <Selector
               onPress={() => genderActionSheetRef.current?.open()}
               label={polyglot.t(
-                'screens.create_activity.inputs.gender.label'
+                'screens.create_profile.action_sheets.gender.title'
               )}
               text={(() => {
                 const selectedGender = getSelectedGender(
@@ -106,36 +116,28 @@ const CreateProfilScreen = () => {
         <View style={styles.viewFeature2}>
           <View style={styles.viewAge}>
             <Selector
-              onPress={() => genderActionSheetRef.current?.open()}
+              onPress={() => heightActionSheetRef.current?.open()}
               label={polyglot.t(
-                'screens.create_activity.inputs.gender.label'
+                'screens.create_profile.action_sheets.height.title'
               )}
-              text={(() => {
-                const selectedGender = getSelectedGender(
-                  selectedGenderValue
-                );
-                if (!selectedGender) {
-                  return undefined;
-                }
-                return polyglot.t(selectedGender.text);
-              })()}
+              text={
+                !!selectedHeight[0] && !!selectedHeight[1]
+                  ? `${selectedHeight[0]}.${selectedHeight[1]} m`
+                  : undefined
+              }
             />
           </View>
           <View style={styles.viewGender}>
-            <Selector
-              onPress={() => genderActionSheetRef.current?.open()}
+          <Selector
+              onPress={() => weightActionSheetRef.current?.open()}
               label={polyglot.t(
-                'screens.create_activity.inputs.gender.label'
+                'screens.create_profile.action_sheets.weight.title'
               )}
-              text={(() => {
-                const selectedGender = getSelectedGender(
-                  selectedGenderValue
-                );
-                if (!selectedGender) {
-                  return undefined;
-                }
-                return polyglot.t(selectedGender.text);
-              })()}
+              text={
+                !!selectedWeight[0] && !!selectedWeight[1]
+                  ? `${selectedWeight[0]}.${selectedWeight[1]} kg`
+                  : undefined
+              }
             />
           </View>
         </View>
@@ -176,6 +178,28 @@ const CreateProfilScreen = () => {
           }}
           onCancel={() => {
             ageActionSheetRef.current?.close();
+          }}
+        />
+        <HeightActionSheet
+          ref={heightActionSheetRef}
+          onSelect={([m, cm]: [number, number]) => {
+            // TODO: Validate selected age values
+            setSelectedHeight([m, cm]);
+            heightActionSheetRef.current?.close();
+          }}
+          onCancel={() => {
+            heightActionSheetRef.current?.close();
+          }}
+        />
+        <WeightActionSheet
+          ref={weightActionSheetRef}
+          onSelect={([kg, gr]: [number, number]) => {
+            // TODO: Validate selected age values
+            setSelectedWeight([kg, gr]);
+            weightActionSheetRef.current?.close();
+          }}
+          onCancel={() => {
+            weightActionSheetRef.current?.close();
           }}
         />
       </View>

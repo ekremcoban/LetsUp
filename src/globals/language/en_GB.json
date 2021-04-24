@@ -59,6 +59,15 @@
       "action_sheets": {
         "age": {
           "title": "Age"
+        },
+        "gender": {
+          "title": "Gender"
+        },
+        "height": {
+          "title": "Height"
+        },
+        "weight": {
+          "title": "Weight"
         }
       }
     }
