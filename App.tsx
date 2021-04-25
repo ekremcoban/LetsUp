@@ -5,6 +5,8 @@ import {
   View,
   Text,
   useColorScheme,
+  TouchableOpacity,
+  Image
 } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -76,6 +78,17 @@ let App = () => {
 
   const Stack = createStackNavigator();
   const Tab = createBottomTabNavigator();
+
+  const loginTitle = (navigation) => (
+    <TouchableOpacity
+      onPress={() => navigation.navigate('Profile Info')}
+    >
+      <Image
+        source={require('assets/images/activities/profile.png')}
+        style={{ width: 25, height: 25, borderRadius: 20, }}
+      />
+    </TouchableOpacity>
+  )
 
   const Home = () => {
     return (
@@ -164,7 +177,7 @@ let App = () => {
             <Stack.Screen
               name="Home"
               component={Home}
-              options={{
+              options={({ navigation, route }) => ({
                 title: 'Lets Up',
                 headerStyle: {
                   backgroundColor: colors.bar,
@@ -173,7 +186,27 @@ let App = () => {
                 headerTitleStyle: {
                   fontWeight: 'bold',
                 },
-              }}
+                headerRight: () => (
+                  <View style={{ flexDirection: 'row', margin: 10 }}>
+                    {loginTitle(navigation)}
+                  </View>
+                ),
+              })}
+            // options={{
+            //   title: 'Lets Up',
+            //   headerStyle: {
+            //     backgroundColor: colors.bar,
+            //   },
+            //   headerTintColor: '#fff',
+            //   headerTitleStyle: {
+            //     fontWeight: 'bold',
+            //   },
+            //   headerRight: (navigation) => (
+            //     <View style={{ flexDirection: 'row', margin: 10 }}>
+            //       {loginTitle(navigation)}
+            //     </View>
+            //   ),
+            // }}
             />
             <Stack.Screen
               name="Activity"

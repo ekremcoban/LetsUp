@@ -16,9 +16,9 @@ export const HeightActionSheet = forwardRef<IActionSheet, IHeightActionSheetProp
     const [selectedMeter, setSelectedMeter] = useState(1);
     const [selectedCm, setSelectedCm] = useState(70);
     const [height] = useState(
-      Array(93)
+      Array(100)
         .fill(null)
-        .map((_, index) => index + 1)
+        .map((_, index) => index)
     );
 
     return (
@@ -31,7 +31,7 @@ export const HeightActionSheet = forwardRef<IActionSheet, IHeightActionSheetProp
         title={polyglot.t('screens.create_activity.action_sheets.age.title')}
       >
         <Picker
-          items={height.filter(x => x < 3).map((meter) => ({ value: meter, text: `${meter} m` }))}
+          items={height.filter(x => x > 0 && x < 3).map((meter) => ({ value: meter, text: `${meter} m` }))}
           selectedValue={selectedMeter}
           onValueChange={setSelectedMeter}
         />

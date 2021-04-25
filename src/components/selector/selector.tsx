@@ -16,7 +16,7 @@ export const Selector = (props: ISelector) => {
     <>
       {/* {!!props.label && <Text style={styles.label}>{props.label}</Text>} */}
       <TouchableNativeFeedback onPress={props.onPress}>
-        <View style={styles.inputWrapper}>
+        <View style={[styles.inputWrapper, props.styleView]}>
           <View style={styles.textWrapper}>
             <Text style={[styles.label, !!props.text && styles.labelWithText]}>
               {props.label}

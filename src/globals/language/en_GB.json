@@ -56,6 +56,14 @@
       }
     },
     "create_profile": {
+      "label": {
+        "full_name": "Full Name",
+        "age": "Age*",
+        "gender": "Gender*",
+        "height": "Height",
+        "weight": "Weight",
+        "interested_in": "Interested In"
+      },
       "action_sheets": {
         "age": {
           "title": "Age"
