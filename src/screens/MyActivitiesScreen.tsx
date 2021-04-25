@@ -8,7 +8,7 @@ const noti = [
         pic: require('assets/img/jogging.png'),
         boldText: 'Koşmaya var mısın?',
         text: 'etkinliğinin güzergahı değişti',
-        date: 'April 8', 
+        date: 'April 8',
         time: '20:00'
     },
     {
@@ -16,7 +16,7 @@ const noti = [
         pic: require('assets/img/hiking.png'),
         boldText: 'Yokuşsever Konyalılar Toplanıyor',
         text: 'etkinliği yarın başlıyor',
-        date: 'April 11', 
+        date: 'April 11',
         time: '23:00'
     },
     {
@@ -24,7 +24,7 @@ const noti = [
         pic: require('assets/img/bcycle.png'),
         boldText: 'İki teker Karaköy Turu',
         text: 'etkinliği iptal edildi',
-        date: 'April 18', 
+        date: 'April 18',
         time: '09:00'
     },
 ]
@@ -50,9 +50,9 @@ const MyActivitiesScreen = () => {
                         </View>
                     </View>
                     <View style={styles.viewRight}>
-                    <Icon size={20} name="trash-outline" type="ionicon" 
-                    onPress={() => Alert.alert('Silim mi :)')}
-                    />
+                        <Icon size={20} name="trash-outline" type="ionicon"
+                            onPress={() => Alert.alert('Silim mi :)')}
+                        />
                     </View>
                 </View>
             ))}
@@ -91,10 +91,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-    viewDateTime: { 
+    viewDateTime: {
         marginTop: 10,
-        flexDirection: 'row', 
-        alignItems: 'center', 
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     textDate: {
         paddingTop: 3,

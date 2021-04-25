@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
-  StatusBar,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { Selector } from 'components/selector/selector';
@@ -41,7 +42,8 @@ const CreateProfilScreen = () => {
   const [branchNo, setBranchNo] = useState<number | null>(null);
 
   return (
-    <>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <View style={{flex: 1}}>
       <View style={styles.viewImg}>
         <TouchableOpacity style={{ alignSelf: 'flex-end' }}>
           <View style={styles.viewbuttonAction}>
@@ -208,7 +210,8 @@ const CreateProfilScreen = () => {
           }}
         />
       </View>
-    </>
+    </View>
+    </TouchableWithoutFeedback>
   )
 }
 
