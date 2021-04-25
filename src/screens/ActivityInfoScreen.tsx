@@ -11,7 +11,7 @@ const IconJoin = locationTag['join'];
 
 class ActivityInfoScreen extends Component {
     state = {
-        isJoin: true,
+        isJoin: false,
         isStar: false,
     }
 
@@ -49,7 +49,7 @@ class ActivityInfoScreen extends Component {
         )
 
         const leave = (
-            <View style={[styles.viewbuttonAction, { backgroundColor: 'red' }]}>
+            <View style={[styles.viewbuttonAction, styles.viewButtonActionLeave]}>
                 <Ionicons
                     size={20}
                     name="hand-left"
@@ -95,7 +95,7 @@ class ActivityInfoScreen extends Component {
                     </View>
                     <View style={styles.viewAction}>
                         <TouchableOpacity onPress={() => this.setState(prev => ({ isJoin: !prev.isJoin }))}>
-                            {this.state.isJoin ? <IconJoin width={90} height={45} /> : leave}
+                            {this.state.isJoin ? join : leave}
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -103,10 +103,91 @@ class ActivityInfoScreen extends Component {
                 <View style={styles.viewLocation}>
                     <Text style={styles.textLocationTitle}>Location</Text>
                     <View style={styles.scrollview}>
-                        <ScrollView showsVerticalScrollIndicator={true}>
-                            <View style={styles.containerLocation}>
+                        <ScrollView horizontal={true}>
+                            <View style={styles.viewNode}>
+                                <View style={{ flexDirection: 'row', flex: 2 }}>
+                                    <View style={{ flex: 1, }} />
+                                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} >
+                                        <View style={{
+                                            height: 20,
+                                            width: '100%',
+                                            flexDirection: 'row',
+                                            backgroundColor: '#37CC4A',
+                                            borderRadius: 20,
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                        }}>
+                                            <Text style={{ color: 'white' }}>Start</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ flex: 1, alignItems: 'flex-end', paddingEnd: 5, }} >
+                                        <Ionicons
+                                            size={20}
+                                            name={"navigate"}
+                                        />
+                                    </View>
+                                </View>
+                                <View style={{ flex: 3, paddingLeft: 5, paddingEnd: 5, }}>
+                                    <Text>Organize Sanayi Bölgesi Ataşehir, 2. Cadde</Text>
+                                </View>
+                            </View>
+                            <View style={styles.viewNode}>
+                                <View style={{ flexDirection: 'row', flex: 2 }}>
+                                    <View style={{ flex: 1, }} />
+                                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} >
+                                        <View style={{
+                                            height: 20,
+                                            width: '100%',
+                                            flexDirection: 'row',
+                                            backgroundColor: 'red',
+                                            borderRadius: 20,
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                        }}>
+                                            <Text style={{ color: 'white' }}>Finish</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ flex: 1, alignItems: 'flex-end', paddingEnd: 5, }} >
+                                        <Ionicons
+                                            size={20}
+                                            name={"navigate"}
+                                        />
+                                    </View>
+                                </View>
+                                <View style={{ flex: 3, paddingLeft: 5, paddingEnd: 5, }}>
+                                    <Text>Organize Sanayi Bölgesi Ataşehir, 2. Cadde</Text>
+                                </View>
+                            </View>
+                            <View style={styles.viewNode}>
+                                <View style={{ flexDirection: 'row', flex: 2 }}>
+                                    <View style={{ flex: 1, }} />
+                                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} >
+                                        <View style={{
+                                            height: 20,
+                                            width: '100%',
+                                            flexDirection: 'row',
+                                            backgroundColor: 'purple',
+                                            borderRadius: 20,
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                        }}>
+                                            <Text style={{ color: 'white' }}>1</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ flex: 1, alignItems: 'flex-end', paddingEnd: 5, }} >
+                                        <Ionicons
+                                            size={20}
+                                            name={"navigate"}
+                                        />
+                                    </View>
+                                </View>
+                                <View style={{ flex: 3, paddingLeft: 5, paddingEnd: 5, }}>
+                                    <Text>Organize Sanayi Bölgesi Ataşehir, 2. Cadde</Text>
+                                </View>
+                            </View>
+                            {/* <View style={styles.containerLocation}>
                                 <View style={styles.viewLocationLeft}>
-                                <IconStart width={40} height={20} />
+                                    <IconStart width={40} height={20} />
                                 </View>
                                 <View style={styles.containerLeft}>
                                     <Text style={styles.textLocationStart}>Organize Sanayi Bölgesi Ataşehir</Text>
@@ -165,7 +246,7 @@ class ActivityInfoScreen extends Component {
                                         name={"navigate"}
                                     />
                                 </View>
-                            </View>
+                            </View> */}
                         </ScrollView>
                     </View>
                 </View>
@@ -261,7 +342,18 @@ const styles = StyleSheet.create({
         backgroundColor: '#37CC4A',
         borderRadius: 20,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-evenly',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    viewButtonActionLeave: {
+        backgroundColor: 'red',
     },
     textButtonAction: {
         color: 'white',
@@ -289,16 +381,33 @@ const styles = StyleSheet.create({
         borderEndWidth: 1,
         borderColor: '#BBBDBF',
     },
+    viewNode: {
+        width: 170,
+        height: '100%',
+        // backgroundColor: 'red',
+        borderWidth: 1,
+        borderColor: '#CCC',
+        borderRadius: 20,
+        alignItems: 'center',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
     containerLocation: {
         flexDirection: 'row',
         paddingTop: 10,
     },
-    containerLeft: { 
-        flex: 1, 
+    containerLeft: {
+        flex: 1,
     },
-    containerRight: { 
-        paddingRight: 5, 
-        justifyContent: 'center', 
+    containerRight: {
+        paddingRight: 5,
+        justifyContent: 'center',
     },
     viewLocationLeft: {
         width: 40,
@@ -355,7 +464,7 @@ const styles = StyleSheet.create({
     },
 
     viewDate: {
-        flex: 2,
+        flex: 1.4,
         marginStart: 20,
         marginEnd: 20,
         // backgroundColor: 'blue',
