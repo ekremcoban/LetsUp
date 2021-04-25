@@ -1,17 +1,12 @@
-import React, { useEffect, useState, createRef } from 'react';
+import React, { useState, createRef } from 'react';
 import {
   StyleSheet,
   View,
   Text,
   ScrollView,
   TouchableOpacity,
-  Image,
-  TextInput,
   Alert,
-  Keyboard,
-  TouchableNativeFeedback,
 } from 'react-native';
-import { colors, window } from '../../utilities/constants/globalValues';
 import Popover from '../../components/popover';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import firestore from '@react-native-firebase/firestore';
@@ -19,73 +14,76 @@ import { MenuProvider } from 'react-native-popup-menu';
 import RNGooglePlaces from 'react-native-google-places';
 import CustomButton from '../../components/buttons/customButton';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import ActionSheetMenu from '../../components/actionSheetMenu';
-import BouncyCheckbox from 'react-native-bouncy-checkbox';
-import { AgeRangeActionSheet } from './action-sheets/ageRange.action-sheet';
 import { IActionSheet } from 'components/action-sheet/action-sheet';
+import { ActivityNameActionSheet } from './action-sheets/activity-name.action-sheet';
+import { AgeRangeActionSheet } from './action-sheets/ageRange.action-sheet';
+import { QuotaActionSheet } from './action-sheets/quota.action-sheet';
+import { GenderActionSheet } from './action-sheets/gender.action-sheet';
+import { getSelectedGender } from 'models/genders';
+import { getSelectedActivityName } from 'models/activity-names';
 import { Selector } from 'components/selector/selector';
 import { ActivityTypeSelector } from 'components/activity-type-selector/activity-type-selector';
 import {
   activityTypes,
   IActivityType,
 } from 'components/activity-type-selector/models';
-import { MoreLess } from './components/more-less';
-import { QuotaActionSheet } from './action-sheets/quota.action-sheet';
-import { GenderActionSheet } from './action-sheets/gender.action-sheet';
-import { getSelectedGender } from 'models/genders';
+import { MAX_LOCATION_COUNT } from './constants';
+import { colors } from 'styles/colors';
 
-const { width, height } = window;
-const startPlacePlaceholder = 'Please Select';
-
+const activityNameActionSheetRef = createRef<IActionSheet>();
 const ageRangeActionSheetRef = createRef<IActionSheet>();
 const quotaActionSheetRef = createRef<IActionSheet>();
 const genderActionSheetRef = createRef<IActionSheet>();
 
+type Location = {
+  id: number;
+  location: string;
+};
+
 const CreateActivityScreen2 = () => {
   const [branchNo, setBranchNo] = useState<number | null>(null);
   const [title, setTitle] = useState<string>('');
-  const [startPlace, setStartPlace] = useState<string>(startPlacePlaceholder);
-  const [isFinishLocation, setIsFinishLocation] = useState(false);
-  const [finishPlace, setFinishPlace] = useState<string>('Finish');
+
   const [warningTitle, setWarningTitle] = useState<boolean>(false);
   const [warningStartPlace, setWarningStartPlace] = useState<boolean>(false);
   const [warningDate, setWarningDate] = useState<number>(0);
   const [warningTime, setWarningTime] = useState<number>(0);
-  const [activityStartDate, setActivityStartDate] = useState<Date>(undefined);
+
+  const [locations, setLocations] = useState<Location[]>([
+    { id: 0, location: '' },
+  ]);
+
+  const [activityDate, setActivityDate] = useState<Date>(undefined);
   const [activityStartTime, setActivityStartTime] = useState<Date>(undefined);
-  const [activityFinishDate, setActivityFinishDate] = useState<Date>(undefined);
   const [activityFinishTime, setActivityFinishTime] = useState<Date>(undefined);
   const [
-    isStartDatePickerVisible,
-    setStartDatePickerVisibility,
+    isDateActionSheetVisible,
+    setDateActionSheetVisibility,
   ] = useState<boolean>(false);
   const [
-    isFinishDatePickerVisible,
-    setFinishDatePickerVisibility,
+    isStartTimeActionSheetVisible,
+    setStartTimeActionSheetVisibility,
   ] = useState<boolean>(false);
   const [
-    isStartTimePickerVisible,
-    setStartTimePickerVisibility,
-  ] = useState<boolean>(false);
-  const [
-    isFinishTimePickerVisible,
-    setFinishTimePickerVisibility,
+    isFinishTimeActionSheetVisible,
+    setFinishTimeActionSheetVisibility,
   ] = useState<boolean>(false);
 
-  const [ageStart, setAgeStart] = useState<number>(0);
+  const [selectedActivityNameValue, setSelectedActivityNameValue] = useState<
+    number | null
+  >(null);
+
   const [selectedAgeRange, setSelectedAgeRange] = useState<
     [number | null, number | null]
   >([null, null]);
+
   const [selectedQuotaRange, setSelectedQuotaRange] = useState<
     [number | null, number | null]
   >([null, null]);
-  const [selectedGenderValue, setSelectedGenderValue] = useState<string | null>(
+
+  const [selectedGenderValue, setSelectedGenderValue] = useState<number | null>(
     null
   );
-  const [gender, setGender] = useState<string>(null);
-  const [quota, setQuota] = useState<number>(0);
-
-  useEffect(() => {});
 
   const insertData = (data: Object) => {
     console.log('data1', data);
@@ -100,136 +98,78 @@ const CreateActivityScreen2 = () => {
       });
   };
 
-  const setActivityTitle = (text: string) => {
-    if (text.length > 0) {
-      setWarningTitle(false);
-    }
-    setTitle(text);
-  };
-
-  const setActityStartPlace = () => {
-    setWarningStartPlace(false);
-    openSearchModal();
-  };
-
   const save = () => {
-    console.log('BURDA');
-    let [month, date, year] = new Date().toLocaleDateString('en-US').split('/');
-    let [hour, minute, second] = new Date()
-      .toLocaleTimeString('tr-TR')
-      .split(/:| /);
-    date = Number(date) < 10 ? '0' + date : date;
-    month = Number(month) < 10 ? '0' + month : month;
-    let now =
-      year +
-      '/' +
-      month +
-      '/' +
-      date +
-      ' ' +
-      hour +
-      ':' +
-      minute +
-      ':' +
-      second;
-    let sendData = null;
-
-    // console.warn('startplace', startPlace)
-    if (
-      title.length > 0 &&
-      startPlace !== startPlacePlaceholder &&
-      warningDate === 0 &&
-      activityTime != undefined
-    ) {
-      setWarningTitle(false);
-      Alert.alert('Başarılı');
-      sendData = {
-        test: {
-          id: 1,
-          title: title,
-          place: startPlace,
-          activityTime: activityTime,
-          // activityCreateDate: now,
-          activityCreateDate: new Date(),
-        },
-      };
-      console.log('send', sendData);
-      insertData(sendData);
-    } else {
-      if (title.length == 0) {
-        setWarningTitle(true);
-      } else {
-        setWarningTitle(false);
-      }
-
-      if (startPlace !== startPlacePlaceholder) {
-        setWarningStartPlace(false);
-      } else {
-        setWarningStartPlace(true);
-      }
-
-      if (activityStartDate != undefined) {
-        setWarningDate(0);
-      } else {
-        setWarningDate(2);
-      }
-
-      if (activityStartTime != undefined) {
-        setWarningTime(0);
-      } else {
-        setWarningTime(2);
-      }
-      Alert.alert('Başarısız');
-    }
+    // TODO: Uncomment when we start implementing save functionality
+    //
+    // console.log('BURDA');
+    // let [month, date, year] = new Date().toLocaleDateString('en-US').split('/');
+    // let [hour, minute, second] = new Date()
+    //   .toLocaleTimeString('tr-TR')
+    //   .split(/:| /);
+    // date = Number(date) < 10 ? '0' + date : date;
+    // month = Number(month) < 10 ? '0' + month : month;
+    // let now =
+    //   year +
+    //   '/' +
+    //   month +
+    //   '/' +
+    //   date +
+    //   ' ' +
+    //   hour +
+    //   ':' +
+    //   minute +
+    //   ':' +
+    //   second;
+    // let sendData = null;
+    // // console.warn('startplace', startPlace)
+    // if (
+    //   title.length > 0 &&
+    //   startPlace !== startPlacePlaceholder &&
+    //   warningDate === 0 &&
+    //   activityTime != undefined
+    // ) {
+    //   setWarningTitle(false);
+    //   Alert.alert('Başarılı');
+    //   sendData = {
+    //     test: {
+    //       id: 1,
+    //       title: title,
+    //       place: startPlace,
+    //       activityTime: activityTime,
+    //       // activityCreateDate: now,
+    //       activityCreateDate: new Date(),
+    //     },
+    //   };
+    //   console.log('send', sendData);
+    //   insertData(sendData);
+    // } else {
+    //   if (title.length == 0) {
+    //     setWarningTitle(true);
+    //   } else {
+    //     setWarningTitle(false);
+    //   }
+    //   if (startPlace !== startPlacePlaceholder) {
+    //     setWarningStartPlace(false);
+    //   } else {
+    //     setWarningStartPlace(true);
+    //   }
+    //   if (activityDate != undefined) {
+    //     setWarningDate(0);
+    //   } else {
+    //     setWarningDate(2);
+    //   }
+    //   if (activityStartTime != undefined) {
+    //     setWarningTime(0);
+    //   } else {
+    //     setWarningTime(2);
+    //   }
+    //   Alert.alert('Başarısız');
+    // }
   };
 
-  const openStartSearchModal = () => {
-    RNGooglePlaces.openAutocompleteModal()
-      .then((place) => {
-        console.log(place);
-        setStartPlace(place.name);
-        // place represents user's selection from the
-        // suggestions and it is a simplified Google Place object.
-      })
-      .catch((error) => console.log(error.message)); // error is a Javascript Error object
-  };
-
-  const openFinishSearchModal = () => {
-    RNGooglePlaces.openAutocompleteModal()
-      .then((place) => {
-        console.log(place);
-        setFinishPlace(place.name);
-        // place represents user's selection from the
-        // suggestions and it is a simplified Google Place object.
-      })
-      .catch((error) => console.log(error.message)); // error is a Javascript Error object
-  };
-
-  const openSearchFinishModal = () => {
-    RNGooglePlaces.openAutocompleteModal()
-      .then((place) => {
-        console.log(place.name);
-        p = place.name;
-        // place represents user's selection from the
-        // suggestions and it is a simplified Google Place object.
-      })
-      .catch((error) => console.log(error.message)) // error is a Javascript Error object
-      .finally((a) => setFinishPlace(p));
-  };
-
-  const finishPlaceTextInput = (
-    <TouchableOpacity onPress={() => openSearchFinishModal()}>
-      <Text style={{ textAlign: 'center' }}>{finishPlace}</Text>
-    </TouchableOpacity>
-  );
-
-  const showStartDatePicker = () => {
-    setStartDatePickerVisibility(true);
-  };
-
-  const handleStartDateConfirm = (date: Date) => {
-    setActivityStartDate(date);
-    setStartDatePickerVisibility(false);
+  const handleDateConfirm = (date: Date) => {
+    setActivityDate(date);
+    setDateActionSheetVisibility(false);
 
     if (
       date.getFullYear() > new Date().getFullYear() ||
@@ -239,40 +179,15 @@ const CreateActivityScreen2 = () => {
         date.getMonth() == new Date().getMonth() &&
         date.getDate() >= new Date().getDate())
     ) {
-      setActivityStartDate(date);
+      setActivityDate(date);
       setActivityStartTime(null);
       setWarningDate(0);
       setWarningTime(0);
 
       console.warn('dışarda tarih');
     } else {
-      setActivityStartDate(date);
+      setActivityDate(date);
       setActivityStartTime(null);
-      setWarningDate(1);
-    }
-  };
-
-  const handleFinishDateConfirm = (date: Date) => {
-    setActivityFinishDate(date);
-    setFinishDatePickerVisibility(false);
-
-    if (
-      date.getFullYear() > new Date().getFullYear() ||
-      (date.getFullYear() == new Date().getFullYear() &&
-        date.getMonth() > new Date().getMonth()) ||
-      (date.getFullYear() == new Date().getFullYear() &&
-        date.getMonth() == new Date().getMonth() &&
-        date.getDate() >= new Date().getDate())
-    ) {
-      setActivityFinishDate(date);
-      setActivityFinishTime(null);
-      setWarningDate(0);
-      setWarningTime(0);
-
-      // console.warn('dışarda tarih');
-    } else {
-      setActivityFinishDate(date);
-      setActivityFinishTime(null);
       setWarningDate(1);
     }
   };
@@ -307,7 +222,7 @@ const CreateActivityScreen2 = () => {
   };
 
   const handleStartTimeConfirm = (date: Date, activityDate: Date) => {
-    setStartTimePickerVisibility(false);
+    setStartTimeActionSheetVisibility(false);
 
     if (
       activityDate != null &&
@@ -328,7 +243,7 @@ const CreateActivityScreen2 = () => {
   };
 
   const handleFinishTimeConfirm = (date: Date, activityDate: Date) => {
-    setFinishTimePickerVisibility(false);
+    setFinishTimeActionSheetVisibility(false);
 
     if (
       activityDate != null &&
@@ -385,281 +300,46 @@ const CreateActivityScreen2 = () => {
     return result;
   };
 
-  const changeLocation = () => {
-    setIsFinishLocation(!isFinishLocation);
-    if (isFinishLocation) {
-      startPlace === 'Start' && setStartPlace('Please Select');
-    } else {
-      startPlace === 'Please Select' && setStartPlace('Start');
+  const addLocation = () => {
+    if (locations.length === MAX_LOCATION_COUNT) {
+      return;
     }
+
+    const newId = locations[locations.length - 1].id + 1;
+    const updatedLocations = [...locations, { id: newId, location: '' }];
+    setLocations(updatedLocations);
   };
 
-  const dateView = (
-    <View style={styles.dateTimeSelectedView}>
-      {/* <Button title={activityDate === null ? "Show Date Picker" : activityDate.getDate().toString()} onPress={() => setDatePickerVisibility(true)} /> */}
-      <CustomButton
-        onPress={showStartDatePicker}
-        title={showDateText(activityStartDate)}
-        styleText={styles.selectedText}
-      />
-      {warningDate === 1 && (
-        <Popover iconName={'alert'} text={'Seçtiğiniz Tarih Güncel Değil!'} />
-      )}
-      {warningDate === 2 && (
-        <Popover iconName={'alert'} text={'Bu Alan Boş Bırakılamaz'} />
-      )}
-      <DateTimePickerModal
-        isVisible={isStartDatePickerVisible}
-        mode="date"
-        onConfirm={handleStartDateConfirm}
-        onCancel={() => setStartDatePickerVisibility(false)}
-      />
-    </View>
-  );
+  const removeLocation = (id: number) => {
+    const updatedLocations = locations.filter((location) => location.id !== id);
+    setLocations(updatedLocations);
+  };
 
-  const timeView = (
-    <View style={styles.dateTimeSelectedView}>
-      <CustomButton
-        onPress={() => setStartTimePickerVisibility(true)}
-        title={showTimeText(activityStartDate, activityStartTime)}
-        styleText={styles.selectedText}
-      />
-      {warningTime === 1 && (
-        <Popover iconName={'alert'} text={'En az 2 saat zaman olmalı!'} />
-      )}
-      {warningTime === 2 && (
-        <Popover iconName={'alert'} text={'Bu Alan Boş Bırakılamaz'} />
-      )}
-      <DateTimePickerModal
-        isVisible={isStartTimePickerVisible}
-        mode="time"
-        onConfirm={handleStartTimeConfirm}
-        onCancel={() => setStartTimePickerVisibility(false)}
-      />
-    </View>
-  );
+  const updateLocation = (id: number, location: string) => {
+    const indexOldElement = locations.findIndex(
+      (location) => location.id == id
+    );
+    const updatedLocations = Object.assign([...locations], {
+      [indexOldElement]: { id, location },
+    });
 
-  const location = (
-    <TouchableNativeFeedback onPress={openStartSearchModal}>
-      <View
-        style={{
-          height: height * 0.06,
-          borderWidth: 1,
-          flexDirection: 'row',
-          alignSelf: 'center',
-          borderRadius: 10,
-          borderColor: '#CCC',
-          backgroundColor: 'white',
-          justifyContent: 'center',
-        }}
-      >
-        <View
-          style={{ flex: 10, alignItems: 'center', justifyContent: 'center' }}
-        >
-          <Text style={{ fontSize: width * 0.045 }}>{startPlace}</Text>
-        </View>
-        <Ionicons
-          size={25}
-          name="caret-down"
-          style={{ alignSelf: 'center', color: '#CCC' }}
-        />
-      </View>
-    </TouchableNativeFeedback>
-  );
+    setLocations(updatedLocations);
+  };
 
-  const finishLocation = (
-    <View
-      style={{
-        flexDirection: 'row',
-        // backgroundColor: 'yellow'
-      }}
-    >
-      <TouchableNativeFeedback onPress={openStartSearchModal}>
-        <View
-          style={{
-            height: height * 0.06,
-            borderWidth: 1,
-            flexDirection: 'row',
-            alignSelf: 'center',
-            borderRadius: 10,
-            borderColor: '#CCC',
-            backgroundColor: 'white',
-            justifyContent: 'space-between',
-            flex: 10,
-          }}
-        >
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              // backgroundColor: 'red'
-            }}
-          >
-            <Text style={{ fontSize: width * 0.045, textAlign: 'center' }}>
-              {startPlace}
-            </Text>
-          </View>
-          <Ionicons
-            size={25}
-            name="caret-down"
-            style={{
-              alignSelf: 'center',
-              color: '#CCC',
-              backgroundColor: 'white',
-            }}
-          />
-        </View>
-      </TouchableNativeFeedback>
-      <View style={{ flex: 1, backgroundColor: '#EEE' }} />
-      <TouchableNativeFeedback onPress={openFinishSearchModal}>
-        <View
-          style={{
-            height: height * 0.06,
-            borderWidth: 1,
-            flexDirection: 'row',
-            alignSelf: 'center',
-            borderRadius: 10,
-            borderColor: '#CCC',
-            backgroundColor: 'white',
-            justifyContent: 'space-between',
-            flex: 10,
-          }}
-        >
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-            }}
-          >
-            <Text style={{ fontSize: width * 0.045, textAlign: 'center' }}>
-              {finishPlace}
-            </Text>
-          </View>
-          <Ionicons
-            size={25}
-            name="caret-down"
-            style={{ alignSelf: 'center', color: '#CCC' }}
-          />
-        </View>
-      </TouchableNativeFeedback>
-    </View>
-  );
-
-  const showFinishDateTime = (
-    <View style={{ flexDirection: 'row', marginTop: 10 }}>
-      <View
-        style={{
-          flex: 10,
-          height: height * 0.1,
-          paddingLeft: 10,
-          paddingRight: 5,
-          // backgroundColor: 'red',
-        }}
-      >
-        <Text style={{ fontWeight: 'bold', paddingBottom: 7, paddingLeft: 10 }}>
-          Finish Date
-        </Text>
-        <TouchableNativeFeedback
-          onPress={() => setFinishDatePickerVisibility(true)}
-        >
-          <View
-            style={{
-              height: height * 0.06,
-              borderWidth: 1,
-              flexDirection: 'row',
-              alignSelf: 'center',
-              borderRadius: 10,
-              backgroundColor: 'white',
-              justifyContent: 'center',
-              borderColor: '#CCC',
-            }}
-          >
-            <View
-              style={{
-                width: '90%',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Text style={{ fontSize: width * 0.045 }}>
-                {showDateText(activityFinishDate)}
-              </Text>
-            </View>
-            <Ionicons
-              size={25}
-              name="caret-down"
-              style={{ alignSelf: 'center', color: '#CCC' }}
-            />
-            <DateTimePickerModal
-              isVisible={isFinishDatePickerVisible}
-              mode="date"
-              onConfirm={handleFinishDateConfirm}
-              onCancel={() => setFinishDatePickerVisibility(false)}
-            />
-          </View>
-        </TouchableNativeFeedback>
-      </View>
-      <View style={{ flex: 1, backgroundColor: '#EEE' }} />
-      <View
-        style={{
-          flex: 10,
-          height: height * 0.08,
-          paddingRight: 12,
-          // backgroundColor: 'red',
-        }}
-      >
-        <Text style={{ fontWeight: 'bold', paddingBottom: 7, paddingLeft: 10 }}>
-          Finish Time
-        </Text>
-        <TouchableNativeFeedback
-          onPress={() => setFinishTimePickerVisibility(true)}
-        >
-          <View
-            style={{
-              height: height * 0.06,
-              borderWidth: 1,
-              flexDirection: 'row',
-              alignSelf: 'center',
-              borderRadius: 10,
-              backgroundColor: 'white',
-              justifyContent: 'center',
-              borderColor: '#CCC',
-            }}
-          >
-            <View
-              style={{
-                width: '90%',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Text style={{ fontSize: width * 0.045 }}>
-                {showTimeText(activityFinishDate, activityFinishTime)}
-              </Text>
-            </View>
-            <Ionicons
-              size={25}
-              name="caret-down"
-              style={{ alignSelf: 'center', color: '#CCC' }}
-            />
-            <DateTimePickerModal
-              isVisible={isFinishTimePickerVisible}
-              mode="time"
-              onConfirm={handleFinishTimeConfirm}
-              onCancel={() => setFinishTimePickerVisibility(false)}
-            />
-          </View>
-        </TouchableNativeFeedback>
-      </View>
-    </View>
-  );
+  const openLocationModal = (id: number) => {
+    RNGooglePlaces.openAutocompleteModal()
+      .then((place) => {
+        updateLocation(id, place.name);
+      })
+      .catch((error) => console.log(error.message)); // error is a Javascript Error object
+  };
 
   return (
     <MenuProvider>
       <View style={styles.container}>
         <View style={styles.firstRow}>
           <ActivityTypeSelector>
-            {activityTypes.map((activityType: IActivityType, index: number) => (
+            {activityTypes.map((activityType: IActivityType) => (
               <ActivityTypeSelector.IconItem
                 key={activityType.id}
                 id={activityType.id}
@@ -673,260 +353,196 @@ const CreateActivityScreen2 = () => {
           </ActivityTypeSelector>
 
           <ScrollView>
-            <View
-              style={{
-                height: height * 0.1,
-                paddingLeft: 5,
-                paddingRight: 5,
-              }}
-            >
-              <ActionSheetMenu
-                label={'Activity Name*'}
-                title={'Select'}
-                items={[
-                  'Bisiklet Bizim İşimiz',
-                  'Koşmaya Var Mısın?',
-                  'Bisiklet Turu',
-                  'Basketbol Maçı',
-                  'Test 1',
-                  'Test 2',
-                  'Test 3',
-                  'Test 4',
-                  'Test 5',
-                  'Test 6',
-                  'Test 7',
-                  'Test 8',
-                  'Test 9',
-                  'Test 10',
-                  'Test 11',
-                  'Test 12',
-                  'Cancel',
-                ]}
-                onPress={() => console.log('TEST')}
-              />
-            </View>
-            <View
-              style={{
-                height: height * 0.11,
-                paddingLeft: 10,
-                paddingRight: 10,
-                marginTop: 5,
-                // backgroundColor: 'yellow',
-                justifyContent: 'center',
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: 'row',
-                  height: height * 0.03,
-                  marginBottom: 5,
-                  // backgroundColor: 'orange',
-                  alignItems: 'center',
-                }}
-              >
-                <View style={{ flex: 1, paddingLeft: 10 }}>
-                  <Text style={{ fontWeight: 'bold' }}>Location*</Text>
-                </View>
-                <View
-                  style={{
-                    flex: 1,
-                    alignItems: 'flex-end',
-                    paddingRight: 10,
-                  }}
-                >
-                  <Text>Add Finish Location</Text>
-                </View>
-                <BouncyCheckbox
-                  size={20}
-                  textColor="#000"
-                  fillColor={colors.bar}
-                  onPress={(checked) => changeLocation()}
+            <View style={styles.row}>
+              <View style={styles.column}>
+                <Selector
+                  onPress={() => activityNameActionSheetRef.current?.open()}
+                  label={`${polyglot.t(
+                    'screens.create_activity.inputs.activity_name.label'
+                  )}*`}
+                  text={(() => {
+                    const selectedActivityName = getSelectedActivityName(
+                      selectedActivityNameValue
+                    );
+                    if (!selectedActivityName) {
+                      return undefined;
+                    }
+                    return polyglot.t(selectedActivityName.text);
+                  })()}
                 />
-              </View>
-              {isFinishLocation ? finishLocation : location}
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                height: height * 0.1,
-                marginTop: 5,
-                // backgroundColor: 'red',
-              }}
-            >
-              <View
-                style={{
-                  flex: 10,
-                  // height: height * 0.1,
-                  paddingLeft: 10,
-                  // backgroundColor: 'red',
-                }}
-              >
-                <Text
-                  style={{
-                    fontWeight: 'bold',
-                    paddingBottom: 7,
-                    paddingLeft: 10,
-                  }}
-                >
-                  Start Date*
-                </Text>
-                <TouchableNativeFeedback
-                  onPress={() => setStartDatePickerVisibility(true)}
-                >
-                  <View
-                    style={{
-                      height: height * 0.06,
-                      borderWidth: 1,
-                      flexDirection: 'row',
-                      alignSelf: 'center',
-                      borderRadius: 10,
-                      backgroundColor: 'white',
-                      justifyContent: 'center',
-                      borderColor: '#CCC',
-                      paddingRight: 5,
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: '90%',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Text style={{ fontSize: width * 0.045 }}>
-                        {showDateText(activityStartDate)}
-                      </Text>
-                    </View>
-                    <Ionicons
-                      size={25}
-                      name="caret-down"
-                      style={{ alignSelf: 'center', color: '#CCC' }}
-                    />
-                    <DateTimePickerModal
-                      isVisible={isStartDatePickerVisible}
-                      mode="date"
-                      onConfirm={handleStartDateConfirm}
-                      onCancel={() => setStartDatePickerVisibility(false)}
-                    />
-                  </View>
-                </TouchableNativeFeedback>
-              </View>
-              <View style={{ flex: 1, backgroundColor: '#EEE' }} />
-              <View
-                style={{
-                  flex: 10,
-                  height: height * 0.1,
-                  paddingRight: 12,
-                  // backgroundColor: 'red',
-                }}
-              >
-                <Text
-                  style={{
-                    fontWeight: 'bold',
-                    paddingBottom: 7,
-                    paddingLeft: 10,
-                  }}
-                >
-                  Start Time*
-                </Text>
-                <TouchableNativeFeedback
-                  onPress={() => setStartTimePickerVisibility(true)}
-                >
-                  <View
-                    style={{
-                      height: height * 0.06,
-                      borderWidth: 1,
-                      flexDirection: 'row',
-                      alignSelf: 'center',
-                      borderRadius: 10,
-                      backgroundColor: 'white',
-                      justifyContent: 'center',
-                      borderColor: '#CCC',
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: '90%',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Text style={{ fontSize: width * 0.045 }}>
-                        {showTimeText(activityStartDate, activityStartTime)}
-                      </Text>
-                    </View>
-                    <Ionicons
-                      size={25}
-                      name="caret-down"
-                      style={{ alignSelf: 'center', color: '#CCC' }}
-                    />
-                    <DateTimePickerModal
-                      isVisible={isStartTimePickerVisible}
-                      mode="time"
-                      onConfirm={handleStartTimeConfirm}
-                      onCancel={() => setStartTimePickerVisibility(false)}
-                    />
-                  </View>
-                </TouchableNativeFeedback>
               </View>
             </View>
 
-              <View>
-                {showFinishDateTime}
-                <View style={styles.row}>
-                  <View style={styles.column}>
+            <View style={styles.locationLabel}>
+              <Text style={styles.label}>
+                {`${polyglot.t(
+                  'screens.create_activity.inputs.location.label'
+                )}*`}
+              </Text>
+
+              <View style={styles.locationAddMore}>
+                <Text style={styles.locationAddMoreLabel}>
+                  {polyglot.t(
+                    'screens.create_activity.inputs.location.add_more'
+                  )}
+                </Text>
+                <TouchableOpacity onPress={addLocation}>
+                  <View style={styles.locationIconWrapper}>
+                    <Ionicons
+                      size={15}
+                      name="add-outline"
+                      color={colors.white}
+                    />
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={styles.locationWrapper}>
+              {locations.map((location) => (
+                <LocationInput
+                  key={location.id}
+                  location={location}
+                  showRemove={locations.length > 1}
+                  onLocationRemove={removeLocation}
+                  onLocationModalOpen={openLocationModal}
+                />
+              ))}
+            </View>
+
+            <View style={styles.row}>
+              <View style={styles.column}>
+                <Selector
+                  labelPosition="center"
+                  onPress={() => setDateActionSheetVisibility(true)}
+                  label={`${polyglot.t(
+                    'screens.create_activity.inputs.date.label'
+                  )}*`}
+                  text={(() => {
+                    return showDateText(activityDate);
+                  })()}
+                />
+              </View>
+              <View style={styles.timesWrapper}>
+                <Text style={styles.label}>
+                  {`${polyglot.t(
+                    'screens.create_activity.inputs.time.label'
+                  )}*`}
+                </Text>
+                <View style={styles.times}>
+                  <View style={styles.time}>
                     <Selector
-                      onPress={() => genderActionSheetRef.current?.open()}
-                      label={polyglot.t(
-                        'screens.create_activity.inputs.gender.label'
+                      noIcon
+                      placeholder={polyglot.t(
+                        'screens.create_activity.inputs.time.placeholder_start'
                       )}
+                      onPress={() => setStartTimeActionSheetVisibility(true)}
                       text={(() => {
-                        const selectedGender = getSelectedGender(
-                          selectedGenderValue
-                        );
-                        if (!selectedGender) {
-                          return undefined;
-                        }
-                        return polyglot.t(selectedGender.text);
+                        return showTimeText(activityDate, activityStartTime);
                       })()}
                     />
                   </View>
-
-                  <View style={{ flex: 1, paddingHorizontal: 5 }}>
+                  <Text>-</Text>
+                  <View style={styles.time}>
                     <Selector
-                      onPress={() => ageRangeActionSheetRef.current?.open()}
-                      label={polyglot.t(
-                        'screens.create_activity.inputs.age.label'
+                      noIcon
+                      placeholder={polyglot.t(
+                        'screens.create_activity.inputs.time.placeholder_finish'
                       )}
-                      text={
-                        !!selectedAgeRange[0] && !!selectedAgeRange[1]
-                          ? `${selectedAgeRange[0]} - ${selectedAgeRange[1]}`
-                          : undefined
-                      }
-                    />
-                  </View>
-
-                  <View style={{ flex: 1, paddingHorizontal: 5 }}>
-                    <Selector
-                      onPress={() => quotaActionSheetRef.current?.open()}
-                      label={polyglot.t(
-                        'screens.create_activity.inputs.quota.label'
-                      )}
-                      text={
-                        !!selectedQuotaRange[0] && !!selectedQuotaRange[1]
-                          ? `${selectedQuotaRange[0]} - ${selectedQuotaRange[1]}`
-                          : undefined
-                      }
+                      onPress={() => setFinishTimeActionSheetVisibility(true)}
+                      text={(() => {
+                        return showTimeText(activityDate, activityFinishTime);
+                      })()}
                     />
                   </View>
                 </View>
               </View>
+            </View>
+
+            <View style={styles.row}>
+              <View style={styles.column}>
+                <Selector
+                  labelPosition="center"
+                  onPress={() => genderActionSheetRef.current?.open()}
+                  label={polyglot.t(
+                    'screens.create_activity.inputs.gender.label'
+                  )}
+                  text={(() => {
+                    const selectedGender = getSelectedGender(
+                      selectedGenderValue
+                    );
+                    if (!selectedGender) {
+                      return undefined;
+                    }
+                    return polyglot.t(selectedGender.text);
+                  })()}
+                />
+              </View>
+
+              <View style={styles.column}>
+                <Selector
+                  labelPosition="center"
+                  onPress={() => ageRangeActionSheetRef.current?.open()}
+                  label={polyglot.t('screens.create_activity.inputs.age.label')}
+                  text={
+                    !!selectedAgeRange[0] && !!selectedAgeRange[1]
+                      ? `${selectedAgeRange[0]} - ${selectedAgeRange[1]}`
+                      : undefined
+                  }
+                />
+              </View>
+
+              <View style={styles.column}>
+                <Selector
+                  labelPosition="center"
+                  onPress={() => quotaActionSheetRef.current?.open()}
+                  label={polyglot.t(
+                    'screens.create_activity.inputs.quota.label'
+                  )}
+                  text={
+                    !!selectedQuotaRange[0] && !!selectedQuotaRange[1]
+                      ? `${selectedQuotaRange[0]} - ${selectedQuotaRange[1]}`
+                      : undefined
+                  }
+                />
+              </View>
+            </View>
           </ScrollView>
         </View>
         <View style={styles.secondRow}>
           <CustomButton onPress={() => save()} title="Create Activity" />
         </View>
 
+        <DateTimePickerModal
+          isVisible={isDateActionSheetVisible}
+          mode="date"
+          onConfirm={handleDateConfirm}
+          onCancel={() => setDateActionSheetVisibility(false)}
+        />
+
+        <DateTimePickerModal
+          isVisible={isStartTimeActionSheetVisible}
+          mode="time"
+          onConfirm={handleStartTimeConfirm}
+          onCancel={() => setStartTimeActionSheetVisibility(false)}
+        />
+
+        <DateTimePickerModal
+          isVisible={isFinishTimeActionSheetVisible}
+          mode="time"
+          onConfirm={handleFinishTimeConfirm}
+          onCancel={() => setFinishTimeActionSheetVisibility(false)}
+        />
+
+        <ActivityNameActionSheet
+          ref={activityNameActionSheetRef}
+          onSelect={(activityNameValue: number) => {
+            setSelectedActivityNameValue(activityNameValue);
+            activityNameActionSheetRef.current?.close();
+          }}
+          onCancel={() => {
+            activityNameActionSheetRef.current?.close();
+          }}
+        />
         <AgeRangeActionSheet
           ref={ageRangeActionSheetRef}
           onSelect={([min, max]: [number, number]) => {
@@ -951,7 +567,7 @@ const CreateActivityScreen2 = () => {
         />
         <GenderActionSheet
           ref={genderActionSheetRef}
-          onSelect={(genderValue: string) => {
+          onSelect={(genderValue: number) => {
             setSelectedGenderValue(genderValue);
             genderActionSheetRef.current?.close();
           }}
@@ -964,6 +580,36 @@ const CreateActivityScreen2 = () => {
   );
 };
 
+interface ILocationInput {
+  location: Location;
+  showRemove: boolean;
+  onLocationModalOpen: (id: number) => void;
+  onLocationRemove: (id: number) => void;
+}
+
+const LocationInput = (props: ILocationInput) => {
+  return (
+    <View style={[styles.row, styles.rowLocation]}>
+      <View style={styles.column}>
+        <Selector
+          onPress={() => props.onLocationModalOpen(props.location.id)}
+          text={props.location.location}
+        />
+      </View>
+
+      {props.showRemove && (
+        <TouchableOpacity
+          onPress={() => props.onLocationRemove(props.location.id)}
+        >
+          <View style={[styles.locationIconWrapper, styles.locationIconRemove]}>
+            <Ionicons size={15} name="remove" color={colors.white} />
+          </View>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -971,11 +617,62 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
+    alignItems: 'center',
     paddingLeft: 5,
     paddingEnd: 5,
+    marginBottom: 20,
   },
   column: {
     flex: 1,
+    paddingHorizontal: 5,
+  },
+  rowLocation: {
+    marginBottom: 10,
+  },
+  locationWrapper: {
+    marginBottom: 10,
+  },
+  locationLabel: {
+    paddingHorizontal: 10,
+    paddingBottom: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  locationAddMore: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  locationAddMoreLabel: {
+    marginRight: 10,
+    color: colors.brownGrey,
+  },
+  locationIconWrapper: {
+    borderRadius: 40,
+    backgroundColor: colors.casper,
+    paddingLeft: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  locationIconRemove: {
+    marginRight: 5,
+  },
+  timesWrapper: {
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  label: {
+    fontWeight: '500',
+    fontSize: 16,
+    color: colors.mortar,
+    paddingBottom: 2,
+  },
+  times: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  time: {
+    width: 100,
     paddingHorizontal: 5,
   },
   firstRow: {
@@ -985,176 +682,6 @@ const styles = StyleSheet.create({
     flex: 2,
     justifyContent: 'center',
     // backgroundColor: 'red'
-  },
-  border: {
-    borderBottomWidth: 1,
-    borderBottomColor: 'white',
-    shadowOpacity: 1,
-  },
-  branch: {
-    // flex: 1,
-    height: '18%',
-    // borderBottomWidth: 1,
-    // backgroundColor: 'yellow',
-  },
-  branchTitleView: {
-    paddingLeft: width * 0.05,
-    justifyContent: 'center',
-    paddingTop: 1,
-    height: '22%',
-    // backgroundColor: 'red',
-  },
-  branchTitleText: {
-    fontSize: width * 0.045,
-    color: 'gray',
-  },
-  branchIcon: {
-    paddingTop: 10,
-    width: 74,
-    // backgroundColor: 'yellow'
-  },
-  imgBranch: {
-    height: 54,
-    width: 54,
-    alignSelf: 'center',
-    // marginLeft: 20,
-  },
-  textBranch: {
-    textAlign: 'center',
-  },
-  activityTitleText: {
-    textAlign: 'center',
-    marginTop: 10,
-    fontSize: width * 0.045,
-  },
-  rowActivity: {
-    width: '88%',
-    height: 50,
-    marginTop: 5,
-    alignSelf: 'center',
-  },
-  rowLocation: {
-    marginTop: 10,
-    height: 85,
-    // backgroundColor: 'red'
-  },
-  locationView: {
-    flexDirection: 'row',
-    width: '30%',
-    height: 35,
-    backgroundColor: '#37CC4A',
-    alignSelf: 'center',
-    borderRadius: 10,
-  },
-  locationText: {
-    flex: 1,
-    fontSize: width * 0.045,
-    color: 'white',
-    textAlign: 'center',
-    alignSelf: 'center',
-  },
-  locationIcon: {
-    alignSelf: 'center',
-    paddingEnd: 5,
-  },
-  selectedText: {
-    textAlign: 'center',
-    fontSize: width * 0.045,
-    color: 'black',
-  },
-  dateColView: {
-    width: '30%',
-    // backgroundColor: 'blue'
-  },
-  dateView: {
-    flexDirection: 'row',
-    height: 35,
-    backgroundColor: '#37CC4A',
-    borderRadius: 10,
-  },
-  selectedTitle: {
-    flex: 1,
-    fontSize: width * 0.045,
-    color: 'white',
-    textAlign: 'center',
-    alignSelf: 'center',
-  },
-  dateTimeSelectedView: {
-    flexDirection: 'row',
-    paddingLeft: '10%',
-    paddingRight: '10%',
-    marginTop: 5,
-    justifyContent: 'center',
-  },
-  timeColView: {
-    width: '30%',
-    // backgroundColor: 'purple'
-  },
-  timeView: {
-    flexDirection: 'row',
-    height: 35,
-    backgroundColor: '#37CC4A',
-    borderRadius: 10,
-  },
-  rowDateTime: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    height: 85, //height - 150,
-    // backgroundColor: 'red',
-  },
-  rowProperty: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    height: 85,
-  },
-  ageColView: {
-    width: '25%',
-    // backgroundColor: 'blue'
-  },
-  ageView: {
-    flexDirection: 'row',
-    height: 35,
-    backgroundColor: '#37CC4A',
-    borderRadius: 10,
-  },
-  genderColView: {
-    width: '25%',
-    // backgroundColor: 'blue'
-  },
-  genderView: {
-    flexDirection: 'row',
-    height: 35,
-    backgroundColor: '#37CC4A',
-    borderRadius: 10,
-  },
-  quotaColView: {
-    width: '25%',
-    // backgroundColor: 'blue'
-  },
-  quotaView: {
-    flexDirection: 'row',
-    height: 35,
-    backgroundColor: '#37CC4A',
-    borderRadius: 10,
-  },
-  rowHorizontal: {
-    flex: 1,
-    marginTop: 5,
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  editText: {
-    flex: 1,
-    height: 40,
-    // paddingTop: '2%',
-    paddingLeft: 10,
-    fontSize: 15,
-    borderColor: 'gray',
-    backgroundColor: '#DDD',
-    borderRadius: 5,
-    shadowOpacity: 0.3,
-    // borderBottomWidth: 1,
-    paddingBottom: 2,
   },
 });
 

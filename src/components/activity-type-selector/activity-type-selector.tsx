@@ -82,7 +82,7 @@ const ActivityTypeSelector: FC<IAcivityTypeSelectorProps> &
               const toggledActivityTypeIndex = selectedActivityTypes.findIndex(
                 (id: number) => id === toggledActivityTypeId
               );
-              let updatedActivityTypes: number[] = [];
+              let updatedActivityTypes: number[] = [...selectedActivityTypes];
 
               if (toggledActivityTypeIndex === -1) {
                 updatedActivityTypes = props.multiple
@@ -90,7 +90,7 @@ const ActivityTypeSelector: FC<IAcivityTypeSelectorProps> &
                   : [toggledActivityTypeId];
               } else if (
                 toggledActivityTypeIndex !== -1 &&
-                (props.multiple || props.toggle)
+                (!!props.multiple || !!props.toggle)
               ) {
                 updatedActivityTypes = selectedActivityTypes.filter(
                   (id: number) => id !== toggledActivityTypeId

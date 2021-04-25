@@ -8,6 +8,7 @@ export const colors = {
   casper: '#BBBDBF',
   black: '#000000',
   offBlack: '#212121',
+  mortar: '#515151',
   brownGrey: '#6b6b6b',
   darkGrey: '#4d4d4d',
   lightGrey: '#636363',

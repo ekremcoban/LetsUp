@@ -1,20 +1,20 @@
 type Gender = {
-  value: string;
+  value: number;
   text: string;
 };
 export const genders: Gender[] = [
   {
-    value: 'F',
+    value: 0,
     text: 'lists.genders.female',
   },
   {
-    value: 'M',
+    value: 1,
     text: 'lists.genders.male',
   },
 ];
 
 export const getSelectedGender = (
-  value?: string | null
+  value?: number | null
 ): Gender | undefined => {
   if (!value) {
     return undefined;
