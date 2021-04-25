@@ -26,6 +26,7 @@ import ProfileInfoScreen from 'screens/ProfileInfoScreen';
 import MyActivitiesScreen from 'screens/MyActivitiesScreen';
 import NotificationScreen from 'screens/NotificationScreen';
 import ActivityScreen from 'screens/ActivityScreen';
+import MoreScreen from 'screens/MoreScreen';
 
 let App = () => {
   const [userId, setUserId] = useState('DmwlR3OcI72ouDxUPH79');
@@ -110,11 +111,11 @@ let App = () => {
             }}
           />
           <Tab.Screen
-            name="Profil"
-            component={CreateProfileScreen}
+            name="My Activities"
+            component={MyActivitiesScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
-                <Ionicons name={'person'} size={25} color={color} />
+                <Ionicons name={'star'} size={25} color={color} />
               ),
             }}
           />
@@ -147,20 +148,20 @@ let App = () => {
             }}
           />
           <Tab.Screen
-            name="My Activities"
-            component={MyActivitiesScreen}
-            options={{
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name={'heart'} size={25} color={color} />
-              ),
-            }}
-          />
-          <Tab.Screen
             name="Notification"
             component={NotificationScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name={'notifications'} size={25} color={color} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="More"
+            component={MoreScreen}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name={'menu-outline'} size={25} color={color} />
               ),
             }}
           />
@@ -227,6 +228,20 @@ let App = () => {
               component={ProfileInfoScreen}
               options={{
                 title: 'Profile Info',
+                headerStyle: {
+                  backgroundColor: colors.bar,
+                },
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                },
+              }}
+            />
+            <Stack.Screen
+              name="Create Profile"
+              component={CreateProfileScreen}
+              options={{
+                title: 'Create Profile',
                 headerStyle: {
                   backgroundColor: colors.bar,
                 },
