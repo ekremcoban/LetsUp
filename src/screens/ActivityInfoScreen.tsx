@@ -4,7 +4,10 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { WebView } from 'react-native-webview';
 import html_script from '../../html_leaflet';
+import { locationTag } from '../assets/img/index';
 
+const IconStart = locationTag['start'];
+const IconJoin = locationTag['join'];
 
 class ActivityInfoScreen extends Component {
     state = {
@@ -92,7 +95,7 @@ class ActivityInfoScreen extends Component {
                     </View>
                     <View style={styles.viewAction}>
                         <TouchableOpacity onPress={() => this.setState(prev => ({ isJoin: !prev.isJoin }))}>
-                            {this.state.isJoin ? join : leave}
+                            {this.state.isJoin ? <IconJoin width={90} height={45} /> : leave}
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -103,9 +106,7 @@ class ActivityInfoScreen extends Component {
                         <ScrollView showsVerticalScrollIndicator={true}>
                             <View style={styles.containerLocation}>
                                 <View style={styles.viewLocationLeft}>
-                                    <View style={styles.viewStartLabel}>
-                                        <Text style={styles.textStartLabel}>Start</Text>
-                                    </View>
+                                <IconStart width={40} height={20} />
                                 </View>
                                 <View style={styles.containerLeft}>
                                     <Text style={styles.textLocationStart}>Organize Sanayi Bölgesi Ataşehir</Text>
@@ -303,6 +304,11 @@ const styles = StyleSheet.create({
         width: 40,
         alignItems: 'flex-end',
         // backgroundColor: 'red',
+    },
+    image: {
+        width: 50,
+        height: 30,
+        borderRadius: 75,
     },
     viewStartLabel: {
         width: 40,

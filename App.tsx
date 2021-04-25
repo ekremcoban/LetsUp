@@ -25,7 +25,7 @@ import CreateProfileScreen from 'screens/CreateProfileScreen';
 import ProfileInfoScreen from 'screens/ProfileInfoScreen';
 import MyActivitiesScreen from 'screens/MyActivitiesScreen';
 import NotificationScreen from 'screens/NotificationScreen';
-import ActivityScreen from 'screens/ActivityScreen';
+import ActivityInfoScreen from 'screens/ActivityInfoScreen';
 import MoreScreen from 'screens/MoreScreen';
 
 let App = () => {
@@ -88,6 +88,14 @@ let App = () => {
         source={require('assets/images/activities/profile.png')}
         style={{ width: 25, height: 25, borderRadius: 20, }}
       />
+    </TouchableOpacity>
+  )
+
+  const exit = (navigation) => (
+    <TouchableOpacity
+      // onPress={() => navigation.navigate('Profile Info')}
+    >
+      <Ionicons name={'log-out-outline'} size={25} color={'white'}/>
     </TouchableOpacity>
   )
 
@@ -211,7 +219,7 @@ let App = () => {
             />
             <Stack.Screen
               name="Activity"
-              component={ActivityScreen}
+              component={ActivityInfoScreen}
               options={{
                 title: 'Activity',
                 headerStyle: {
@@ -226,7 +234,7 @@ let App = () => {
             <Stack.Screen
               name="Profile Info"
               component={ProfileInfoScreen}
-              options={{
+              options={({ navigation, route }) => ({
                 title: 'Profile Info',
                 headerStyle: {
                   backgroundColor: colors.bar,
@@ -235,7 +243,12 @@ let App = () => {
                 headerTitleStyle: {
                   fontWeight: 'bold',
                 },
-              }}
+                headerRight: () => (
+                  <View style={{ flexDirection: 'row', margin: 10 }}>
+                    {exit(navigation)}
+                  </View>
+                ),
+              })}
             />
             <Stack.Screen
               name="Create Profile"
