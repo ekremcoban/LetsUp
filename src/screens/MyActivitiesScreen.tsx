@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View, Image, Alert } from 'react-native';
 import { Icon } from 'react-native-elements';
 
 const noti = [
@@ -40,7 +40,7 @@ const MyActivitiesScreen = () => {
                             style={styles.icon}
                         />
                     </View>
-                    <View style={styles.viewRight}>
+                    <View style={styles.viewMiddle}>
                         <Text style={styles.textBold}>{item.boldText}</Text>
                         <View style={styles.viewDateTime}>
                             <Icon size={20} name="calendar-outline" type="ionicon" />
@@ -48,6 +48,11 @@ const MyActivitiesScreen = () => {
                             <Icon size={20} name="time-outline" type="ionicon" />
                             <Text style={styles.textDate}> {item.time}</Text>
                         </View>
+                    </View>
+                    <View style={styles.viewRight}>
+                    <Icon size={20} name="trash-outline" type="ionicon" 
+                    onPress={() => Alert.alert('Silim mi :)')}
+                    />
                     </View>
                 </View>
             ))}
@@ -71,12 +76,16 @@ const styles = StyleSheet.create({
         width: 60,
         height: 60,
     },
-    viewRight: {
+    viewMiddle: {
         flex: 5,
         // flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'flex-start',
         // backgroundColor: 'red',
+    },
+    viewRight: {
+        flex: 1,
+        justifyContent: 'center',
     },
     textBold: {
         fontSize: 16,

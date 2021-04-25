@@ -29,7 +29,9 @@ const NotificationScreen = () => {
     return (
         <View style={{marginTop: 10}}>
             {noti.map(item => (
-                <View style={styles.viewContainer}>
+                <View 
+                key={item.id}
+                style={styles.viewContainer}>
                     <View style={styles.viewLeft}>
                         <Image
                             source={item.pic}

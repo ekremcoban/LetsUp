@@ -15,7 +15,7 @@ const MoreScreen = ({navigation}) => {
             <View style={{ flex: 1 }}>
                 <View style={styles.viewContainer}>
                     <View style={styles.viewLeft}>
-                        <Icon size={40} name="log-in-outline" type="ionicon" />
+                        <Icon size={35} name="log-in-outline" type="ionicon" />
                     </View>
                     <View style={styles.viewRight}>
                         <Text style={styles.textBold}>Login</Text>
@@ -25,7 +25,7 @@ const MoreScreen = ({navigation}) => {
                     onPress={() => navigation.navigate('Create Profile') }
                 >
                     <View style={styles.viewLeft}>
-                        <Icon size={40} name="person-circle" type="ionicon" />
+                        <Icon size={35} name="person-circle" type="ionicon" />
                     </View>
                     <View style={styles.viewRight}>
                         <Text style={styles.textBold}>Profil</Text>
@@ -33,7 +33,7 @@ const MoreScreen = ({navigation}) => {
                 </TouchableOpacity>
                 <View style={styles.viewContainer}>
                     <View style={styles.viewLeft}>
-                        <Icon size={40} name="log-out-outline" type="ionicon" />
+                        <Icon size={35} name="log-out-outline" type="ionicon" />
                     </View>
                     <View style={styles.viewRight}>
                         <Text style={styles.textBold}>Logout</Text>
@@ -47,7 +47,7 @@ const MoreScreen = ({navigation}) => {
 const styles = StyleSheet.create({
     viewContainer: {
         flexDirection: 'row',
-        height: 80,
+        height: 70,
         alignItems: 'center',
         borderBottomWidth: 1,
         borderColor: '#CCC',
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     },
     textBold: {
         fontWeight: 'bold',
-        fontSize: 18,
+        fontSize: 16,
     },
     textDate: {
         paddingTop: 3,
