@@ -352,7 +352,6 @@ const CreateActivityScreen2 = () => {
             ))}
           </ActivityTypeSelector>
 
-          <ScrollView>
             <View style={styles.row}>
               <View style={styles.column}>
                 <Selector
@@ -372,7 +371,7 @@ const CreateActivityScreen2 = () => {
                 />
               </View>
             </View>
-
+     <ScrollView>
             <View style={styles.locationLabel}>
               <Text style={styles.label}>
                 {`${polyglot.t(
@@ -408,7 +407,7 @@ const CreateActivityScreen2 = () => {
                 />
               ))}
             </View>
-
+            </ScrollView>
             <View style={styles.row}>
               <View style={styles.column}>
                 <Selector
@@ -506,7 +505,6 @@ const CreateActivityScreen2 = () => {
                 />
               </View>
             </View>
-          </ScrollView>
         </View>
         <View style={styles.secondRow}>
           <CustomButton onPress={() => save()} title="Create Activity" />

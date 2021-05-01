@@ -111,13 +111,10 @@ class ActivityInfoScreen extends Component {
                                         <View style={{
                                             height: 20,
                                             width: '100%',
-                                            flexDirection: 'row',
-                                            backgroundColor: '#37CC4A',
-                                            borderRadius: 20,
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                         }}>
-                                            <Text style={{ color: 'white' }}>Start</Text>
+                                            <Text style={{ color: '#37CC4A', fontWeight: '600' }}>Start</Text>
                                         </View>
                                     </View>
                                     <View style={{ flex: 1, alignItems: 'flex-end', paddingEnd: 5, }} >
@@ -127,7 +124,13 @@ class ActivityInfoScreen extends Component {
                                         />
                                     </View>
                                 </View>
-                                <View style={{ flex: 3, paddingLeft: 5, paddingEnd: 5, }}>
+                                <View style={{
+                                    flex: 4,
+                                    marginStart: 5,
+                                    marginEnd: 5,
+                                    borderTopWidth: 1,
+                                    borderColor: '#37CC4A',
+                                }}>
                                     <Text>Organize Sanayi Bölgesi Ataşehir, 2. Cadde</Text>
                                 </View>
                             </View>
@@ -138,13 +141,10 @@ class ActivityInfoScreen extends Component {
                                         <View style={{
                                             height: 20,
                                             width: '100%',
-                                            flexDirection: 'row',
-                                            backgroundColor: 'red',
-                                            borderRadius: 20,
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                         }}>
-                                            <Text style={{ color: 'white' }}>Finish</Text>
+                                            <Text style={{ color: 'red', fontWeight: '600'  }}>Finish</Text>
                                         </View>
                                     </View>
                                     <View style={{ flex: 1, alignItems: 'flex-end', paddingEnd: 5, }} >
@@ -154,7 +154,13 @@ class ActivityInfoScreen extends Component {
                                         />
                                     </View>
                                 </View>
-                                <View style={{ flex: 3, paddingLeft: 5, paddingEnd: 5, }}>
+                                <View style={{ 
+                                    flex: 4,
+                                    marginStart: 5,
+                                    marginEnd: 5,
+                                    borderTopWidth: 1,
+                                    borderColor: 'red',
+                                    }}>
                                     <Text>Organize Sanayi Bölgesi Ataşehir, 2. Cadde</Text>
                                 </View>
                             </View>
@@ -252,7 +258,7 @@ class ActivityInfoScreen extends Component {
                 </View>
 
                 <View style={styles.viewDate}>
-                    <Text style={styles.textDateTitle}>Date</Text>
+                    <Text style={styles.textDateTitle}>Date:</Text>
                     <Text style={styles.textDate}>24 Ağustos Cumratesi, 09:00-12:00</Text>
                 </View>
 
@@ -377,7 +383,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     scrollview: {
-        height: 60,
+        marginTop: 5,
+        height: 70,
         borderEndWidth: 1,
         borderColor: '#BBBDBF',
     },
@@ -387,16 +394,16 @@ const styles = StyleSheet.create({
         // backgroundColor: 'red',
         borderWidth: 1,
         borderColor: '#CCC',
-        borderRadius: 20,
+        borderRadius: 15,
         alignItems: 'center',
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
+        // shadowColor: "#000",
+        // shadowOffset: {
+        //     width: 0,
+        //     height: 1,
+        // },
+        // shadowOpacity: 0.25,
+        // shadowRadius: 3.84,
+        //  elevation: 5,
     },
     containerLocation: {
         flexDirection: 'row',
@@ -464,18 +471,22 @@ const styles = StyleSheet.create({
     },
 
     viewDate: {
-        flex: 1.4,
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
         marginStart: 20,
         marginEnd: 20,
         // backgroundColor: 'blue',
     },
     textDateTitle: {
+        flex: 1,
         fontWeight: '700',
         color: '#515151',
-        fontSize: 18,
+        fontSize: 16,
+        // backgroundColor: 'red',
     },
     textDate: {
-        paddingTop: 5,
+        flex: 6,
         color: '#515151',
         fontSize: 16, //width * 0.04,
     },
