@@ -1,6 +1,6 @@
 {
   "name": "LetsUp",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -30,7 +30,6 @@
     "react-native-code-push": "^7.0.0",
     "react-native-elements": "^3.2.0",
     "react-native-gesture-handler": "^1.10.1",
-<<<<<<< HEAD
     "react-native-get-location": "^2.1.0",
     "react-native-get-random-values": "^1.5.1",
     "react-native-google-places": "^3.1.2",
@@ -38,11 +37,6 @@
     "react-native-map-link": "^2.7.26",
     "react-native-modal-datetime-picker": "^9.2.0",
     "react-native-navigation-directions": "^1.0.4",
-=======
-    "react-native-get-random-values": "^1.5.1",
-    "react-native-google-places": "^3.1.2",
-    "react-native-modal-datetime-picker": "^9.2.0",
->>>>>>> 90d6798f715ddbfc163fcf68c4b716096759f16a
     "react-native-popup-menu": "^0.15.10",
     "react-native-raw-bottom-sheet": "^2.2.0",
     "react-native-reanimated": "^1.13.2",
