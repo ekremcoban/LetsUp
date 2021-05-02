@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "302760440961",
+    "project_id": "lets-up-2e996",
+    "storage_bucket": "lets-up-2e996.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:302760440961:android:50cb096643f17c75518980",
+        "android_client_info": {
+          "package_name": "com.letsup"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "302760440961-vou3ifko88vp0cfun6cd3othj2bllf4m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDS5bF5MmCoNK0Hyc99ey40o2yNSzwp140"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "302760440961-vou3ifko88vp0cfun6cd3othj2bllf4m.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "302760440961-fr8che6j9u07qer5i8c12hag73kkmf77.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.letsup"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

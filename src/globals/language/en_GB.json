@@ -1,0 +1,113 @@
+{
+  "activity_names": {
+    "0": "Bisiklet Bizim İşimiz",
+    "1": "Koşmaya Var Mısın?",
+    "2": "Bisiklet Turu",
+    "3": "Basketbol Maçı",
+    "4": "Test 1",
+    "5": "Test 2",
+    "6": "Test 3",
+    "7": "Test 4",
+    "8": "Test 5",
+    "9": "Test 6"
+  },
+  "activity_types": {
+    "basketball": "Basketball",
+    "bicycle": "Bicycle",
+    "bowling": "Bowling",
+    "frisbee": "Frisbee",
+    "hiking": "Hiking",
+    "jogging": "Jogging",
+    "table_tennis": "Table Tennis"
+  },
+  "components": {
+    "selector": {
+      "default_placeholder": "Select"
+    }
+  },
+  "global": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save"
+  },
+  "lists": {
+    "genders": {
+      "female": "Female",
+      "male": "Male"
+    }
+  },
+  "screens": {
+    "create_activity": {
+      "action_sheets": {
+        "activity_name": {
+          "title": "Pick activity name"
+        },
+        "age": {
+          "title": "Pick age range"
+        },
+        "gender": {
+          "title": "Pick gender"
+        },
+        "quota": {
+          "title": "Pick quota range"
+        }
+      },
+      "components": {
+        "more_less": {
+          "less": "Less...",
+          "more": "More..."
+        }
+      },
+      "inputs": {
+        "activity_name": {
+          "label": "Activity Name"
+        },
+        "age": {
+          "label": "Age"
+        },
+        "date": {
+          "label": "Date"
+        },
+        "gender": {
+          "label": "Gender"
+        },
+        "location": {
+          "add_more": "Add More",
+          "label": "Location"
+        },
+        "quota": {
+          "label": "Quota"
+        },
+        "time": {
+          "label": "Time",
+          "placeholder_finish": "Finish",
+          "placeholder_start": "Start"
+        }
+      }
+    },
+    "create_profile": {
+      "label": {
+        "full_name": "Full Name*",
+        "age": "Age*",
+        "gender": "Gender*",
+        "height": "Height",
+        "weight": "Weight",
+        "interested_in": "Interested In"
+      },
+      "action_sheets": {
+        "age": {
+          "title": "Age"
+        },
+        "gender": {
+          "title": "Gender"
+        },
+        "height": {
+          "title": "Height"
+        },
+        "weight": {
+          "title": "Weight"
+        }
+      }
+    }
+  }
+}
