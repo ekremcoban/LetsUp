@@ -34,25 +34,25 @@ let App = () => {
 
   useEffect(() => {
     CodePush.sync();
-    // auth()
-    //   .createUserWithEmailAndPassword('osman@example.com', 'SuperSecretPassword!')
-    //   .then(x => {
-    //     console.log('x', x)
-    //     console.log('user', auth().currentUser)
-    //     console.log('User account created & signed in!');
-    //   })
-    //   .catch(error => {
-    //     if (error.code === 'auth/email-already-in-use') {
-    //       // console.log('That email address is already in use!', error);
-    //       // console.log('user1', auth().currentUser)
-    //     }
+    auth()
+      .createUserWithEmailAndPassword('osman@example.com', 'SuperSecretPassword!')
+      .then(x => {
+        console.log('x', x)
+        console.log('user', auth().currentUser)
+        console.log('User account created & signed in!');
+      })
+      .catch(error => {
+        if (error.code === 'auth/email-already-in-use') {
+          // console.log('That email address is already in use!', error);
+          // console.log('user1', auth().currentUser)
+        }
 
-    //     if (error.code === 'auth/invalid-email') {
-    //       console.log('That email address is invalid!', error);
-    //     }
+        if (error.code === 'auth/invalid-email') {
+          console.log('That email address is invalid!', error);
+        }
 
-    //     console.error(error);
-    //   });
+        console.error(error);
+      });
 
     // auth().signInWithEmailAndPassword('osmana@example.com', 'SuperSecretPassword!')
     //   .then((userCredential) => {
