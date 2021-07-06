@@ -30,6 +30,27 @@
     <string>Light</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+  
+  <key>CFBundleURLTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <string>com.LetsUp</string>
+      </array>
+    </dict>
+    <dict>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <string>com.googleusercontent.apps.302760440961-fr8che6j9u07qer5i8c12hag73kkmf77</string>
+      </array>
+    </dict>
+  </array>
+  
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSApplicationQueriesSchemes</key>

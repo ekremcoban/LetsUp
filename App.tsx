@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   StyleSheet,
   ScrollView,
@@ -6,7 +6,8 @@ import {
   Text,
   useColorScheme,
   TouchableOpacity,
-  Image
+  Image,
+  Platform,
 } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -27,32 +28,48 @@ import MyActivitiesScreen from 'screens/MyActivitiesScreen';
 import NotificationScreen from 'screens/NotificationScreen';
 import ActivityInfoScreen from 'screens/ActivityInfoScreen';
 import MoreScreen from 'screens/MoreScreen';
+import LoginScreen from 'screens/LoginScreen';
+import ContextApi from 'context/ContextApi';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { getData, removeItem } from 'db/localDb';
 
 let App = () => {
+  const [profile, setProfile] = useState<string>();
+  const value = { profile, setProfile };
   const [userId, setUserId] = useState('DmwlR3OcI72ouDxUPH79');
   const scheme = useColorScheme();
 
+  const Stack = createStackNavigator();
+  const Tab = createBottomTabNavigator();
+
   useEffect(() => {
     CodePush.sync();
-    auth()
-      .createUserWithEmailAndPassword('osman@example.com', 'SuperSecretPassword!')
-      .then(x => {
-        console.log('x', x)
-        console.log('user', auth().currentUser)
-        console.log('User account created & signed in!');
-      })
-      .catch(error => {
-        if (error.code === 'auth/email-already-in-use') {
-          // console.log('That email address is already in use!', error);
-          // console.log('user1', auth().currentUser)
-        }
+    getData('profile').then(res =>{
+      console.log(res)
+      setProfile(res)
+  });
+    // auth()
+    //   .createUserWithEmailAndPassword(
+    //     'osman@example.com',
+    //     'SuperSecretPassword!'
+    //   )
+    //   .then((x) => {
+    //     console.log('x', x);
+    //     console.log('user', auth().currentUser);
+    //     console.log('User account created & signed in!');
+    //   })
+    //   .catch((error) => {
+    //     if (error.code === 'auth/email-already-in-use') {
+    //       // console.log('That email address is already in use!', error);
+    //       // console.log('user1', auth().currentUser)
+    //     }
 
-        if (error.code === 'auth/invalid-email') {
-          console.log('That email address is invalid!', error);
-        }
+    //     if (error.code === 'auth/invalid-email') {
+    //       console.log('That email address is invalid!', error);
+    //     }
 
-        console.error(error);
-      });
+    //     console.error(error);
+    // });
 
     // auth().signInWithEmailAndPassword('osmana@example.com', 'SuperSecretPassword!')
     //   .then((userCredential) => {
@@ -77,27 +94,36 @@ let App = () => {
     //   return () => subscriber();
   }, []);
 
-  const Stack = createStackNavigator();
-  const Tab = createBottomTabNavigator();
-
-  const loginTitle = (navigation) => (
-    <TouchableOpacity
-      onPress={() => navigation.navigate('Profile Info')}
-    >
+  const loginOutTitle = (navigation: any, profile: any) => (
+    <TouchableOpacity onPress={() => navigation.navigate('Profile Info')}>
       <Image
-        source={require('assets/images/activities/profile.png')}
-        style={{ width: 25, height: 25, borderRadius: 20, }}
+        source={{uri: profile.photo}}
+        style={{ width: 25, height: 25, borderRadius: 20 }}
       />
     </TouchableOpacity>
-  )
+  );
 
-  const exit = (navigation) => (
-    <TouchableOpacity
-      // onPress={() => navigation.navigate('Profile Info')}
-    >
-      <Ionicons name={'log-out-outline'} size={25} color={'white'}/>
+  const loginInTitle = (navigation: any) => (
+    <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+      <Ionicons name={'log-in-outline'} size={30} color={'white'} />
     </TouchableOpacity>
-  )
+  );
+
+  const exitAccount = (navigation: any) => {
+    setProfile(null);
+    removeItem('profile')
+    GoogleSignin.signOut();
+    GoogleSignin.revokeAccess();
+    navigation.navigate('Activity List')
+  };
+
+  const exit = (navigation: any) => (
+    <TouchableOpacity
+    onPress={() => exitAccount(navigation)}
+    >
+      <Ionicons name={'log-out-outline'} size={25} color={'white'} />
+    </TouchableOpacity>
+  );
 
   const Home = () => {
     return (
@@ -179,95 +205,115 @@ let App = () => {
   };
 
   return (
-    <InitializeSettings>
-      <SafeAreaProvider>
-        <NavigationContainer>
-          <Stack.Navigator>
-            <Stack.Screen
-              name="Home"
-              component={Home}
-              options={({ navigation, route }) => ({
-                title: 'Lets Up',
-                headerStyle: {
-                  backgroundColor: colors.bar,
-                },
-                headerTintColor: '#fff',
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                },
-                headerRight: () => (
-                  <View style={{ flexDirection: 'row', margin: 10 }}>
-                    {loginTitle(navigation)}
-                  </View>
-                ),
-              })}
-            // options={{
-            //   title: 'Lets Up',
-            //   headerStyle: {
-            //     backgroundColor: colors.bar,
-            //   },
-            //   headerTintColor: '#fff',
-            //   headerTitleStyle: {
-            //     fontWeight: 'bold',
-            //   },
-            //   headerRight: (navigation) => (
-            //     <View style={{ flexDirection: 'row', margin: 10 }}>
-            //       {loginTitle(navigation)}
-            //     </View>
-            //   ),
-            // }}
-            />
-            <Stack.Screen
-              name="Activity"
-              component={ActivityInfoScreen}
-              options={{
-                title: 'Activity',
-                headerStyle: {
-                  backgroundColor: colors.bar,
-                },
-                headerTintColor: '#fff',
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                },
-              }}
-            />
-            <Stack.Screen
-              name="Profile Info"
-              component={ProfileInfoScreen}
-              options={({ navigation, route }) => ({
-                title: 'Profile Info',
-                headerStyle: {
-                  backgroundColor: colors.bar,
-                },
-                headerTintColor: '#fff',
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                },
-                headerRight: () => (
-                  <View style={{ flexDirection: 'row', margin: 10 }}>
-                    {exit(navigation)}
-                  </View>
-                ),
-              })}
-            />
-            <Stack.Screen
-              name="Create Profile"
-              component={CreateProfileScreen}
-              options={{
-                title: 'Create Profile',
-                headerStyle: {
-                  backgroundColor: colors.bar,
-                },
-                headerTintColor: '#fff',
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                },
-              }}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </SafeAreaProvider>
-    </InitializeSettings>
+    <ContextApi.Provider value={value}>
+      <InitializeSettings>
+        <SafeAreaProvider>
+          <NavigationContainer>
+            <Stack.Navigator>
+              <Stack.Screen
+                name="Home"
+                component={Home}
+                options={({ navigation, route }) => ({
+                  title: 'Lets Up',
+                  headerStyle: {
+                    backgroundColor: colors.bar,
+                  },
+                  headerTintColor: '#fff',
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                    alignSelf: 'center',
+                    paddingStart: Platform.OS == 'android' ? '20%' : 0,
+                  },
+                  headerRight: () => (
+                    <View style={{ flexDirection: 'row', margin: 5 }}>
+                      {profile != null
+                        ? loginOutTitle(navigation, profile)
+                        : loginInTitle(navigation)}
+                    </View>
+                  ),
+                })}
+                // options={{
+                //   title: 'Lets Up',
+                //   headerStyle: {
+                //     backgroundColor: colors.bar,
+                //   },
+                //   headerTintColor: '#fff',
+                //   headerTitleStyle: {
+                //     fontWeight: 'bold',
+                //   },
+                //   headerRight: (navigation) => (
+                //     <View style={{ flexDirection: 'row', margin: 10 }}>
+                //       {loginTitle(navigation)}
+                //     </View>
+                //   ),
+                // }}
+              />
+              <Stack.Screen
+                name="Activity"
+                component={ActivityInfoScreen}
+                options={{
+                  title: 'Activity',
+                  headerStyle: {
+                    backgroundColor: colors.bar,
+                  },
+                  headerTintColor: '#fff',
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                  },
+                }}
+              />
+              <Stack.Screen
+                name="Profile Info"
+                component={ProfileInfoScreen}
+                options={({ navigation, route }) => ({
+                  title: 'Profile Info',
+                  headerStyle: {
+                    backgroundColor: colors.bar,
+                  },
+                  headerTintColor: '#fff',
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                  },
+                  headerRight: () => (
+                    <View style={{ flexDirection: 'row', margin: 10 }}>
+                      {exit(navigation)}
+                    </View>
+                  ),
+                })}
+              />
+              <Stack.Screen
+                name="Login"
+                component={LoginScreen}
+                options={{
+                  title: 'Login',
+                  headerStyle: {
+                    backgroundColor: colors.bar,
+                  },
+                  headerTintColor: '#fff',
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                  },
+                }}
+              />
+              <Stack.Screen
+                name="Create Profile"
+                component={CreateProfileScreen}
+                options={{
+                  title: 'Create Profile',
+                  headerStyle: {
+                    backgroundColor: colors.bar,
+                  },
+                  headerTintColor: '#fff',
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                  },
+                }}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </SafeAreaProvider>
+      </InitializeSettings>
+    </ContextApi.Provider>
   );
 };
 
