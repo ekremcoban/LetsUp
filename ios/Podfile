@@ -27,7 +27,7 @@ target 'LetsUp' do
 #  post_install do |installer|
 #    flipper_post_install(installer)
 #  end
-use_flipper!({ 'Flipper-Folly' => '2.5.0' })
+use_flipper!({ 'Flipper-Folly' => '2.5.3' })
 end
 
 target 'LetsUp-tvOS' do

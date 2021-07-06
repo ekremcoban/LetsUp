@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, Button } from 'react-native';
 import { window, colors } from '../utilities/constants/globalValues';
 import ListViewEvents from '../components/listViewEvents';
-import { SearchBar } from 'react-native-elements';
+import { SearchBar, Icon } from 'react-native-elements';
 import firestore from '@react-native-firebase/firestore';
-import { Icon } from 'react-native-elements';
 import auth from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 
