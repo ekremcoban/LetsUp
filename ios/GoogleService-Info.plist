@@ -3,17 +3,19 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>302760440961-fr8che6j9u07qer5i8c12hag73kkmf77.apps.googleusercontent.com</string>
+	<string>302760440961-klg2kjjec9fihu18uhda04j9crmrhin3.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.302760440961-fr8che6j9u07qer5i8c12hag73kkmf77</string>
+	<string>com.googleusercontent.apps.302760440961-klg2kjjec9fihu18uhda04j9crmrhin3</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>302760440961-aa913lalabv43se28h7kcd1schf97h6o.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBJXmaVOHlpGVKqPHcgamsFZ3jIe_zbIzc</string>
+	<string>AIzaSyBqf24XZnY77HCj0nP6n613Ru2IINWSCng</string>
 	<key>GCM_SENDER_ID</key>
 	<string>302760440961</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.letsup</string>
+	<string>com.letsup.letsup</string>
 	<key>PROJECT_ID</key>
 	<string>lets-up-2e996</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:302760440961:ios:0a23721b79988d94518980</string>
+	<string>1:302760440961:ios:bccb2fd1b9249178518980</string>
 </dict>
 </plist>

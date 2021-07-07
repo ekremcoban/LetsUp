@@ -855,7 +855,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.sutcu.letsup;
+				PRODUCT_BUNDLE_IDENTIFIER = com.letsup.letsup;
 				PRODUCT_NAME = LetsUp;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -878,7 +878,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.sutcu.letsup;
+				PRODUCT_BUNDLE_IDENTIFIER = com.letsup.letsup;
 				PRODUCT_NAME = LetsUp;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

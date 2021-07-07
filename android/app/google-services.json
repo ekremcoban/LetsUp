@@ -7,35 +7,36 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:302760440961:android:50cb096643f17c75518980",
+        "mobilesdk_app_id": "1:302760440961:android:94df5bf108bff7be518980",
         "android_client_info": {
-          "package_name": "com.letsup"
+          "package_name": "com.letsup.letsup"
         }
       },
       "oauth_client": [
         {
-          "client_id": "302760440961-vou3ifko88vp0cfun6cd3othj2bllf4m.apps.googleusercontent.com",
+          "client_id": "302760440961-aa913lalabv43se28h7kcd1schf97h6o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.letsup.letsup",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "302760440961-62l3brhdrhu0372cobb5ted76gtk43pe.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDS5bF5MmCoNK0Hyc99ey40o2yNSzwp140"
+          "current_key": "AIzaSyC7nCF9ShzV06FrF7X2yVx2T_lYojdutP8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "302760440961-vou3ifko88vp0cfun6cd3othj2bllf4m.apps.googleusercontent.com",
+              "client_id": "302760440961-62l3brhdrhu0372cobb5ted76gtk43pe.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "302760440961-fr8che6j9u07qer5i8c12hag73kkmf77.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.letsup"
-              }
             }
           ]
         }

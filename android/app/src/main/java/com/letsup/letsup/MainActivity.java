@@ -1,4 +1,4 @@
-package com.letsup;
+package com.letsup.letsup;
 
 import com.facebook.react.ReactActivity;
 

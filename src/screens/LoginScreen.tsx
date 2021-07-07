@@ -9,7 +9,7 @@ const LoginScreen = ({navigation}: any) => {
 
     const signIn = async (navigation: any) => {
         GoogleSignin.configure({
-            webClientId: '302760440961-vou3ifko88vp0cfun6cd3othj2bllf4m.apps.googleusercontent.com',
+            webClientId: '302760440961-62l3brhdrhu0372cobb5ted76gtk43pe.apps.googleusercontent.com',
           });
     
           try {
