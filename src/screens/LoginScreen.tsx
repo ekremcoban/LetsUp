@@ -9,6 +9,13 @@ const LoginScreen = ({ navigation }: any) => {
   const { profile, setProfile } = useContext(ContextApi);
 
   const signIn = async (navigation: any) => {
+    let profile: Object = {};
+    let data: Object = {};
+
+    await getLocation().then(res => {
+      data = res;
+    })
+
     GoogleSignin.configure({
       webClientId:
         '302760440961-62l3brhdrhu0372cobb5ted76gtk43pe.apps.googleusercontent.com',
@@ -17,57 +24,84 @@ const LoginScreen = ({ navigation }: any) => {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
+  
+      const usersCollection = await firestore()
+        .collection('Users')
+        .doc(userInfo.user.email)
+        .get();
 
-      console.log('google', userInfo.user);
-      let profile : Object = {};
-      // let profile = {
-      //   id: userInfo.user.id,
-      //   name: userInfo.user.givenName,
-      //   surname: userInfo.user.familyName,
-      //   photo: userInfo.user.photo,
-      // };
+        await upsert(profile, usersCollection, data, userInfo);
+    }
+    catch (error) {
+      console.error('GoogleSignin', error);
+    }
+  };
 
-      const usersCollection = await (await firestore().collection('Test').doc('resulekremcoban@gmail.com').get());
+  const getLocation = () => {
+    return fetch('https://ipapi.co/json/')
+      .then((response) => response.json())
+      .then((data) => {
+        return data;
+      });
+  };
+
+  const upsert = async (profile: Object, usersCollection: any, data: any, userInfo: any) => {
+    try {
+
       if (usersCollection.exists) {
         const { _data } = usersCollection;
         profile = {
           id: _data.id,
+          nick: _data.nick,
           name: _data.name,
           surname: _data.surname,
-          photo: _data.photo,
           age: _data.age,
           height: _data.height,
-          interestedIn: _data.interestedIn,
           weight: _data.weight,
-        }
-      }
-      else {
+          interestedIn: _data.interestedIn,
+          photo: _data.photo,
+          geoCode: _data.geoCode,
+          city: _data.city,
+          county: _data.county,
+          country: _data.country,
+          createdTime: _data.createdTime,
+        };
+      } else {
         profile = {
-            id: userInfo.user.id,
-            name: userInfo.user.givenName,
-            surname: userInfo.user.familyName,
-            photo: userInfo.user.photo,
-          };
+          id: userInfo.user.id,
+          nick: null,
+          name: userInfo.user.givenName,
+          surname: userInfo.user.familyName,
+          age: null,
+          height: null,
+          weight: null,
+          interestedIn: null,
+          photo: userInfo.user.photo,
+          geoCode: null,
+          county: null,
+          country: data.country_name,
+          region: data.region,
+          city: data.city,
+          createdTime: new Date()
+        };
+
+        firestore()
+          .collection('Users')
+          .doc(userInfo.user.email)
+          .set(profile)
+          .then(() => {
+            console.log('User added!');
+          });
       }
 
-      console.log('from server', profile);
-
-      // firestore()
-      //   .collection('Test')
-      //   .doc(userInfo.user.email)
-      //   .set(profile)
-      //   .then(() => {
-      //     console.log('User added!');
-      //   });
-
-      storeData('profile', profile).then((res) => {
+      storeData('Users', profile).then((res) => {
         setProfile(profile);
         navigation.goBack();
       });
     } catch (error) {
       console.error(error);
     }
-  };
+  }
 
   return (
     <View style={styles.container}>

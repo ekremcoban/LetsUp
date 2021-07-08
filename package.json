@@ -1,6 +1,6 @@
 {
   "name": "LetsUp",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -32,7 +32,6 @@
     "react-native-code-push": "^7.0.1",
     "react-native-elements": "^3.2.0",
     "react-native-gesture-handler": "^1.10.1",
-    "react-native-get-location": "^2.1.0",
     "react-native-get-random-values": "^1.5.1",
     "react-native-google-places": "^3.1.2",
     "react-native-image-crop-picker": "^0.36.0",
