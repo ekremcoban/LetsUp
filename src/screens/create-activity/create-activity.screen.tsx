@@ -29,6 +29,8 @@ import {
 } from 'components/activity-type-selector/models';
 import { MAX_LOCATION_COUNT } from './constants';
 import { colors } from 'styles/colors';
+import { useNavigation } from '@react-navigation/native';
+import { getData } from 'db/localDb';
 
 const activityNameActionSheetRef = createRef<IActionSheet>();
 const ageRangeActionSheetRef = createRef<IActionSheet>();
@@ -41,6 +43,7 @@ type Location = {
 };
 
 const CreateActivityScreen2 = () => {
+  const navigation = useNavigation();
   const [branchNo, setBranchNo] = useState<number | null>(null);
   const [title, setTitle] = useState<string>('');
 
@@ -99,6 +102,21 @@ const CreateActivityScreen2 = () => {
   };
 
   const save = () => {
+    getData('Users').then(res => {
+      if (res.age == null) {
+        Alert.alert(
+          `${polyglot.t('alert.warning')}`,
+          `${polyglot.t('alert.create_activity.save_text')}`,
+          [
+            { text: "OK", onPress: () => navigation.navigate('Create Profile') }
+          ]
+        );
+      }
+      else {
+        Alert.alert('Kayıt Yapıldı')
+      }
+    })
+
     // TODO: Uncomment when we start implementing save functionality
     //
     // console.log('BURDA');
@@ -352,26 +370,26 @@ const CreateActivityScreen2 = () => {
             ))}
           </ActivityTypeSelector>
 
-            <View style={styles.row}>
-              <View style={styles.column}>
-                <Selector
-                  onPress={() => activityNameActionSheetRef.current?.open()}
-                  label={`${polyglot.t(
-                    'screens.create_activity.inputs.activity_name.label'
-                  )}*`}
-                  text={(() => {
-                    const selectedActivityName = getSelectedActivityName(
-                      selectedActivityNameValue
-                    );
-                    if (!selectedActivityName) {
-                      return undefined;
-                    }
-                    return polyglot.t(selectedActivityName.text);
-                  })()}
-                />
-              </View>
+          <View style={styles.row}>
+            <View style={styles.column}>
+              <Selector
+                onPress={() => activityNameActionSheetRef.current?.open()}
+                label={`${polyglot.t(
+                  'screens.create_activity.inputs.activity_name.label'
+                )}*`}
+                text={(() => {
+                  const selectedActivityName = getSelectedActivityName(
+                    selectedActivityNameValue
+                  );
+                  if (!selectedActivityName) {
+                    return undefined;
+                  }
+                  return polyglot.t(selectedActivityName.text);
+                })()}
+              />
             </View>
-     <ScrollView>
+          </View>
+          <ScrollView>
             <View style={styles.locationLabel}>
               <Text style={styles.label}>
                 {`${polyglot.t(
@@ -407,104 +425,98 @@ const CreateActivityScreen2 = () => {
                 />
               ))}
             </View>
-            </ScrollView>
-            <View style={styles.row}>
-              <View style={styles.column}>
-                <Selector
-                  labelPosition="center"
-                  onPress={() => setDateActionSheetVisibility(true)}
-                  label={`${polyglot.t(
-                    'screens.create_activity.inputs.date.label'
-                  )}*`}
-                  text={(() => {
-                    return showDateText(activityDate);
-                  })()}
-                />
-              </View>
-              <View style={styles.timesWrapper}>
-                <Text style={styles.label}>
-                  {`${polyglot.t(
-                    'screens.create_activity.inputs.time.label'
-                  )}*`}
-                </Text>
-                <View style={styles.times}>
-                  <View style={styles.time}>
-                    <Selector
-                      noIcon
-                      placeholder={polyglot.t(
-                        'screens.create_activity.inputs.time.placeholder_start'
-                      )}
-                      onPress={() => setStartTimeActionSheetVisibility(true)}
-                      text={(() => {
-                        return showTimeText(activityDate, activityStartTime);
-                      })()}
-                    />
-                  </View>
-                  <Text>-</Text>
-                  <View style={styles.time}>
-                    <Selector
-                      noIcon
-                      placeholder={polyglot.t(
-                        'screens.create_activity.inputs.time.placeholder_finish'
-                      )}
-                      onPress={() => setFinishTimeActionSheetVisibility(true)}
-                      text={(() => {
-                        return showTimeText(activityDate, activityFinishTime);
-                      })()}
-                    />
-                  </View>
+          </ScrollView>
+          <View style={styles.row}>
+            <View style={styles.column}>
+              <Selector
+                labelPosition="center"
+                onPress={() => setDateActionSheetVisibility(true)}
+                label={`${polyglot.t(
+                  'screens.create_activity.inputs.date.label'
+                )}*`}
+                text={(() => {
+                  return showDateText(activityDate);
+                })()}
+              />
+            </View>
+            <View style={styles.timesWrapper}>
+              <Text style={styles.label}>
+                {`${polyglot.t('screens.create_activity.inputs.time.label')}*`}
+              </Text>
+              <View style={styles.times}>
+                <View style={styles.time}>
+                  <Selector
+                    noIcon
+                    placeholder={polyglot.t(
+                      'screens.create_activity.inputs.time.placeholder_start'
+                    )}
+                    onPress={() => setStartTimeActionSheetVisibility(true)}
+                    text={(() => {
+                      return showTimeText(activityDate, activityStartTime);
+                    })()}
+                  />
+                </View>
+                <Text>-</Text>
+                <View style={styles.time}>
+                  <Selector
+                    noIcon
+                    placeholder={polyglot.t(
+                      'screens.create_activity.inputs.time.placeholder_finish'
+                    )}
+                    onPress={() => setFinishTimeActionSheetVisibility(true)}
+                    text={(() => {
+                      return showTimeText(activityDate, activityFinishTime);
+                    })()}
+                  />
                 </View>
               </View>
             </View>
+          </View>
 
-            <View style={styles.row}>
-              <View style={styles.column}>
-                <Selector
-                  labelPosition="center"
-                  onPress={() => genderActionSheetRef.current?.open()}
-                  label={polyglot.t(
-                    'screens.create_activity.inputs.gender.label'
-                  )}
-                  text={(() => {
-                    const selectedGender = getSelectedGender(
-                      selectedGenderValue
-                    );
-                    if (!selectedGender) {
-                      return undefined;
-                    }
-                    return polyglot.t(selectedGender.text);
-                  })()}
-                />
-              </View>
-
-              <View style={styles.column}>
-                <Selector
-                  labelPosition="center"
-                  onPress={() => ageRangeActionSheetRef.current?.open()}
-                  label={polyglot.t('screens.create_activity.inputs.age.label')}
-                  text={
-                    !!selectedAgeRange[0] && !!selectedAgeRange[1]
-                      ? `${selectedAgeRange[0]} - ${selectedAgeRange[1]}`
-                      : undefined
+          <View style={styles.row}>
+            <View style={styles.column}>
+              <Selector
+                labelPosition="center"
+                onPress={() => genderActionSheetRef.current?.open()}
+                label={polyglot.t(
+                  'screens.create_activity.inputs.gender.label'
+                )}
+                text={(() => {
+                  const selectedGender = getSelectedGender(selectedGenderValue);
+                  if (!selectedGender) {
+                    return undefined;
                   }
-                />
-              </View>
-
-              <View style={styles.column}>
-                <Selector
-                  labelPosition="center"
-                  onPress={() => quotaActionSheetRef.current?.open()}
-                  label={polyglot.t(
-                    'screens.create_activity.inputs.quota.label'
-                  )}
-                  text={
-                    !!selectedQuotaRange[0] && !!selectedQuotaRange[1]
-                      ? `${selectedQuotaRange[0]} - ${selectedQuotaRange[1]}`
-                      : undefined
-                  }
-                />
-              </View>
+                  return polyglot.t(selectedGender.text);
+                })()}
+              />
             </View>
+
+            <View style={styles.column}>
+              <Selector
+                labelPosition="center"
+                onPress={() => ageRangeActionSheetRef.current?.open()}
+                label={polyglot.t('screens.create_activity.inputs.age.label')}
+                text={
+                  !!selectedAgeRange[0] && !!selectedAgeRange[1]
+                    ? `${selectedAgeRange[0]} - ${selectedAgeRange[1]}`
+                    : undefined
+                }
+              />
+            </View>
+
+            <View style={styles.column}>
+              <Selector
+                labelPosition="center"
+                onPress={() => quotaActionSheetRef.current?.open()}
+                label={polyglot.t('screens.create_activity.inputs.quota.label')}
+                text={
+                  !!selectedQuotaRange[0] && !!selectedQuotaRange[1]
+                    ? `${selectedQuotaRange[0]} - ${selectedQuotaRange[1]}`
+                    : undefined
+                }
+              />
+            </View>
+          </View>
         </View>
         <View style={styles.secondRow}>
           <CustomButton onPress={() => save()} title="Create Activity" />
