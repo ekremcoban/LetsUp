@@ -109,5 +109,11 @@
         }
       }
     }
+  },
+  "alert": {
+    "warning": "Warning",
+    "create_activity": {
+      "save_text": "You have to fill your profile"
+    }
   }
 }

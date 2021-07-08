@@ -8,7 +8,6 @@ import html_script from '../../html_leaflet';
 import { locationTag } from '../assets/img/index';
 import { Popup } from 'react-native-map-link';
 import { OpenMapDirections } from 'react-native-navigation-directions';
-import GetLocation from 'react-native-get-location';
 
 const IconStart = locationTag['start'];
 const IconJoin = locationTag['join'];
@@ -23,18 +22,6 @@ class ActivityInfoScreen extends Component {
     }
 
     componentDidMount() {
-        GetLocation.getCurrentPosition({
-            enableHighAccuracy: true,
-            timeout: 15000,
-        })
-            .then(location => {
-                console.log('location Effect', location)
-                this.setState({ location })
-            })
-            .catch(e => {
-                console.error('HATA map', e)
-            })
-
         setTimeout(() => {
             console.log('timer')
             this.refs['mapRef'].injectJavaScript(`
