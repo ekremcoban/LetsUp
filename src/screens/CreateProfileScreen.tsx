@@ -8,6 +8,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Alert,
+  Platform,
 } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { Selector } from 'components/selector/selector';
@@ -31,6 +32,8 @@ import {
 } from '@react-native-google-signin/google-signin';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ImagePickerCropper from 'react-native-image-crop-picker';
+import { utils } from '@react-native-firebase/app';
+import storage from '@react-native-firebase/storage';
 
 const genderActionSheetRef = createRef<IActionSheet>();
 const ageActionSheetRef = createRef<IActionSheet>();
@@ -53,6 +56,10 @@ const CreateProfilScreen = () => {
     [number | null, number | null]
   >([null, null]);
   const [branchNo, setBranchNo] = useState<number | null>(null);
+  const [uploadUri, setUploadUri] = useState();
+  const [imageName, setImageName] = useState();
+  let reference = null;
+  let pathToFile = null;
 
   useEffect(() => {
     getCurrentUser();
@@ -80,7 +87,7 @@ const CreateProfilScreen = () => {
       nick: users.nick,
       name: users.name,
       surname: users.surname,
-      age: selectedAge,
+      age: null, //selectedAge,
       gender:
         selectedGenderValue === 2
           ? 'Male'
@@ -90,7 +97,7 @@ const CreateProfilScreen = () => {
       height: selectedHeight,
       weight: selectedWeight,
       interestedIn: users.interestedIn,
-      photo: photo,
+      // photo: photo,
       geoCode: users.geoCode,
       city: users.city,
       county: users.county,
@@ -106,7 +113,30 @@ const CreateProfilScreen = () => {
         console.log('User updated!');
       });
 
+      storage()
+      .ref(imageName)
+      .putFile(uploadUri)
+      .then((snapshot) => {
+        //You can check the image is now uploaded in the storage bucket
+        console.log(`${imageName} has been successfully uploaded.`);
+      })
+      .catch((e) => console.log('uploading image error => ', e));
+
     storeData('Users', data);
+    // try {
+    //   console.log('yol', utils.FilePath.PICTURES_DIRECTORY);
+    //   console.log('reference', photo);
+    //   console.log('pathToFile', photo);
+    //   const reference = storage().ref(
+    //     '64F6FEC9-8776-492D-908A-078C2AEA02A3.jpg'
+    //   );
+    //   const pathToFile = `${utils.FilePath.PICTURES_DIRECTORY}/64F6FEC9-8776-492D-908A-078C2AEA02A3.jpg`;
+    //   // reference = storage().ref("/Users/tiban/Library/Developer/CoreSimulator/Devices/055E0022-99AE-4AB8-B52E-42A127E3B195/data/Containers/Data/Application/EB0ED1B5-055A-437E-8564-E2037B58FDEB/tmp/react-native-image-crop-picker/95B016A1-E997-4EE0-AF74-E1FB7D4CECBD.jpg");
+    //   // pathToFile = `/Users/tiban/Library/Developer/CoreSimulator/Devices/055E0022-99AE-4AB8-B52E-42A127E3B195/data/Containers/Data/Application/EB0ED1B5-055A-437E-8564-E2037B58FDEB/tmp/react-native-image-crop-picker/95B016A1-E997-4EE0-AF74-E1FB7D4CECBD.jpg`;
+    //   reference.putFile(pathToFile);
+    // } catch (e) {
+    //   console.error('ref', e);
+    // }
   };
 
   const getCurrentUser = async () => {
@@ -124,7 +154,18 @@ const CreateProfilScreen = () => {
       cropping: true,
     })
       .then((image) => {
-        console.log(image);
+        console.log('image', image);
+        let uri = image.sourceURL;
+        //generating image name
+        let imageName = 'profile 1.jpeg';
+        //to resolve file path issue on different platforms
+        let uploadUri =
+          Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+        //setting the image name and image uri in the state
+
+        setUploadUri(uploadUri);
+        setImageName(imageName);
+
         setPhoto(image.path);
       })
       .catch((e) => {
