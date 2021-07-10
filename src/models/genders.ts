@@ -5,10 +5,14 @@ type Gender = {
 export const genders: Gender[] = [
   {
     value: 0,
-    text: 'lists.genders.female',
+    text: 'lists.genders.select',
   },
   {
     value: 1,
+    text: 'lists.genders.female',
+  },
+  {
+    value: 2,
     text: 'lists.genders.male',
   },
 ];

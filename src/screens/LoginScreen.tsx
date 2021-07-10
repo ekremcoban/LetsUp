@@ -30,7 +30,7 @@ const LoginScreen = ({ navigation }: any) => {
         .doc(userInfo.user.email)
         .get();
 
-        await upsert(profile, usersCollection, data, userInfo);
+        await read(profile, usersCollection, data, userInfo);
     }
     catch (error) {
       console.error('GoogleSignin', error);
@@ -45,7 +45,7 @@ const LoginScreen = ({ navigation }: any) => {
       });
   };
 
-  const upsert = async (profile: Object, usersCollection: any, data: any, userInfo: any) => {
+  const read = async (profile: Object, usersCollection: any, data: any, userInfo: any) => {
     try {
 
       if (usersCollection.exists) {
@@ -56,6 +56,7 @@ const LoginScreen = ({ navigation }: any) => {
           name: _data.name,
           surname: _data.surname,
           age: _data.age,
+          gender: _data.gender,
           height: _data.height,
           weight: _data.weight,
           interestedIn: _data.interestedIn,
@@ -73,6 +74,7 @@ const LoginScreen = ({ navigation }: any) => {
           name: userInfo.user.givenName,
           surname: userInfo.user.familyName,
           age: null,
+          gender: null,
           height: null,
           weight: null,
           interestedIn: null,
@@ -96,7 +98,12 @@ const LoginScreen = ({ navigation }: any) => {
 
       storeData('Users', profile).then((res) => {
         setProfile(profile);
-        navigation.goBack();
+        if (profile.age == null) {
+          navigation.navigate('Create Profile')
+        }
+        else {
+          navigation.goBack()
+        }
       });
     } catch (error) {
       console.error(error);

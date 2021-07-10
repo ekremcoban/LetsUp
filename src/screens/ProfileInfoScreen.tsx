@@ -1,5 +1,5 @@
 import React, { useState} from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, View, Text, Alert, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ImagePickerCropper from 'react-native-image-crop-picker';
 
@@ -15,6 +15,9 @@ const ProfileInfoScreen = () => {
             console.log(image.path);
             setPhotoPath(image.path)
           }).catch(e => {
+            if (e.code === 'E_NO_IMAGE_DATA_FOUND') {
+                Alert.alert('Warning', 'Selected photo must be png or jpeg format')
+              }
               console.error('photo error', e);
           });
     }

@@ -111,7 +111,7 @@ let App = () => {
 
   const exitAccount = (navigation: any) => {
     setProfile(null);
-    removeItem('profile')
+    removeItem('Users')
     GoogleSignin.signOut();
     GoogleSignin.revokeAccess();
     navigation.navigate('Activity List')

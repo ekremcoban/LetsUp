@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   Keyboard,
+  Alert,
 } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { Selector } from 'components/selector/selector';
@@ -21,6 +22,15 @@ import {
   activityTypes,
   IActivityType,
 } from 'components/activity-type-selector/models';
+import firestore from '@react-native-firebase/firestore';
+import { useEffect } from 'react';
+import { getData, storeData } from 'db/localDb';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import Icon from 'react-native-vector-icons/Ionicons';
+import ImagePickerCropper from 'react-native-image-crop-picker';
 
 const genderActionSheetRef = createRef<IActionSheet>();
 const ageActionSheetRef = createRef<IActionSheet>();
@@ -28,7 +38,10 @@ const heightActionSheetRef = createRef<IActionSheet>();
 const weightActionSheetRef = createRef<IActionSheet>();
 
 const CreateProfilScreen = () => {
-  const [fullName, onChangeFullName] = React.useState("");
+  const [users, setUsers] = React.useState();
+  const [email, setEmail] = React.useState();
+  const [photo, setPhoto] = React.useState();
+  const [fullName, onChangeFullName] = React.useState('');
   const [selectedGenderValue, setSelectedGenderValue] = useState<string | null>(
     null
   );
@@ -41,193 +54,290 @@ const CreateProfilScreen = () => {
   >([null, null]);
   const [branchNo, setBranchNo] = useState<number | null>(null);
 
+  useEffect(() => {
+    getCurrentUser();
+
+    getData('Users').then((users) => {
+      console.log(users);
+      setUsers(users);
+      users.age != null && setSelectedAge(users.age);
+      users.gender != null &&
+        setSelectedGenderValue(
+          users.gender === 'Male' ? 2 : users.gender === 'Female' ? 1 : 0
+        );
+      users.height != null && setSelectedHeight(users.height);
+      users.weight != null && setSelectedWeight(users.weight);
+      users.photo != null && setPhoto(users.photo);
+    });
+  }, []);
+
+  const create = () => {
+    console.log('users', users);
+    console.log('email', email);
+
+    let data = {
+      id: users.id,
+      nick: users.nick,
+      name: users.name,
+      surname: users.surname,
+      age: selectedAge,
+      gender:
+        selectedGenderValue === 2
+          ? 'Male'
+          : selectedGenderValue === 1
+          ? 'Female'
+          : '',
+      height: selectedHeight,
+      weight: selectedWeight,
+      interestedIn: users.interestedIn,
+      photo: photo,
+      geoCode: users.geoCode,
+      city: users.city,
+      county: users.county,
+      country: users.country,
+      createdTime: users.createdTime,
+    };
+
+    firestore()
+      .collection('Users')
+      .doc(email)
+      .update(data)
+      .then(() => {
+        console.log('User updated!');
+      });
+
+    storeData('Users', data);
+  };
+
+  const getCurrentUser = async () => {
+    const currentUser = await GoogleSignin.getCurrentUser();
+    setEmail(currentUser?.user.email);
+    onChangeFullName(
+      currentUser?.user.givenName + ' ' + currentUser?.user.familyName
+    );
+  };
+
+  const photoUpdate = () => {
+    ImagePickerCropper.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true,
+    })
+      .then((image) => {
+        console.log(image);
+        setPhoto(image.path);
+      })
+      .catch((e) => {
+        if (e.code === 'E_NO_IMAGE_DATA_FOUND') {
+          Alert.alert('Warning', 'Selected photo must be png or jpeg format');
+        }
+        console.error('photo error', e.code);
+      });
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-    <View style={{flex: 1}}>
-      <View style={styles.viewImg}>
-        <TouchableOpacity style={{ alignSelf: 'flex-end' }}>
+      <View style={{ flex: 1 }}>
+        <TouchableOpacity
+          style={{ alignSelf: 'flex-end' }}
+          onPress={() => create()}
+        >
           <View style={styles.viewbuttonAction}>
-            <Text style={styles.textButtonAction}>CREATE</Text>
+            <Text style={styles.textButtonAction}>Save</Text>
           </View>
         </TouchableOpacity>
-        <Image
-          source={require('assets/img/userphoto.png')}
-          style={styles.icon}
-        />
-      </View>
-      <View style={styles.viewInfo}>
-        <View style={styles.viewFullName}>
-          <Text style={styles.textFullName}>
-            {polyglot.t(
-              'screens.create_profile.label.full_name'
-            )}
-          </Text>
-          <View style={styles.inputFullName}>
-            <TextInput
-              style={styles.inputNameText}
-              onChangeText={onChangeFullName}
-              value={fullName}
+        <View style={styles.viewImg}>
+          <Image
+            source={
+              photo != ''
+                ? { uri: photo }
+                : require('assets/images/activities/profile.png')
+            }
+            // source={require(photoPath)}
+            style={styles.image}
+          />
+          <View style={styles.viewIcon}>
+            <Icon
+              size={30}
+              name="camera-outline"
+              type="ionicon"
+              onPress={() => photoUpdate()}
             />
           </View>
         </View>
+        <View style={styles.viewInfo}>
+          <View style={styles.viewFullName}>
+            <Text style={styles.textFullName}>
+              {polyglot.t('screens.create_profile.label.full_name')}
+            </Text>
+            <View style={styles.inputFullName}>
+              <TextInput
+                style={styles.inputNameText}
+                onChangeText={onChangeFullName}
+                editable={false}
+                value={fullName}
+              />
+            </View>
+          </View>
 
-        <View style={styles.viewAgeGender}>
-          <View style={styles.viewAge}>
-            <Text style={styles.textAge}>
-              {polyglot.t(
-                'screens.create_profile.label.age'
-              )}
-            </Text>
-            <Selector
-              styleView={styles.selectorAge}
-              onPress={() => ageActionSheetRef.current?.open()}
-              // label={polyglot.t(
-              //   'screens.create_profile.action_sheets.age.title'
-              // )}
-              text={selectedAge}
-            />
+          <View style={styles.viewAgeGender}>
+            <View style={styles.viewAge}>
+              <Text style={styles.textAge}>
+                {polyglot.t('screens.create_profile.label.age')}
+              </Text>
+              <Selector
+                styleView={styles.selectorAge}
+                onPress={() => ageActionSheetRef.current?.open()}
+                // label={polyglot.t(
+                //   'screens.create_profile.action_sheets.age.title'
+                // )}
+                text={selectedAge}
+              />
+            </View>
+            <View style={styles.viewGender}>
+              <Text style={styles.textGender}>
+                {polyglot.t('screens.create_profile.label.gender')}
+              </Text>
+              <Selector
+                styleView={styles.selectorGender}
+                onPress={() => genderActionSheetRef.current?.open()}
+                // label={polyglot.t(
+                //   'screens.create_profile.action_sheets.gender.title'
+                // )}
+                text={(() => {
+                  const selectedGender = getSelectedGender(selectedGenderValue);
+                  if (!selectedGender) {
+                    return undefined;
+                  }
+                  return polyglot.t(selectedGender.text);
+                })()}
+              />
+            </View>
           </View>
-          <View style={styles.viewGender}>
-            <Text style={styles.textGender}>
-              {polyglot.t(
-                'screens.create_profile.label.gender'
-              )}
-            </Text>
-            <Selector
-              styleView={styles.selectorGender}
-              onPress={() => genderActionSheetRef.current?.open()}
-              // label={polyglot.t(
-              //   'screens.create_profile.action_sheets.gender.title'
-              // )}
-              text={(() => {
-                const selectedGender = getSelectedGender(
-                  selectedGenderValue
-                );
-                if (!selectedGender) {
-                  return undefined;
-                }
-                return polyglot.t(selectedGender.text);
-              })()}
-            />
-          </View>
-        </View>
 
-        <View style={styles.viewHeightWeight}>
-          <View style={styles.viewHeight}>
-            <Text style={styles.textHeight}>
-              {polyglot.t(
-                'screens.create_profile.label.height'
-              )}
-            </Text>
-            <Selector
-              styleView={styles.selectorHeight}
-              onPress={() => heightActionSheetRef.current?.open()}
-              // label={polyglot.t(
-              //   'screens.create_profile.action_sheets.height.title'
-              // )}
-              text={selectedHeight[0] != null && selectedHeight[1] != null && `${selectedHeight[0]}.${selectedHeight[1]} m`}
-            />
-          </View>
-          <View style={styles.viewWeight}>
-            <Text style={styles.textWeight}>
-              {polyglot.t(
-                'screens.create_profile.label.weight'
-              )}
-            </Text>
-            <Selector
-              styleView={styles.selectorWeight}
-              onPress={() => weightActionSheetRef.current?.open()}
-              // label={polyglot.t(
-              //   'screens.create_profile.action_sheets.weight.title'
-              // )}
-              text={selectedWeight[0] != null && selectedWeight[1] != null && `${selectedWeight[0]}.${selectedWeight[1]} kg`}
-            />
-          </View>
-        </View>
-
-        <View style={styles.viewInterestedIn}>
-          <Text style={styles.textInterestedIn}>
-            {polyglot.t(
-              'screens.create_profile.label.interested_in'
-            )}
-          </Text>
-          <ActivityTypeSelector>
-            {activityTypes.map((activityType: IActivityType, index: number) => (
-              <ActivityTypeSelector.IconItem
-                key={activityType.id}
-                id={activityType.id}
-                icon={activityType.image}
-                text={polyglot.t(activityType.textKey)}
-                onItemPress={(selecteActivityTypes: number[]) =>
-                  setBranchNo(selecteActivityTypes[0])
+          <View style={styles.viewHeightWeight}>
+            <View style={styles.viewHeight}>
+              <Text style={styles.textHeight}>
+                {polyglot.t('screens.create_profile.label.height')}
+              </Text>
+              <Selector
+                styleView={styles.selectorHeight}
+                onPress={() => heightActionSheetRef.current?.open()}
+                // label={polyglot.t(
+                //   'screens.create_profile.action_sheets.height.title'
+                // )}
+                text={
+                  selectedHeight[0] != null &&
+                  selectedHeight[1] != null &&
+                  `${selectedHeight[0]}.${selectedHeight[1]} m`
                 }
               />
-            ))}
-          </ActivityTypeSelector>
+            </View>
+            <View style={styles.viewWeight}>
+              <Text style={styles.textWeight}>
+                {polyglot.t('screens.create_profile.label.weight')}
+              </Text>
+              <Selector
+                styleView={styles.selectorWeight}
+                onPress={() => weightActionSheetRef.current?.open()}
+                // label={polyglot.t(
+                //   'screens.create_profile.action_sheets.weight.title'
+                // )}
+                text={
+                  selectedWeight[0] != null &&
+                  selectedWeight[1] != null &&
+                  `${selectedWeight[0]}.${selectedWeight[1]} kg`
+                }
+              />
+            </View>
+          </View>
+
+          <View style={styles.viewInterestedIn}>
+            {/* <Text style={styles.textInterestedIn}>
+              {polyglot.t('screens.create_profile.label.interested_in')}
+            </Text>
+            <ActivityTypeSelector>
+              {activityTypes.map(
+                (activityType: IActivityType, index: number) => (
+                  <ActivityTypeSelector.IconItem
+                    key={activityType.id}
+                    id={activityType.id}
+                    icon={activityType.image}
+                    text={polyglot.t(activityType.textKey)}
+                    onItemPress={(selecteActivityTypes: number[]) => {
+                      console.log(selecteActivityTypes)
+                      setBranchNo(selecteActivityTypes[0])
+                    }}
+                  />
+                )
+              )}
+            </ActivityTypeSelector> */}
+          </View>
+          <View style={{ flex: 1 }} />
+          <GenderActionSheet
+            ref={genderActionSheetRef}
+            onSelect={(genderValue: string) => {
+              setSelectedGenderValue(genderValue);
+              genderActionSheetRef.current?.close();
+            }}
+            onCancel={() => {
+              genderActionSheetRef.current?.close();
+            }}
+          />
+          <AgeActionSheet
+            ref={ageActionSheetRef}
+            onSelect={(number: number) => {
+              // TODO: Validate selected age values
+              setSelectedAge(number);
+              ageActionSheetRef.current?.close();
+            }}
+            onCancel={() => {
+              ageActionSheetRef.current?.close();
+            }}
+          />
+          <HeightActionSheet
+            ref={heightActionSheetRef}
+            onSelect={([m, cm]: [number, number]) => {
+              // TODO: Validate selected age values
+              setSelectedHeight([m, cm]);
+              heightActionSheetRef.current?.close();
+            }}
+            onCancel={() => {
+              heightActionSheetRef.current?.close();
+            }}
+          />
+          <WeightActionSheet
+            ref={weightActionSheetRef}
+            onSelect={([kg, gr]: [number, number]) => {
+              // TODO: Validate selected age values
+              setSelectedWeight([kg, gr]);
+              weightActionSheetRef.current?.close();
+            }}
+            onCancel={() => {
+              weightActionSheetRef.current?.close();
+            }}
+          />
         </View>
-        <View style={{ flex: 1, }} />
-        <GenderActionSheet
-          ref={genderActionSheetRef}
-          onSelect={(genderValue: string) => {
-            setSelectedGenderValue(genderValue);
-            genderActionSheetRef.current?.close();
-          }}
-          onCancel={() => {
-            genderActionSheetRef.current?.close();
-          }}
-        />
-        <AgeActionSheet
-          ref={ageActionSheetRef}
-          onSelect={(number: number) => {
-            // TODO: Validate selected age values
-            setSelectedAge(number);
-            ageActionSheetRef.current?.close();
-          }}
-          onCancel={() => {
-            ageActionSheetRef.current?.close();
-          }}
-        />
-        <HeightActionSheet
-          ref={heightActionSheetRef}
-          onSelect={([m, cm]: [number, number]) => {
-            // TODO: Validate selected age values
-            setSelectedHeight([m, cm]);
-            heightActionSheetRef.current?.close();
-          }}
-          onCancel={() => {
-            heightActionSheetRef.current?.close();
-          }}
-        />
-        <WeightActionSheet
-          ref={weightActionSheetRef}
-          onSelect={([kg, gr]: [number, number]) => {
-            // TODO: Validate selected age values
-            setSelectedWeight([kg, gr]);
-            weightActionSheetRef.current?.close();
-          }}
-          onCancel={() => {
-            weightActionSheetRef.current?.close();
-          }}
-        />
       </View>
-    </View>
     </TouchableWithoutFeedback>
-  )
-}
+  );
+};
 
 export default CreateProfilScreen;
 
 const styles = StyleSheet.create({
   viewImg: {
     flex: 1,
-    padding: 10,
+    paddingStart: '5%',
+    flexDirection: 'row',
+    alignSelf: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
   },
   viewbuttonAction: {
     height: 40,
     width: 80,
     marginTop: 10,
+    marginEnd: 10,
     flexDirection: 'row',
     backgroundColor: '#37CC4A',
     borderRadius: 20,
@@ -239,9 +349,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  icon: {
-    width: 100,
-    height: 100,
+  image: {
+    width: 140,
+    height: 140,
+    borderRadius: 75,
+  },
+  viewIcon: {
+    alignSelf: 'flex-end',
+    // backgroundColor: 'orange'
   },
   viewInfo: {
     flex: 3,
@@ -256,7 +371,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingTop: 10,
     borderColor: '#DADADA',
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
 
   viewFullName: {
@@ -351,5 +466,5 @@ const styles = StyleSheet.create({
   textInterestedIn: {
     paddingStart: 5,
     fontWeight: 'bold',
-  }
+  },
 });
