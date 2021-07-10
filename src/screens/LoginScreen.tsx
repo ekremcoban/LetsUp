@@ -86,7 +86,7 @@ const LoginScreen = ({ navigation }: any) => {
           city: data.city,
           createdTime: new Date()
         };
-
+console.log('login', profile)
         firestore()
           .collection('Users')
           .doc(userInfo.user.email)
