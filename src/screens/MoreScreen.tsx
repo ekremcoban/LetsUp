@@ -2,8 +2,10 @@ import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+const pkg = require('../../package.json');
 
 const MoreScreen = ({navigation}) => {
+    
     return (
         <>
             <View style={{ flex: 1, }}>
@@ -39,6 +41,8 @@ const MoreScreen = ({navigation}) => {
                         <Text style={styles.textBold}>Logout</Text>
                     </View>
                 </View>
+
+                <Text style={{textAlign: 'center'}}>{pkg.version}</Text>
             </View>
         </>
     )

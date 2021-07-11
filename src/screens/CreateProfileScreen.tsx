@@ -261,7 +261,7 @@ const CreateProfilScreen = () => {
             source={
               photo != ''
                 ? { uri: photo }
-                : require('assets/images/activities/profile.png')
+                : null
             }
             // source={require(photoPath)}
             style={styles.image}
