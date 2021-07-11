@@ -26,6 +26,11 @@ const ProfileInfoScreen = () => {
         getData('Photo').then(res => {
             setPhotoPath(res)
             console.log('res', res)
+            if (res == null) {
+              getData('Users').then(res => {
+                setPhotoPath(res.photo)
+              })
+            }
         })
     })
 
