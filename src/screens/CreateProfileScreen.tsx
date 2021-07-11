@@ -83,7 +83,7 @@ const CreateProfilScreen = () => {
           getData('Photo').then((res) => {
             if (res == null) {
               console.log('Burda 2', res);
-              // getImage();
+              getImage();
             } else {
               console.log('Burda 3')
               setPhoto(res);

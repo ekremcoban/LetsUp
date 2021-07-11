@@ -7,7 +7,7 @@ import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 
 const LoginScreen = ({ navigation }: any) => {
-  const { user, setUser } = useContext(ContextApi);
+  const { user, setUser, setUserPhoto } = useContext(ContextApi);
 
   const signIn = async (navigation: any) => {
     let user: Object = {};
@@ -58,17 +58,18 @@ const LoginScreen = ({ navigation }: any) => {
       .then((url) => {
         //from url you can fetched the uploaded image easily
         storeData('Photo', url);
-
+        setUserPhoto(url)
       })
       .catch((e) => console.log('getting downloadURL of image error => ', e));
   };
 
   // Kayitli ise vt den, kayit yoksa google dan bilgileri alir.
   const retrieveData = async (user: Object, usersCollection: any, data: any, userInfo: any) => {
+    let userTemp;
     try {
       const { _data, exists } = usersCollection;
       if (exists) {
-        userInfo = {
+        userTemp = {
           id: _data.id,
           email: _data.email,
           nick: _data.nick,
@@ -87,7 +88,7 @@ const LoginScreen = ({ navigation }: any) => {
           createdTime: _data.createdTime,
         };
       } else {
-        userInfo = {
+        userTemp = {
           id: userInfo.user.id,
           email: userInfo.user.email,
           nick: null,
@@ -117,14 +118,14 @@ const LoginScreen = ({ navigation }: any) => {
         //   });
       }
 
-      if (userInfo.photo == null) {
+      if (userTemp.photo == null) {
         getImage()
       }
 
-      storeData('Users', userInfo);
-      setUser(userInfo);
+      storeData('Users', userTemp);
+      setUser(userTemp);
 
-      if (userInfo.age == null) {
+      if (userTemp.age == null) {
         navigation.navigate('Create Profile', {from: 'Login'})
       }
       else {
