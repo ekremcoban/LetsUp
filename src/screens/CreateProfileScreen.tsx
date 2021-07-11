@@ -1,4 +1,4 @@
-import React, { Component, useState, createRef } from 'react';
+import React, { useContext, useState, createRef } from 'react';
 import {
   View,
   Text,
@@ -34,6 +34,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import ImagePickerCropper from 'react-native-image-crop-picker';
 import { utils } from '@react-native-firebase/app';
 import storage from '@react-native-firebase/storage';
+import ContextApi from 'context/ContextApi';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const genderActionSheetRef = createRef<IActionSheet>();
 const ageActionSheetRef = createRef<IActionSheet>();
@@ -41,10 +43,10 @@ const heightActionSheetRef = createRef<IActionSheet>();
 const weightActionSheetRef = createRef<IActionSheet>();
 
 const CreateProfilScreen = () => {
-  const [users, setUsers] = React.useState();
-  const [email, setEmail] = React.useState();
-  const [photo, setPhoto] = React.useState();
-  const [fullName, onChangeFullName] = React.useState('');
+  const { user, setUser, userPhoto, setUserPhoto } = useContext(ContextApi);
+  const [email, setEmail] = useState();
+  const [photo, setPhoto] = useState(null);
+  const [fullName, onChangeFullName] = useState('');
   const [selectedGenderValue, setSelectedGenderValue] = useState<string | null>(
     null
   );
@@ -57,37 +59,55 @@ const CreateProfilScreen = () => {
   >([null, null]);
   const [branchNo, setBranchNo] = useState<number | null>(null);
   const [uploadUri, setUploadUri] = useState();
-  const [imageName, setImageName] = useState();
-  let reference = null;
-  let pathToFile = null;
+  const [imageName, setImageName] = useState(null);
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { from } = route.params;
 
   useEffect(() => {
     getCurrentUser();
+      console.log('Girdi')
+      // Kullanici resim eklemediyse
+      getData('Users').then((user) => {
+        console.log('user create', user);
+        setUser(user);
+        user.age != null && setSelectedAge(user.age);
+        user.gender != null &&
+          setSelectedGenderValue(
+            user.gender === 'Male' ? 2 : user.gender === 'Female' ? 1 : 0
+          );
+        user.height != null && setSelectedHeight(user.height);
+        user.weight != null && setSelectedWeight(user.weight);
+        if (user.photo == null && imageName == null) {
+          // Kullanici resim eklediyse
+          getData('Photo').then((res) => {
+            if (res == null) {
+              console.log('Burda 2', res);
+              // getImage();
+            } else {
+              console.log('Burda 3')
+              setPhoto(res);
+            }
+          });
+        } else {
+          console.log('Burda 4')
+          setPhoto(user.photo);
+        }
 
-    getData('Users').then((users) => {
-      console.log(users);
-      setUsers(users);
-      users.age != null && setSelectedAge(users.age);
-      users.gender != null &&
-        setSelectedGenderValue(
-          users.gender === 'Male' ? 2 : users.gender === 'Female' ? 1 : 0
-        );
-      users.height != null && setSelectedHeight(users.height);
-      users.weight != null && setSelectedWeight(users.weight);
-      users.photo != null && setPhoto(users.photo);
-    });
+        // getImage(user.email, user.photo);
+      });
+
   }, []);
 
-  const create = () => {
-    console.log('users', users);
-    console.log('email', email);
 
+  const create = async () => {
     let data = {
-      id: users.id,
-      nick: users.nick,
-      name: users.name,
-      surname: users.surname,
-      age: null, //selectedAge,
+      id: user.id,
+      email: user.email,
+      nick: user.nick,
+      name: user.name,
+      surname: user.surname,
+      age: selectedAge,
       gender:
         selectedGenderValue === 2
           ? 'Male'
@@ -96,47 +116,35 @@ const CreateProfilScreen = () => {
           : '',
       height: selectedHeight,
       weight: selectedWeight,
-      interestedIn: users.interestedIn,
-      // photo: photo,
-      geoCode: users.geoCode,
-      city: users.city,
-      county: users.county,
-      country: users.country,
-      createdTime: users.createdTime,
+      interestedIn: user.interestedIn,
+      photo: imageName != null ? null : photo,
+      geoCode: user.geoCode,
+      city: user.city,
+      county: user.county,
+      country: user.country,
+      createdTime: user.createdTime,
     };
 
-    firestore()
+    // Kullanici kayitli mi bilgisi
+    const usersCollection = await firestore()
       .collection('Users')
       .doc(email)
-      .update(data)
-      .then(() => {
-        console.log('User updated!');
-      });
+      .get();
 
-      storage()
-      .ref(imageName)
-      .putFile(uploadUri)
-      .then((snapshot) => {
-        //You can check the image is now uploaded in the storage bucket
-        console.log(`${imageName} has been successfully uploaded.`);
-      })
-      .catch((e) => console.log('uploading image error => ', e));
+    // Veriler sunucuya gonderildi
+    sendData(usersCollection, data);
 
+    // Veri lokalde kayit edildi.
     storeData('Users', data);
-    // try {
-    //   console.log('yol', utils.FilePath.PICTURES_DIRECTORY);
-    //   console.log('reference', photo);
-    //   console.log('pathToFile', photo);
-    //   const reference = storage().ref(
-    //     '64F6FEC9-8776-492D-908A-078C2AEA02A3.jpg'
-    //   );
-    //   const pathToFile = `${utils.FilePath.PICTURES_DIRECTORY}/64F6FEC9-8776-492D-908A-078C2AEA02A3.jpg`;
-    //   // reference = storage().ref("/Users/tiban/Library/Developer/CoreSimulator/Devices/055E0022-99AE-4AB8-B52E-42A127E3B195/data/Containers/Data/Application/EB0ED1B5-055A-437E-8564-E2037B58FDEB/tmp/react-native-image-crop-picker/95B016A1-E997-4EE0-AF74-E1FB7D4CECBD.jpg");
-    //   // pathToFile = `/Users/tiban/Library/Developer/CoreSimulator/Devices/055E0022-99AE-4AB8-B52E-42A127E3B195/data/Containers/Data/Application/EB0ED1B5-055A-437E-8564-E2037B58FDEB/tmp/react-native-image-crop-picker/95B016A1-E997-4EE0-AF74-E1FB7D4CECBD.jpg`;
-    //   reference.putFile(pathToFile);
-    // } catch (e) {
-    //   console.error('ref', e);
-    // }
+    setUser(data)
+
+    if (from === 'Login') {
+      navigation.goBack()
+      navigation.goBack()
+    }
+    else if (from === 'Profile Info') {
+      navigation.goBack()
+    }
   };
 
   const getCurrentUser = async () => {
@@ -147,26 +155,31 @@ const CreateProfilScreen = () => {
     );
   };
 
+  // Foto degistirilmek istendiginde
   const photoUpdate = () => {
     ImagePickerCropper.openPicker({
-      width: 300,
-      height: 400,
+      width: 140,
+      height: 140,
       cropping: true,
     })
       .then((image) => {
-        console.log('image', image);
-        let uri = image.sourceURL;
+        let uri = image.path;
         //generating image name
-        let imageName = 'profile 1.jpeg';
+        let imageName = `${email}.jpeg`;
         //to resolve file path issue on different platforms
-        let uploadUri =
-          Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+        let uploadUri = uri.replace('file://', '');
+        // let uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
         //setting the image name and image uri in the state
 
         setUploadUri(uploadUri);
         setImageName(imageName);
+        // setPhoto(image.path);
 
-        setPhoto(image.path);
+        // Resim sunucuya gonderildi
+        sendImage(imageName, uploadUri);
+      })
+      .then((x) => {
+        getImage();
       })
       .catch((e) => {
         if (e.code === 'E_NO_IMAGE_DATA_FOUND') {
@@ -174,6 +187,62 @@ const CreateProfilScreen = () => {
         }
         console.error('photo error', e.code);
       });
+  };
+
+  const sendData = (usersCollection: any, data: Object) => {
+    if (usersCollection.exists) {
+      firestore()
+        .collection('Users')
+        .doc(email)
+        .update(data)
+        .then(() => {
+          console.log('User updated!');
+        }).catch(e => {
+          console.log('update', e)
+        })
+    } else {
+      firestore()
+        .collection('Users')
+        .doc(email)
+        .set(data)
+        .then(() => {
+          console.log('User updated!');
+        }).catch(e => {
+          console.log('update', e)
+        })
+    }
+  };
+
+  const sendImage = (imageName: any, uploadUri: any) => {
+    console.log('image', imageName);
+    if (imageName != null) {
+      storage()
+        .ref(imageName)
+        .putFile(uploadUri)
+        .then((snapshot) => {
+          //You can check the image is now uploaded in the storage bucket
+          console.log(`${imageName} has been successfully uploaded.`);
+        })
+        .catch((e) => console.log('uploading image error => ', e));
+    }
+  };
+
+  const getImage = async () => {
+    const currentUser = await GoogleSignin.getCurrentUser();
+    
+    let imageRef = storage().ref(currentUser?.user.email + '.jpeg');
+    await imageRef
+      .getDownloadURL()
+      .then((url) => {
+        //from url you can fetched the uploaded image easily
+        console.log('burda', url);
+        console.log('temp', url)
+        setUserPhoto(url);
+        setPhoto(url);
+        storeData('Photo', url);
+
+      })
+      .catch((e) => console.log('getting downloadURL of image error => ', e));
   };
 
   return (
@@ -228,7 +297,9 @@ const CreateProfilScreen = () => {
               </Text>
               <Selector
                 styleView={styles.selectorAge}
-                onPress={() => ageActionSheetRef.current?.open()}
+                onPress={() => {
+                  ageActionSheetRef.current?.open();
+                }}
                 // label={polyglot.t(
                 //   'screens.create_profile.action_sheets.age.title'
                 // )}
@@ -241,7 +312,9 @@ const CreateProfilScreen = () => {
               </Text>
               <Selector
                 styleView={styles.selectorGender}
-                onPress={() => genderActionSheetRef.current?.open()}
+                onPress={() => {
+                  genderActionSheetRef.current?.open();
+                }}
                 // label={polyglot.t(
                 //   'screens.create_profile.action_sheets.gender.title'
                 // )}

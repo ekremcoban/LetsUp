@@ -13,13 +13,11 @@ import {
 import { activities, IActivity } from './models';
 import { colors } from 'styles/colors';
 import { useNavigation } from '@react-navigation/native';
-import ContextApi from 'context/ContextApi';
 
 const ageActionSheetRef = createRef<IActionSheet>();
 
 export const ActivityListScreen = () => {
   const navigation = useNavigation();
-  const {profile, setProfile} = useContext(ContextApi);
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
 
   const _activityTypes = activityTypes.map(

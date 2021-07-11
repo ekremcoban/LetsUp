@@ -1,8 +1,10 @@
 import React from 'react'; 
 
 const ContextApi = React.createContext({
-    profile: null,
-    setProfile: () => {}
+    user: null,
+    setUser: () => {},
+    userPhoto: null,
+    setUserPhoto: () => {},
   });
 
   export default ContextApi;
