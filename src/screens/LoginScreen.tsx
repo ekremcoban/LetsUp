@@ -4,14 +4,16 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { getData, storeData } from '../db/localDb';
 import ContextApi from 'context/ContextApi';
 import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 
 const LoginScreen = ({ navigation }: any) => {
-  const { profile, setProfile } = useContext(ContextApi);
+  const { user, setUser, setUserPhoto } = useContext(ContextApi);
 
   const signIn = async (navigation: any) => {
-    let profile: Object = {};
+    let user: Object = {};
     let data: Object = {};
 
+    // ip adresimde lokasyon alindi
     await getLocation().then(res => {
       data = res;
     })
@@ -25,12 +27,14 @@ const LoginScreen = ({ navigation }: any) => {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
   
+      // Kullanici kayitli mi bilgisi
       const usersCollection = await firestore()
         .collection('Users')
         .doc(userInfo.user.email)
         .get();
 
-        await upsert(profile, usersCollection, data, userInfo);
+        // Kayitli ise vt den, kayit yoksa google dan bilgileri alir
+        await retrieveData(user, usersCollection, data, userInfo);
     }
     catch (error) {
       console.error('GoogleSignin', error);
@@ -45,17 +49,34 @@ const LoginScreen = ({ navigation }: any) => {
       });
   };
 
-  const upsert = async (profile: Object, usersCollection: any, data: any, userInfo: any) => {
-    try {
+  const getImage = async () => {
+    const currentUser = await GoogleSignin.getCurrentUser();
+    
+    let imageRef = storage().ref(currentUser?.user.email + '.jpeg');
+    await imageRef
+      .getDownloadURL()
+      .then((url) => {
+        //from url you can fetched the uploaded image easily
+        storeData('Photo', url);
+        setUserPhoto(url)
+      })
+      .catch((e) => console.log('getting downloadURL of image error => ', e));
+  };
 
-      if (usersCollection.exists) {
-        const { _data } = usersCollection;
-        profile = {
+  // Kayitli ise vt den, kayit yoksa google dan bilgileri alir.
+  const retrieveData = async (user: Object, usersCollection: any, data: any, userInfo: any) => {
+    let userTemp;
+    try {
+      const { _data, exists } = usersCollection;
+      if (exists) {
+        userTemp = {
           id: _data.id,
+          email: _data.email,
           nick: _data.nick,
           name: _data.name,
           surname: _data.surname,
           age: _data.age,
+          gender: _data.gender,
           height: _data.height,
           weight: _data.weight,
           interestedIn: _data.interestedIn,
@@ -67,12 +88,14 @@ const LoginScreen = ({ navigation }: any) => {
           createdTime: _data.createdTime,
         };
       } else {
-        profile = {
+        userTemp = {
           id: userInfo.user.id,
+          email: userInfo.user.email,
           nick: null,
           name: userInfo.user.givenName,
           surname: userInfo.user.familyName,
           age: null,
+          gender: null,
           height: null,
           weight: null,
           interestedIn: null,
@@ -84,20 +107,31 @@ const LoginScreen = ({ navigation }: any) => {
           city: data.city,
           createdTime: new Date()
         };
-
-        firestore()
-          .collection('Users')
-          .doc(userInfo.user.email)
-          .set(profile)
-          .then(() => {
-            console.log('User added!');
-          });
+        
+        // console.log('login', profile)
+        // firestore()
+        //   .collection('Users')
+        //   .doc(userInfo.user.email)
+        //   .set(profile)
+        //   .then(() => {
+        //     console.log('User added!');
+        //   });
       }
 
-      storeData('Users', profile).then((res) => {
-        setProfile(profile);
-        navigation.goBack();
-      });
+      if (userTemp.photo == null) {
+        getImage()
+      }
+
+      storeData('Users', userTemp);
+      setUser(userTemp);
+
+      if (userTemp.age == null) {
+        navigation.navigate('Create Profile', {from: 'Login'})
+      }
+      else {
+        navigation.goBack()
+      }
+
     } catch (error) {
       console.error(error);
     }

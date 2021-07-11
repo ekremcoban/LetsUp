@@ -34,19 +34,26 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { getData, removeItem } from 'db/localDb';
 
 let App = () => {
-  const [profile, setProfile] = useState<string>();
-  const value = { profile, setProfile };
-  const [userId, setUserId] = useState('DmwlR3OcI72ouDxUPH79');
-  const scheme = useColorScheme();
+  const [user, setUser,] = useState();
+  const [userPhoto, setUserPhoto] = useState();
+  const value = { user, setUser, userPhoto, setUserPhoto };
 
+  const scheme = useColorScheme();
   const Stack = createStackNavigator();
   const Tab = createBottomTabNavigator();
 
   useEffect(() => {
     CodePush.sync();
-    getData('profile').then(res =>{
-      console.log(res)
-      setProfile(res)
+    console.log('user1', user)
+    getData('Users').then(res => {
+      console.log('user2', res.photo)
+      setUser(res)
+      if (res.photo == null) {
+        getData('Photo').then(res => {
+          setUserPhoto(res)
+          console.log('Photo', res)
+        })
+      }
   });
     // auth()
     //   .createUserWithEmailAndPassword(
@@ -94,10 +101,10 @@ let App = () => {
     //   return () => subscriber();
   }, []);
 
-  const loginOutTitle = (navigation: any, profile: any) => (
+  const logOutTitle = (navigation: any, user: any, photo: any) => (
     <TouchableOpacity onPress={() => navigation.navigate('Profile Info')}>
       <Image
-        source={{uri: profile.photo}}
+        source={{uri: user != null && user.photo != null ? user.photo : photo}}
         style={{ width: 25, height: 25, borderRadius: 20 }}
       />
     </TouchableOpacity>
@@ -110,8 +117,9 @@ let App = () => {
   );
 
   const exitAccount = (navigation: any) => {
-    setProfile(null);
-    removeItem('profile')
+    setUser(null);
+    removeItem('Photo')
+    removeItem('Users')
     GoogleSignin.signOut();
     GoogleSignin.revokeAccess();
     navigation.navigate('Activity List')
@@ -226,9 +234,9 @@ let App = () => {
                   },
                   headerRight: () => (
                     <View style={{ flexDirection: 'row', margin: 5 }}>
-                      {profile != null
-                        ? loginOutTitle(navigation, profile)
-                        : loginInTitle(navigation)}
+                      {user == null
+                        ? loginInTitle(navigation)
+                        : logOutTitle(navigation, user, userPhoto)} 
                     </View>
                   ),
                 })}

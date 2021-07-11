@@ -103,7 +103,17 @@ const CreateActivityScreen2 = () => {
 
   const save = () => {
     getData('Users').then(res => {
-      if (res.age == null) {
+      console.log('users', res)
+      if (res == null) {
+        Alert.alert(
+          `${polyglot.t('alert.warning')}`,
+          `${polyglot.t('alert.create_activity.save_text')}`,
+          [
+            { text: "OK", onPress: () => navigation.navigate('Login') }
+          ]
+        );
+      }
+      else if (res.age == null) {
         Alert.alert(
           `${polyglot.t('alert.warning')}`,
           `${polyglot.t('alert.create_activity.save_text')}`,
