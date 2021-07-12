@@ -7,6 +7,7 @@ import ContextApi from 'context/ContextApi';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import { useState } from 'react';
+import { firebase } from '@react-native-firebase/auth';
 
 const LoginScreen = ({ navigation }: any) => {
   const { user, setUser, setUserPhoto } = useContext(ContextApi);
@@ -112,7 +113,7 @@ const LoginScreen = ({ navigation }: any) => {
           country: data.country_name,
           region: data.region,
           city: data.city,
-          createdTime: new Date()
+          createdTime: new Date().getTime()
         };
         
         // console.log('login', profile)

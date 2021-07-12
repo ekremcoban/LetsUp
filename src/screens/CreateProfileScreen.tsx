@@ -127,6 +127,7 @@ const CreateProfilScreen = () => {
       createdTime: user.createdTime,
     };
 
+    console.log('time', humanDateFormat)
     if (data.age == undefined && data.gender == undefined) {
       setWarning(1);
     } else if (data.age == undefined) {
