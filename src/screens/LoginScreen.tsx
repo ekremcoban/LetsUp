@@ -2,16 +2,21 @@ import React, { useContext } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { getData, storeData } from '../db/localDb';
+import DisplaySpinner from '../components/spinner';
 import ContextApi from 'context/ContextApi';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
+import { useState } from 'react';
 
 const LoginScreen = ({ navigation }: any) => {
   const { user, setUser, setUserPhoto } = useContext(ContextApi);
+  const [spinner, setSpinner] = useState<boolean>(false);
 
   const signIn = async (navigation: any) => {
     let user: Object = {};
     let data: Object = {};
+
+    setSpinner(true);
 
     // ip adresimde lokasyon alindi
     await getLocation().then(res => {
@@ -32,6 +37,8 @@ const LoginScreen = ({ navigation }: any) => {
         .collection('Users')
         .doc(userInfo.user.email)
         .get();
+
+        setSpinner(false);
 
         // Kayitli ise vt den, kayit yoksa google dan bilgileri alir
         await retrieveData(user, usersCollection, data, userInfo);
@@ -139,6 +146,7 @@ const LoginScreen = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
+    {spinner && <DisplaySpinner/>}
       <TouchableOpacity
         style={{
           padding: 10,

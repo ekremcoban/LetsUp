@@ -36,7 +36,8 @@ import { getData, removeItem } from 'db/localDb';
 let App = () => {
   const [user, setUser,] = useState();
   const [userPhoto, setUserPhoto] = useState();
-  const value = { user, setUser, userPhoto, setUserPhoto };
+  const [location, setLocation] = useState();
+  const value = { user, setUser, userPhoto, setUserPhoto, location, setLocation };
 
   const scheme = useColorScheme();
   const Stack = createStackNavigator();
@@ -44,6 +45,9 @@ let App = () => {
 
   useEffect(() => {
     CodePush.sync();
+    
+    getLocations();
+
     console.log('user1', user)
     getData('Users').then(res => {
       console.log('user2', res.photo)
@@ -100,6 +104,27 @@ let App = () => {
     //   // Stop listening for updates when no longer required
     //   return () => subscriber();
   }, []);
+
+  const getLocations = async () => {
+    let location = await getLocationFromIp('https://ipapi.co/json/');
+    console.log('location', location)
+    if (location == undefined) {
+      location = await getLocationFromIp('https://ipinfo.io/json/');
+      console.log('ipinfo', location)
+    }
+    setLocation(location)
+}
+
+const getLocationFromIp = (url: string) => {
+    return fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        return data;
+      })
+      .catch((error) => {
+        console.error('ipapi', error);
+      });
+  };
 
   const logOutTitle = (navigation: any, user: any, photo: any) => (
     <TouchableOpacity onPress={() => navigation.navigate('Profile Info')}>

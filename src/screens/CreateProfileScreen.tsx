@@ -8,7 +8,6 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Alert,
-  Platform,
 } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { Selector } from 'components/selector/selector';
@@ -32,6 +31,7 @@ import {
 } from '@react-native-google-signin/google-signin';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ImagePickerCropper from 'react-native-image-crop-picker';
+import DisplaySpinner from '../components/spinner';
 import { utils } from '@react-native-firebase/app';
 import storage from '@react-native-firebase/storage';
 import ContextApi from 'context/ContextApi';
@@ -43,7 +43,7 @@ const heightActionSheetRef = createRef<IActionSheet>();
 const weightActionSheetRef = createRef<IActionSheet>();
 
 const CreateProfilScreen = () => {
-  const { user, setUser, userPhoto, setUserPhoto } = useContext(ContextApi);
+  const { user, setUser, location, setUserPhoto } = useContext(ContextApi);
   const [email, setEmail] = useState();
   const [photo, setPhoto] = useState(null);
   const [fullName, onChangeFullName] = useState('');
@@ -60,13 +60,14 @@ const CreateProfilScreen = () => {
   const [branchNo, setBranchNo] = useState<number | null>(null);
   const [uploadUri, setUploadUri] = useState();
   const [imageName, setImageName] = useState(null);
+  const [spinner, setSpinner] = useState<boolean>(false);
   const navigation = useNavigation();
   const route = useRoute();
   const { from } = route.params;
 
   useEffect(() => {
     getCurrentUser();
-      console.log('Girdi')
+      console.log('Girdi', location)
       // Kullanici resim eklemediyse
       getData('Users').then((user) => {
         console.log('user create', user);
@@ -101,6 +102,7 @@ const CreateProfilScreen = () => {
 
 
   const create = async () => {
+    setSpinner(true);
     let data = {
       id: user.id,
       email: user.email,
@@ -119,9 +121,11 @@ const CreateProfilScreen = () => {
       interestedIn: user.interestedIn,
       photo: imageName != null ? null : photo,
       geoCode: user.geoCode,
-      city: user.city,
-      county: user.county,
-      country: user.country,
+      city: location.city,
+      county: location.region,
+      country: location.country,
+      postal: location.postal,
+      type: 0,
       createdTime: user.createdTime,
     };
 
@@ -138,6 +142,7 @@ const CreateProfilScreen = () => {
     storeData('Users', data);
     setUser(data)
 
+    setSpinner(false);
     if (from === 'Login') {
       navigation.goBack()
       navigation.goBack()
@@ -208,7 +213,7 @@ const CreateProfilScreen = () => {
         .then(() => {
           console.log('User updated!');
         }).catch(e => {
-          console.log('update', e)
+          console.log('insert', e)
         })
     }
   };
@@ -246,6 +251,8 @@ const CreateProfilScreen = () => {
   };
 
   return (
+    <>
+    {spinner && <DisplaySpinner/>}
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={{ flex: 1 }}>
         <TouchableOpacity
@@ -434,6 +441,7 @@ const CreateProfilScreen = () => {
         </View>
       </View>
     </TouchableWithoutFeedback>
+    </>
   );
 };
 

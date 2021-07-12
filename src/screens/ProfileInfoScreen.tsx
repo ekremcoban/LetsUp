@@ -95,7 +95,7 @@ const ProfileInfoScreen = () => {
           <View style={styles.viewSecondCol1}>
             <Text style={styles.textSecondCol1Title}>Height</Text>
             <Text style={styles.textSecondCol1Text}>
-              {user != null && user.height[0] != null
+              {user != null && user.height != null && user.height[0] != null
                 ? user.height[0] + ',' + user.height[1]
                 : '---'}
             </Text>
@@ -103,7 +103,7 @@ const ProfileInfoScreen = () => {
           <View style={styles.viewSecondCol2}>
             <Text style={styles.textSecondCol2Title}>Weight</Text>
             <Text style={styles.textSecondCol2Text}>
-              {user != null && user.weight[0] != null
+              {user != null && user.weight != null && user.weight[0] != null
                 ? user.weight[0] + ',' + user.weight[1]
                 : '---'}
             </Text>

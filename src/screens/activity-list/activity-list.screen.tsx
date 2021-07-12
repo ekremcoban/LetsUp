@@ -13,10 +13,13 @@ import {
 import { activities, IActivity } from './models';
 import { colors } from 'styles/colors';
 import { useNavigation } from '@react-navigation/native';
+import { useEffect } from 'react';
+import ContextApi from 'context/ContextApi';
 
 const ageActionSheetRef = createRef<IActionSheet>();
 
 export const ActivityListScreen = () => {
+  const { location } = useContext(ContextApi)
   const navigation = useNavigation();
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
 
