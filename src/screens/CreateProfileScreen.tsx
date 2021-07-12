@@ -61,48 +61,46 @@ const CreateProfilScreen = () => {
   const [uploadUri, setUploadUri] = useState();
   const [imageName, setImageName] = useState(null);
   const [spinner, setSpinner] = useState<boolean>(false);
+  const [warning, setWarning] = useState<number>(0);
   const navigation = useNavigation();
   const route = useRoute();
   const { from } = route.params;
 
   useEffect(() => {
     getCurrentUser();
-      console.log('Girdi', location)
-      // Kullanici resim eklemediyse
-      getData('Users').then((user) => {
-        console.log('user create', user);
-        setUser(user);
-        user.age != null && setSelectedAge(user.age);
-        user.gender != null &&
-          setSelectedGenderValue(
-            user.gender === 'Male' ? 2 : user.gender === 'Female' ? 1 : 0
-          );
-        user.height != null && setSelectedHeight(user.height);
-        user.weight != null && setSelectedWeight(user.weight);
-        if (user.photo == null && imageName == null) {
-          // Kullanici resim eklediyse
-          getData('Photo').then((res) => {
-            if (res == null) {
-              console.log('Burda 2', res);
-              getImage();
-            } else {
-              console.log('Burda 3')
-              setPhoto(res);
-            }
-          });
-        } else {
-          console.log('Burda 4')
-          setPhoto(user.photo);
-        }
+    console.log('Girdi', location);
+    // Kullanici resim eklemediyse
+    getData('Users').then((user) => {
+      console.log('user create', user);
+      setUser(user);
+      user.age != null && setSelectedAge(user.age);
+      user.gender != null &&
+        setSelectedGenderValue(
+          user.gender === 'Male' ? 2 : user.gender === 'Female' ? 1 : 0
+        );
+      user.height != null && setSelectedHeight(user.height);
+      user.weight != null && setSelectedWeight(user.weight);
+      if (user.photo == null && imageName == null) {
+        // Kullanici resim eklediyse
+        getData('Photo').then((res) => {
+          if (res == null) {
+            console.log('Burda 2', res);
+            getImage();
+          } else {
+            console.log('Burda 3');
+            setPhoto(res);
+          }
+        });
+      } else {
+        console.log('Burda 4');
+        setPhoto(user.photo);
+      }
 
-        // getImage(user.email, user.photo);
-      });
-
+      // getImage(user.email, user.photo);
+    });
   }, []);
 
-
   const create = async () => {
-    setSpinner(true);
     let data = {
       id: user.id,
       email: user.email,
@@ -115,7 +113,7 @@ const CreateProfilScreen = () => {
           ? 'Male'
           : selectedGenderValue === 1
           ? 'Female'
-          : '',
+          : undefined,
       height: selectedHeight,
       weight: selectedWeight,
       interestedIn: user.interestedIn,
@@ -129,26 +127,35 @@ const CreateProfilScreen = () => {
       createdTime: user.createdTime,
     };
 
-    // Kullanici kayitli mi bilgisi
-    const usersCollection = await firestore()
-      .collection('Users')
-      .doc(email)
-      .get();
+    if (data.age == undefined && data.gender == undefined) {
+      setWarning(1);
+    } else if (data.age == undefined) {
+      setWarning(2);
+    } else if (data.gender == undefined) {
+      setWarning(3);
+    } else {
+      setSpinner(true);
+      setWarning(0);
+      // Kullanici kayitli mi bilgisi
+      const usersCollection = await firestore()
+        .collection('Users')
+        .doc(email)
+        .get();
 
-    // Veriler sunucuya gonderildi
-    sendData(usersCollection, data);
+      // Veriler sunucuya gonderildi
+      sendData(usersCollection, data);
 
-    // Veri lokalde kayit edildi.
-    storeData('Users', data);
-    setUser(data)
+      // Veri lokalde kayit edildi.
+      storeData('Users', data);
+      setUser(data);
 
-    setSpinner(false);
-    if (from === 'Login') {
-      navigation.goBack()
-      navigation.goBack()
-    }
-    else if (from === 'Profile Info') {
-      navigation.goBack()
+      setSpinner(false);
+      if (from === 'Login') {
+        navigation.goBack();
+        navigation.goBack();
+      } else if (from === 'Profile Info') {
+        navigation.goBack();
+      }
     }
   };
 
@@ -195,6 +202,7 @@ const CreateProfilScreen = () => {
   };
 
   const sendData = (usersCollection: any, data: Object) => {
+    console.log(data, usersCollection);
     if (usersCollection.exists) {
       firestore()
         .collection('Users')
@@ -202,9 +210,10 @@ const CreateProfilScreen = () => {
         .update(data)
         .then(() => {
           console.log('User updated!');
-        }).catch(e => {
-          console.log('update', e)
         })
+        .catch((e) => {
+          console.log('update', e);
+        });
     } else {
       firestore()
         .collection('Users')
@@ -212,9 +221,10 @@ const CreateProfilScreen = () => {
         .set(data)
         .then(() => {
           console.log('User updated!');
-        }).catch(e => {
-          console.log('insert', e)
         })
+        .catch((e) => {
+          console.log('insert', e);
+        });
     }
   };
 
@@ -234,147 +244,156 @@ const CreateProfilScreen = () => {
 
   const getImage = async () => {
     const currentUser = await GoogleSignin.getCurrentUser();
-    
+
     let imageRef = storage().ref(currentUser?.user.email + '.jpeg');
     await imageRef
       .getDownloadURL()
       .then((url) => {
         //from url you can fetched the uploaded image easily
         console.log('burda', url);
-        console.log('temp', url)
+        console.log('temp', url);
         setUserPhoto(url);
         setPhoto(url);
         storeData('Photo', url);
-
       })
       .catch((e) => console.log('getting downloadURL of image error => ', e));
   };
 
   return (
     <>
-    {spinner && <DisplaySpinner/>}
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={{ flex: 1 }}>
-        <TouchableOpacity
-          style={{ alignSelf: 'flex-end' }}
-          onPress={() => create()}
-        >
-          <View style={styles.viewbuttonAction}>
-            <Text style={styles.textButtonAction}>Save</Text>
-          </View>
-        </TouchableOpacity>
-        <View style={styles.viewImg}>
-          <Image
-            source={
-              photo != ''
-                ? { uri: photo }
-                : null
-            }
-            // source={require(photoPath)}
-            style={styles.image}
-          />
-          <View style={styles.viewIcon}>
-            <Icon
-              size={30}
-              name="camera-outline"
-              type="ionicon"
-              onPress={() => photoUpdate()}
+      {spinner && <DisplaySpinner />}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity
+            style={{ alignSelf: 'flex-end' }}
+            onPress={() => create()}
+          >
+            <View style={styles.viewbuttonAction}>
+              <Text style={styles.textButtonAction}>Save</Text>
+            </View>
+          </TouchableOpacity>
+          <View style={styles.viewImg}>
+            <Image
+              source={photo != '' ? { uri: photo } : null}
+              // source={require(photoPath)}
+              style={styles.image}
             />
-          </View>
-        </View>
-        <View style={styles.viewInfo}>
-          <View style={styles.viewFullName}>
-            <Text style={styles.textFullName}>
-              {polyglot.t('screens.create_profile.label.full_name')}
-            </Text>
-            <View style={styles.inputFullName}>
-              <TextInput
-                style={styles.inputNameText}
-                onChangeText={onChangeFullName}
-                editable={false}
-                value={fullName}
+            <View style={styles.viewIcon}>
+              <Icon
+                size={30}
+                name="camera-outline"
+                type="ionicon"
+                onPress={() => photoUpdate()}
               />
             </View>
           </View>
+          <View style={styles.viewInfo}>
+            <View style={styles.viewFullName}>
+              <Text style={styles.textFullName}>
+                {polyglot.t('screens.create_profile.label.full_name')}
+              </Text>
+              <View style={styles.inputFullName}>
+                <TextInput
+                  style={styles.inputNameText}
+                  onChangeText={onChangeFullName}
+                  editable={false}
+                  value={fullName}
+                />
+              </View>
+            </View>
 
-          <View style={styles.viewAgeGender}>
-            <View style={styles.viewAge}>
-              <Text style={styles.textAge}>
-                {polyglot.t('screens.create_profile.label.age')}
-              </Text>
-              <Selector
-                styleView={styles.selectorAge}
-                onPress={() => {
-                  ageActionSheetRef.current?.open();
-                }}
-                // label={polyglot.t(
-                //   'screens.create_profile.action_sheets.age.title'
-                // )}
-                text={selectedAge}
-              />
+            <View style={styles.viewAgeGender}>
+              <View style={styles.viewAge}>
+                <Text style={warning === 1 || warning === 2 ? [styles.textAge, {color: 'red'}] : styles.textAge}>
+                  {polyglot.t('screens.create_profile.label.age')}
+                </Text>
+                <Selector
+                  styleView={styles.selectorAge}
+                  onPress={() => {
+                    ageActionSheetRef.current?.open();
+                    if (warning === 1) {
+                      setWarning(3)
+                    }
+                    else {
+                      setWarning(0)
+                    }
+                  }}
+                  // label={polyglot.t(
+                  //   'screens.create_profile.action_sheets.age.title'
+                  // )}
+                  text={selectedAge}
+                />
+              </View>
+              <View style={styles.viewGender}>
+                <Text style={warning === 1 || warning === 3 ? [styles.textGender, {color: 'red'}] : styles.textGender}>
+                  {polyglot.t('screens.create_profile.label.gender')}
+                </Text>
+                <Selector
+                  styleView={styles.selectorGender}
+                  onPress={() => {
+                    genderActionSheetRef.current?.open();
+                    if (warning === 1) {
+                      setWarning(2)
+                    }
+                    else {
+                      setWarning(0)
+                    }
+                  }}
+                  // label={polyglot.t(
+                  //   'screens.create_profile.action_sheets.gender.title'
+                  // )}
+                  text={(() => {
+                    const selectedGender = getSelectedGender(
+                      selectedGenderValue
+                    );
+                    if (!selectedGender) {
+                      return undefined;
+                    }
+                    return polyglot.t(selectedGender.text);
+                  })()}
+                />
+              </View>
             </View>
-            <View style={styles.viewGender}>
-              <Text style={styles.textGender}>
-                {polyglot.t('screens.create_profile.label.gender')}
-              </Text>
-              <Selector
-                styleView={styles.selectorGender}
-                onPress={() => {
-                  genderActionSheetRef.current?.open();
-                }}
-                // label={polyglot.t(
-                //   'screens.create_profile.action_sheets.gender.title'
-                // )}
-                text={(() => {
-                  const selectedGender = getSelectedGender(selectedGenderValue);
-                  if (!selectedGender) {
-                    return undefined;
+
+            <View style={styles.viewHeightWeight}>
+              <View style={styles.viewHeight}>
+                <Text style={styles.textHeight}>
+                  {polyglot.t('screens.create_profile.label.height')}
+                </Text>
+                <Selector
+                  styleView={styles.selectorHeight}
+                  onPress={() => heightActionSheetRef.current?.open()}
+                  // label={polyglot.t(
+                  //   'screens.create_profile.action_sheets.height.title'
+                  // )}
+                  text={
+                    selectedHeight[0] != null &&
+                    selectedHeight[1] != null &&
+                    `${selectedHeight[0]}.${selectedHeight[1]} m`
                   }
-                  return polyglot.t(selectedGender.text);
-                })()}
-              />
+                />
+              </View>
+              <View style={styles.viewWeight}>
+                <Text style={styles.textWeight}>
+                  {polyglot.t('screens.create_profile.label.weight')}
+                </Text>
+                <Selector
+                  styleView={styles.selectorWeight}
+                  onPress={() => weightActionSheetRef.current?.open()}
+                  // label={polyglot.t(
+                  //   'screens.create_profile.action_sheets.weight.title'
+                  // )}
+                  text={
+                    selectedWeight[0] != null &&
+                    selectedWeight[1] != null &&
+                    `${selectedWeight[0]}.${selectedWeight[1]} kg`
+                  }
+                />
+              </View>
             </View>
-          </View>
 
-          <View style={styles.viewHeightWeight}>
-            <View style={styles.viewHeight}>
-              <Text style={styles.textHeight}>
-                {polyglot.t('screens.create_profile.label.height')}
-              </Text>
-              <Selector
-                styleView={styles.selectorHeight}
-                onPress={() => heightActionSheetRef.current?.open()}
-                // label={polyglot.t(
-                //   'screens.create_profile.action_sheets.height.title'
-                // )}
-                text={
-                  selectedHeight[0] != null &&
-                  selectedHeight[1] != null &&
-                  `${selectedHeight[0]}.${selectedHeight[1]} m`
-                }
-              />
-            </View>
-            <View style={styles.viewWeight}>
-              <Text style={styles.textWeight}>
-                {polyglot.t('screens.create_profile.label.weight')}
-              </Text>
-              <Selector
-                styleView={styles.selectorWeight}
-                onPress={() => weightActionSheetRef.current?.open()}
-                // label={polyglot.t(
-                //   'screens.create_profile.action_sheets.weight.title'
-                // )}
-                text={
-                  selectedWeight[0] != null &&
-                  selectedWeight[1] != null &&
-                  `${selectedWeight[0]}.${selectedWeight[1]} kg`
-                }
-              />
-            </View>
-          </View>
-
-          <View style={styles.viewInterestedIn}>
-            {/* <Text style={styles.textInterestedIn}>
+            <View style={styles.viewInterestedIn}>
+              {/* <Text style={styles.textInterestedIn}>
               {polyglot.t('screens.create_profile.label.interested_in')}
             </Text>
             <ActivityTypeSelector>
@@ -393,54 +412,54 @@ const CreateProfilScreen = () => {
                 )
               )}
             </ActivityTypeSelector> */}
+            </View>
+            <View style={{ flex: 1 }} />
+            <GenderActionSheet
+              ref={genderActionSheetRef}
+              onSelect={(genderValue: string) => {
+                setSelectedGenderValue(genderValue);
+                genderActionSheetRef.current?.close();
+              }}
+              onCancel={() => {
+                genderActionSheetRef.current?.close();
+              }}
+            />
+            <AgeActionSheet
+              ref={ageActionSheetRef}
+              onSelect={(number: number) => {
+                // TODO: Validate selected age values
+                setSelectedAge(number);
+                ageActionSheetRef.current?.close();
+              }}
+              onCancel={() => {
+                ageActionSheetRef.current?.close();
+              }}
+            />
+            <HeightActionSheet
+              ref={heightActionSheetRef}
+              onSelect={([m, cm]: [number, number]) => {
+                // TODO: Validate selected age values
+                setSelectedHeight([m, cm]);
+                heightActionSheetRef.current?.close();
+              }}
+              onCancel={() => {
+                heightActionSheetRef.current?.close();
+              }}
+            />
+            <WeightActionSheet
+              ref={weightActionSheetRef}
+              onSelect={([kg, gr]: [number, number]) => {
+                // TODO: Validate selected age values
+                setSelectedWeight([kg, gr]);
+                weightActionSheetRef.current?.close();
+              }}
+              onCancel={() => {
+                weightActionSheetRef.current?.close();
+              }}
+            />
           </View>
-          <View style={{ flex: 1 }} />
-          <GenderActionSheet
-            ref={genderActionSheetRef}
-            onSelect={(genderValue: string) => {
-              setSelectedGenderValue(genderValue);
-              genderActionSheetRef.current?.close();
-            }}
-            onCancel={() => {
-              genderActionSheetRef.current?.close();
-            }}
-          />
-          <AgeActionSheet
-            ref={ageActionSheetRef}
-            onSelect={(number: number) => {
-              // TODO: Validate selected age values
-              setSelectedAge(number);
-              ageActionSheetRef.current?.close();
-            }}
-            onCancel={() => {
-              ageActionSheetRef.current?.close();
-            }}
-          />
-          <HeightActionSheet
-            ref={heightActionSheetRef}
-            onSelect={([m, cm]: [number, number]) => {
-              // TODO: Validate selected age values
-              setSelectedHeight([m, cm]);
-              heightActionSheetRef.current?.close();
-            }}
-            onCancel={() => {
-              heightActionSheetRef.current?.close();
-            }}
-          />
-          <WeightActionSheet
-            ref={weightActionSheetRef}
-            onSelect={([kg, gr]: [number, number]) => {
-              // TODO: Validate selected age values
-              setSelectedWeight([kg, gr]);
-              weightActionSheetRef.current?.close();
-            }}
-            onCancel={() => {
-              weightActionSheetRef.current?.close();
-            }}
-          />
         </View>
-      </View>
-    </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
     </>
   );
 };
@@ -526,6 +545,7 @@ const styles = StyleSheet.create({
   textAge: {
     paddingStart: 5,
     fontWeight: 'bold',
+    color: 'black',
   },
   selectorAge: {
     height: 40,
@@ -534,6 +554,7 @@ const styles = StyleSheet.create({
   viewGender: {
     flex: 1,
     paddingLeft: 5,
+    color: 'black',
   },
   textGender: {
     paddingStart: 5,
