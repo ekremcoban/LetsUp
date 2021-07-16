@@ -44,8 +44,8 @@ type Location = {
 
 const CreateActivityScreen2 = () => {
   const navigation = useNavigation();
-  const [branchNo, setBranchNo] = useState<number | null>(null);
-  const [title, setTitle] = useState<string>('');
+  const [branchName, setBranchName] = useState<String>(String || undefined);
+  const [activityName, setActivityName] = useState<string>('');
 
   const [warningTitle, setWarningTitle] = useState<boolean>(false);
   const [warningStartPlace, setWarningStartPlace] = useState<boolean>(false);
@@ -102,30 +102,36 @@ const CreateActivityScreen2 = () => {
   };
 
   const save = () => {
-    getData('Users').then(res => {
-      console.log('users', res)
-      if (res == null) {
-        Alert.alert(
-          `${polyglot.t('alert.warning')}`,
-          `${polyglot.t('alert.create_activity.save_text')}`,
-          [
-            { text: "OK", onPress: () => navigation.navigate('Login') }
-          ]
-        );
-      }
-      else if (res.age == null) {
-        Alert.alert(
-          `${polyglot.t('alert.warning')}`,
-          `${polyglot.t('alert.create_activity.save_text')}`,
-          [
-            { text: "OK", onPress: () => navigation.navigate('Create Profile') }
-          ]
-        );
-      }
-      else {
-        Alert.alert('Kayıt Yapıldı')
-      }
-    })
+    const activity = {
+      type: branchName,
+      name: selectedActivityNameValue,
+    };
+
+    console.log('activity', activity)
+    // getData('Users').then(res => {
+    //   console.log('users', res)
+    //   if (res == null) {
+    //     Alert.alert(
+    //       `${polyglot.t('alert.warning')}`,
+    //       `${polyglot.t('alert.create_activity.save_text')}`,
+    //       [
+    //         { text: "OK", onPress: () => navigation.navigate('Login') }
+    //       ]
+    //     );
+    //   }
+    //   else if (res.age == null) {
+    //     Alert.alert(
+    //       `${polyglot.t('alert.warning')}`,
+    //       `${polyglot.t('alert.create_activity.save_text')}`,
+    //       [
+    //         { text: "OK", onPress: () => navigation.navigate('Create Profile') }
+    //       ]
+    //     );
+    //   }
+    //   else {
+    //     Alert.alert('Kayıt Yapıldı')
+    //   }
+    // })
 
     // TODO: Uncomment when we start implementing save functionality
     //
@@ -373,8 +379,8 @@ const CreateActivityScreen2 = () => {
                 id={activityType.id}
                 icon={activityType.image}
                 text={polyglot.t(activityType.textKey)}
-                onItemPress={(selecteActivityTypes: number[]) =>
-                  setBranchNo(selecteActivityTypes[0])
+                onItemPress={() =>
+                  setBranchName(activityType.image)
                 }
               />
             ))}
@@ -389,7 +395,7 @@ const CreateActivityScreen2 = () => {
                 )}*`}
                 text={(() => {
                   const selectedActivityName = getSelectedActivityName(
-                    selectedActivityNameValue
+                    selectedActivityNameValue,
                   );
                   if (!selectedActivityName) {
                     return undefined;
@@ -554,6 +560,7 @@ const CreateActivityScreen2 = () => {
         />
 
         <ActivityNameActionSheet
+        branchName={branchName}
           ref={activityNameActionSheetRef}
           onSelect={(activityNameValue: number) => {
             setSelectedActivityNameValue(activityNameValue);

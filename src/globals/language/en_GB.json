@@ -1,15 +1,17 @@
 {
   "activity_names": {
-    "0": "Bisiklet Bizim İşimiz",
+    "0": "Seçiniz",
     "1": "Koşmaya Var Mısın?",
-    "2": "Bisiklet Turu",
+    "2": "Koşu candır",
     "3": "Basketbol Maçı",
-    "4": "Test 1",
-    "5": "Test 2",
-    "6": "Test 3",
-    "7": "Test 4",
-    "8": "Test 5",
-    "9": "Test 6"
+    "4": "Basketteyiz",
+    "5": "Bisiklet Turu",
+    "6": "Bisiklet Bizim İşimiz",
+    "7": "Tırmanmaca",
+    "8": "Tırmık",
+    "9": "Masada Tenis",
+    "10": "Bowlingen",
+    "11": "Atarım Tutamazsın"
   },
   "activity_types": {
     "basketball": "Basketball",

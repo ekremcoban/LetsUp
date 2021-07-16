@@ -14,10 +14,12 @@ export const activityNames: ActivityName[] = [
   { value: 7, text: 'activity_names.7' },
   { value: 8, text: 'activity_names.8' },
   { value: 9, text: 'activity_names.9' },
+  { value: 10, text: 'activity_names.10' },
+  { value: 11, text: 'activity_names.11' },
 ];
 
 export const getSelectedActivityName = (
-  value?: number | null
+  value?: number | null,
 ): ActivityName | undefined => {
   if (!value) {
     return undefined;

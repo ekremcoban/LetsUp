@@ -8,6 +8,7 @@ import { Picker } from 'components/picker/picker';
 import { activityNames } from 'models/activity-names';
 
 interface IActivityNameActionSheetProps {
+  branchName: String;
   onSelect: (value: number) => void;
   onCancel: () => void;
 }
@@ -31,7 +32,7 @@ export const ActivityNameActionSheet = forwardRef<
     >
       <Picker
         fluid
-        items={activityNames.map((activityName) => ({
+        items={activityNames.filter(a => a.value < 3).map((activityName) => ({
           value: activityName.value,
           text: polyglot.t(activityName.text),
         }))}
