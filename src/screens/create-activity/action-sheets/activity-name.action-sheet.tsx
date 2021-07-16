@@ -19,6 +19,59 @@ export const ActivityNameActionSheet = forwardRef<
 >((props, ref) => {
   const [selectedValue, setSelectedValue] = useState(activityNames[0].value);
 
+  const items = () => {
+    console.log('branch', props.branchName)
+    if (props.branchName === 'jogging') {
+      return activityNames.filter(a => a.value >= 1 && a.value < 6).map((activityName) => ({
+        value: activityName.value,
+        text: polyglot.t(activityName.text),
+      }))
+    }
+
+    if (props.branchName === 'basketball') {
+      return activityNames.filter(a => a.value >= 6 && a.value < 11).map((activityName) => ({
+        value: activityName.value,
+        text: polyglot.t(activityName.text),
+      }))
+    }
+
+    if (props.branchName === 'bicycle') {
+      return activityNames.filter(a => a.value >= 11 && a.value < 16).map((activityName) => ({
+        value: activityName.value,
+        text: polyglot.t(activityName.text),
+      }))
+    }
+    
+    if (props.branchName === 'hiking') {
+      return activityNames.filter(a => a.value >= 16 && a.value < 21).map((activityName) => ({
+        value: activityName.value,
+        text: polyglot.t(activityName.text),
+      }))
+    }
+
+    if (props.branchName === 'tennis') {
+      return activityNames.filter(a => a.value >= 21 && a.value < 26).map((activityName) => ({
+        value: activityName.value,
+        text: polyglot.t(activityName.text),
+      }))
+    }
+
+    if (props.branchName === 'bowling') {
+      return activityNames.filter(a => a.value >= 26 && a.value < 31).map((activityName) => ({
+        value: activityName.value,
+        text: polyglot.t(activityName.text),
+      }))
+    }
+
+    if (props.branchName === 'frisbee') {
+      return activityNames.filter(a => a.value >= 31 && a.value < 36).map((activityName) => ({
+        value: activityName.value,
+        text: polyglot.t(activityName.text),
+      }))
+    }
+
+  }
+
   return (
     <ActionSheet
       ref={ref}
@@ -32,10 +85,7 @@ export const ActivityNameActionSheet = forwardRef<
     >
       <Picker
         fluid
-        items={activityNames.filter(a => a.value < 3).map((activityName) => ({
-          value: activityName.value,
-          text: polyglot.t(activityName.text),
-        }))}
+        items={items()}
         selectedValue={selectedValue}
         onValueChange={setSelectedValue}
       />

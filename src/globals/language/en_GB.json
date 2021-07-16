@@ -1,17 +1,47 @@
 {
   "activity_names": {
     "0": "Seçiniz",
-    "1": "Koşmaya Var Mısın?",
-    "2": "Koşu candır",
-    "3": "Basketbol Maçı",
-    "4": "Basketteyiz",
-    "5": "Bisiklet Turu",
-    "6": "Bisiklet Bizim İşimiz",
-    "7": "Tırmanmaca",
-    "8": "Tırmık",
-    "9": "Masada Tenis",
-    "10": "Bowlingen",
-    "11": "Atarım Tutamazsın"
+    "1": "Lets Run",
+    "2": "Lets Race",
+    "3": "How fast are you?",
+    "4": "Do you want to join us?",
+    "5": "The streets are waiting for us",
+
+    "6": "Let's go basketball",
+    "7": "Basketball is our business",
+    "8": "Basketball lovers",
+    "9": "Let's socialize",
+    "10": "Double Double",
+
+    "11": "Let's bike",
+    "12": "Lets Race",
+    "13": "Join us with your bikes",
+    "14": "Cycling for Health",
+    "15": "Cycling for pleasure",
+
+    "16": "Let's go nature",
+    "17": "Hiking this weekend",
+    "18": "We missed fresh air",
+    "19": "Enjoy nature",
+    "20": "Grab your backpack",
+
+    "21": "Lets go tennis",
+    "22": "Grab your racket",
+    "23": "Will you be my rival?",
+    "24": "Do you play tennis with me?",
+    "25": "Tennis is my fav",
+
+    "26": "Lets go bowling",
+    "27": "Let's socialize",
+    "28": "Come if you're bored",
+    "29": "Will you be my rival?",
+    "30": "Do you play bowling with us?",
+   
+    "31": "Let's play frisbee",
+    "32": "Let's socialize",
+    "33": "Come if you're bored",
+    "34": "Will you be my rival?",
+    "35": "Do you play frisbee with us?"
   },
   "activity_types": {
     "basketball": "Basketball",
@@ -20,7 +50,7 @@
     "frisbee": "Frisbee",
     "hiking": "Hiking",
     "jogging": "Jogging",
-    "table_tennis": "Table Tennis"
+    "table_tennis": "Tennis"
   },
   "components": {
     "selector": {

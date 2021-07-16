@@ -37,8 +37,8 @@ static void InitializeFlipper(UIApplication *application) {
 #ifdef FB_SONARKIT_ENABLED
   InitializeFlipper(application);
 #endif
-  [GMSPlacesClient provideAPIKey:@"AIzaSyD8KADTGGbJt12O6Y8DH7iEsyOWwkk4hSY"];
-  [GMSServices provideAPIKey:@"AIzaSyD8KADTGGbJt12O6Y8DH7iEsyOWwkk4hSY"];
+  [GMSPlacesClient provideAPIKey:@"AIzaSyBqf24XZnY77HCj0nP6n613Ru2IINWSCng"];
+  [GMSServices provideAPIKey:@"AIzaSyBqf24XZnY77HCj0nP6n613Ru2IINWSCng"];
   
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge

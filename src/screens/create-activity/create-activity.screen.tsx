@@ -107,7 +107,7 @@ const CreateActivityScreen2 = () => {
       name: selectedActivityNameValue,
     };
 
-    console.log('activity', activity)
+    console.log('activity', activity);
     // getData('Users').then(res => {
     //   console.log('users', res)
     //   if (res == null) {
@@ -379,9 +379,10 @@ const CreateActivityScreen2 = () => {
                 id={activityType.id}
                 icon={activityType.image}
                 text={polyglot.t(activityType.textKey)}
-                onItemPress={() =>
-                  setBranchName(activityType.image)
-                }
+                onItemPress={() => {
+                  setBranchName(activityType.image);
+                  setSelectedActivityNameValue(null);
+                }}
               />
             ))}
           </ActivityTypeSelector>
@@ -389,13 +390,20 @@ const CreateActivityScreen2 = () => {
           <View style={styles.row}>
             <View style={styles.column}>
               <Selector
-                onPress={() => activityNameActionSheetRef.current?.open()}
+                onPress={() =>
+                  branchName != ''
+                    ? activityNameActionSheetRef.current?.open()
+                    : Alert.alert(
+                        'Warning',
+                        'You have to select a branch firstly'
+                      )
+                }
                 label={`${polyglot.t(
                   'screens.create_activity.inputs.activity_name.label'
                 )}*`}
                 text={(() => {
                   const selectedActivityName = getSelectedActivityName(
-                    selectedActivityNameValue,
+                    selectedActivityNameValue
                   );
                   if (!selectedActivityName) {
                     return undefined;
@@ -560,7 +568,7 @@ const CreateActivityScreen2 = () => {
         />
 
         <ActivityNameActionSheet
-        branchName={branchName}
+          branchName={branchName}
           ref={activityNameActionSheetRef}
           onSelect={(activityNameValue: number) => {
             setSelectedActivityNameValue(activityNameValue);
