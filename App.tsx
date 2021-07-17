@@ -48,9 +48,8 @@ let App = () => {
     
     getLocations();
 
-    console.log('user1', user)
     getData('Users').then(res => {
-      console.log('user2', res.photo)
+      console.log('user', res.photo)
       setUser(res)
       if (res.photo == null) {
         getData('Photo').then(res => {
@@ -108,7 +107,7 @@ let App = () => {
   const getLocations = async () => {
     let location = await getLocationFromIp('https://ipapi.co/json/');
     console.log('location', location)
-    if (location == undefined) {
+    if (location == undefined || location == null || location.eror) {
       location = await getLocationFromIp('https://ipinfo.io/json/');
       console.log('ipinfo', location)
     }

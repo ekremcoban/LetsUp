@@ -5,6 +5,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from 'styles/colors';
 
 interface ISelector {
+  warning: boolean;
   placeholder?: string;
   text?: string;
   label?: string;
@@ -28,7 +29,7 @@ export const Selector = (props: ISelector) => {
         </Text>
       )}
       <TouchableNativeFeedback onPress={props.onPress}>
-        <View style={[styles.inputWrapper, props.styleView]}>
+        <View style={[styles.inputWrapper, props.warning && {borderColor: 'red'}]}>
           <View style={styles.textWrapper}>
             <Text
               style={[styles.text, !props.text && styles.placeholder]}

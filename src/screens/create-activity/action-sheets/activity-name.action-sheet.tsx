@@ -20,7 +20,6 @@ export const ActivityNameActionSheet = forwardRef<
   const [selectedValue, setSelectedValue] = useState(0);
 
   const items = () => {
-    console.log('branch', props.branchName)
     if (props.branchName === 'jogging') {
       return activityNames.filter(a => a.value >= 0 && a.value < 6).map((activityName) => ({
         value: activityName.value,

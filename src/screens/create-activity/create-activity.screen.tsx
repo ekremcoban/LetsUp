@@ -86,7 +86,13 @@ const CreateActivityScreen2 = () => {
     null
   );
 
-  const [warningName, setWarningName] = useState(false);
+  const [warning, setWarning] = useState({
+    activityName: false,
+    location: false,
+    date: false,
+    startTime: false,
+    finishTime: false,
+  });
 
   const insertData = (data: Object) => {
     console.log('data1', data);
@@ -102,8 +108,37 @@ const CreateActivityScreen2 = () => {
   };
 
   const save = () => {
+    let warningTemp = {
+      activityName: false,
+      location: false,
+      date: false,
+      startTime: false,
+      finishTime: false,
+    };
+
     let startActivityTime = null;
     let finishActivityTime = null;
+
+    console.log('selectedActivityNameValue', selectedActivityNameValue)
+    if (selectedActivityNameValue == null || selectedActivityNameValue === 0) {
+      warningTemp.activityName = true;
+    }
+
+    if (locations == undefined) {
+      warningTemp.location = true;
+    }
+
+    if (activityDate == undefined) {
+      warningTemp.date = true;
+    }
+
+    if (activityStartTime == undefined) {
+      warningTemp.startTime = true;
+    }
+
+    if (activityFinishTime == undefined) {
+      warningTemp.finishTime = true;
+    }
 
     if (activityStartTime != undefined) {
       startActivityTime = new Date(
@@ -125,7 +160,10 @@ const CreateActivityScreen2 = () => {
       );
     }
 
-    if (locations != undefined) {
+    console.log('warning', warningTemp);
+    if (!warningTemp.activityName && !warningTemp.location && !warningTemp.date
+      && !warningTemp.startTime && !warningTemp.finishTime) {
+
       const activity = {
         type: branchName,
         name: polyglot.t(
@@ -142,15 +180,11 @@ const CreateActivityScreen2 = () => {
         minQuota: selectedQuotaRange[0],
         maxQuota: selectedQuotaRange[1],
       };
-
-      setWarningName(false);
       console.log('activity', activity);
     }
-    else {
-      setWarningName(true);
-    }
 
- 
+    setWarning(warningTemp);
+
     // getData('Users').then(res => {
     //   console.log('users', res)
     //   if (res == null) {
@@ -245,6 +279,9 @@ const CreateActivityScreen2 = () => {
   };
 
   const handleDateConfirm = (date: Date) => {
+    let warningTemp = warning;
+    warningTemp.date = false;
+    setWarning(warningTemp);
     setActivityDate(date);
     setDateActionSheetVisibility(false);
 
@@ -299,6 +336,9 @@ const CreateActivityScreen2 = () => {
   };
 
   const handleStartTimeConfirm = (date: Date, activityDate: Date) => {
+    let warningTemp = warning;
+    warningTemp.startTime = false;
+    setWarning(warningTemp);
     setStartTimeActionSheetVisibility(false);
 
     // if (
@@ -322,22 +362,25 @@ const CreateActivityScreen2 = () => {
   const handleFinishTimeConfirm = (date: Date, activityDate: Date) => {
     setFinishTimeActionSheetVisibility(false);
 
-    if (
-      activityDate != null &&
-      activityDate.getFullYear() === new Date().getFullYear() &&
-      activityDate.getMonth() === new Date().getMonth() &&
-      activityDate.getDate() === new Date().getDate() &&
-      date.getHours() * 60 + date.getMinutes() <=
-        (new Date().getHours() + 2) * 60 + new Date().getMinutes()
-    ) {
-      setActivityFinishTime(null);
-      setWarningTime(1);
-      // console.warn('En az 2 saat olmalı');
-    } else {
+    // if (
+    //   activityDate != null &&
+    //   activityDate.getFullYear() === new Date().getFullYear() &&
+    //   activityDate.getMonth() === new Date().getMonth() &&
+    //   activityDate.getDate() === new Date().getDate() &&
+    //   date.getHours() * 60 + date.getMinutes() <=
+    //     (new Date().getHours() + 2) * 60 + new Date().getMinutes()
+    // ) {
+    //   setActivityFinishTime(null);
+    //   setWarningTime(1);
+    //   // console.warn('En az 2 saat olmalı');
+    // } else {
+      let warningTemp = warning;
+      warningTemp.finishTime = false;
+      setWarning(warningTemp);
       setActivityFinishTime(date);
       setWarningTime(0);
       // console.warn('saat');
-    }
+    // }
   };
 
   const showTimeText = (activityDate: Date, activityTime: Date) => {
@@ -407,6 +450,14 @@ const CreateActivityScreen2 = () => {
     RNGooglePlaces.openAutocompleteModal()
       .then((place) => {
         console.log('place', place);
+        let warningTemp = warning;
+        if (place == null) {
+          warningTemp.location = true;
+        }
+        else {
+          warningTemp.location = false;
+        }
+        setWarning(warningTemp);
         // updateLocation(id, place);
         setLocations(place);
       })
@@ -435,7 +486,7 @@ const CreateActivityScreen2 = () => {
           <View style={styles.row}>
             <View style={styles.column}>
               <Selector
-                warning={warningName}
+                warning={warning.activityName}
                 onPress={() => {
                   branchName != ''
                     ? activityNameActionSheetRef.current?.open()
@@ -451,10 +502,6 @@ const CreateActivityScreen2 = () => {
                   const selectedActivityName = getSelectedActivityName(
                     selectedActivityNameValue,
                     branchName
-                  );
-                  console.log(
-                    'selectedActivityNameValue',
-                    selectedActivityNameValue
                   );
                   if (!selectedActivityName) {
                     return undefined;
@@ -495,6 +542,7 @@ const CreateActivityScreen2 = () => {
               <View style={[styles.row, styles.rowLocation]}>
                 <View style={styles.column}>
                   <Selector
+                    warning={warning.location}
                     onPress={() => openLocationModal()}
                     text={locations != null && locations.name}
                   />
@@ -520,6 +568,7 @@ const CreateActivityScreen2 = () => {
           <View style={styles.row}>
             <View style={styles.column}>
               <Selector
+                warning={warning.date}
                 labelPosition="center"
                 onPress={() => setDateActionSheetVisibility(true)}
                 label={`${polyglot.t(
@@ -537,6 +586,7 @@ const CreateActivityScreen2 = () => {
               <View style={styles.times}>
                 <View style={styles.time}>
                   <Selector
+                    warning={warning.startTime}
                     noIcon
                     placeholder={polyglot.t(
                       'screens.create_activity.inputs.time.placeholder_start'
@@ -550,6 +600,7 @@ const CreateActivityScreen2 = () => {
                 <Text>-</Text>
                 <View style={styles.time}>
                   <Selector
+                    warning={warning.finishTime}
                     noIcon
                     placeholder={polyglot.t(
                       'screens.create_activity.inputs.time.placeholder_finish'
@@ -638,7 +689,13 @@ const CreateActivityScreen2 = () => {
           branchName={branchName}
           ref={activityNameActionSheetRef}
           onSelect={(activityNameValue: number) => {
-            console.log('af', activityNameValue);
+           if (activityNameValue % 6 === 0) {
+             warning.activityName = true;
+           }
+           else {
+            warning.activityName = false;
+           }
+            setWarning(warning);
             setSelectedActivityNameValue(activityNameValue);
             activityNameActionSheetRef.current?.close();
           }}
