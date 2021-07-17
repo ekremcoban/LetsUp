@@ -119,7 +119,7 @@ const CreateActivityScreen2 = () => {
     let startActivityTime = null;
     let finishActivityTime = null;
 
-    console.log('selectedActivityNameValue', selectedActivityNameValue)
+    console.log('selectedActivityNameValue', selectedActivityNameValue);
     if (selectedActivityNameValue == null || selectedActivityNameValue === 0) {
       warningTemp.activityName = true;
     }
@@ -134,13 +134,14 @@ const CreateActivityScreen2 = () => {
 
     if (activityStartTime == undefined) {
       warningTemp.startTime = true;
+    } else {
     }
 
     if (activityFinishTime == undefined) {
       warningTemp.finishTime = true;
     }
 
-    if (activityStartTime != undefined) {
+    if (activityDate != undefined && activityStartTime != undefined) {
       startActivityTime = new Date(
         activityDate.getFullYear(),
         activityDate.getMonth(),
@@ -150,7 +151,7 @@ const CreateActivityScreen2 = () => {
       );
     }
 
-    if (activityFinishTime != undefined) {
+    if (activityDate != undefined && activityFinishTime != undefined) {
       finishActivityTime = new Date(
         activityDate.getFullYear(),
         activityDate.getMonth(),
@@ -160,10 +161,13 @@ const CreateActivityScreen2 = () => {
       );
     }
 
-    console.log('warning', warningTemp);
-    if (!warningTemp.activityName && !warningTemp.location && !warningTemp.date
-      && !warningTemp.startTime && !warningTemp.finishTime) {
-
+    if (
+      !warningTemp.activityName &&
+      !warningTemp.location &&
+      !warningTemp.date &&
+      !warningTemp.startTime &&
+      !warningTemp.finishTime
+    ) {
       const activity = {
         type: branchName,
         name: polyglot.t(
@@ -300,9 +304,9 @@ const CreateActivityScreen2 = () => {
 
     //   console.warn('dışarda tarih');
     // } else {
-    setActivityDate(date);
     setActivityStartTime(null);
     setWarningDate(1);
+    console.warn('dışarda', activityDate);
     // }
   };
 
@@ -323,7 +327,7 @@ const CreateActivityScreen2 = () => {
       } else {
         result = activityDate.getDate().toString();
       }
-      if (activityDate.getMonth() + 1 < 10) {
+      if (activityDate.getMonth() + 2 < 10) {
         result += '.0' + (activityDate.getMonth() + 1).toString();
       } else {
         result += '.' + (activityDate.getMonth() + 1).toString();
@@ -335,33 +339,91 @@ const CreateActivityScreen2 = () => {
     return result;
   };
 
-  const handleStartTimeConfirm = (date: Date, activityDate: Date) => {
-    let warningTemp = warning;
-    warningTemp.startTime = false;
-    setWarning(warningTemp);
-    setStartTimeActionSheetVisibility(false);
-
-    // if (
-    //   activityDate != null &&
-    //   activityDate.getFullYear() === new Date().getFullYear() &&
-    //   activityDate.getMonth() === new Date().getMonth() &&
-    //   activityDate.getDate() === new Date().getDate() &&
-    //   date.getHours() * 60 + date.getMinutes() <=
-    //     (new Date().getHours() + 2) * 60 + new Date().getMinutes()
-    // ) {
-    //   setActivityStartTime(null);
-    //   setWarningTime(1);
-    //   // console.warn('En az 2 saat olmalı');
-    // } else {
-    setActivityStartTime(date);
-    setWarningTime(0);
-    // console.warn('saat');
+  const handleStartTimeConfirm = (date: Date) => {
+    console.log('activityDate', date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes());
+    console.log('today', new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes());
+    // if (date.getTime() < new Date().getTime() + 7200000) {
+    //   Alert.alert(
+    //     'Warning',
+    //     'You have to select the time at least 2 hours before'
+    //   );
     // }
+    // else if (activityFinishTime != undefined && date.getTime() > activityFinishTime.getTime()) {
+    //   Alert.alert(
+    //     'Warning',
+    //     'Thw start time must not be after the finish'
+    //   );
+    // }
+    // else {
+    //   // if (activityStartTime) {
+    //   let warningTemp = warning;
+    //   warningTemp.startTime = false;
+    //   setWarning(warningTemp);
+    //   setActivityStartTime(date);
+    //   setWarningTime(0);
+    // }
+
+    setStartTimeActionSheetVisibility(false);
+    // }
+
+      console.log('1', date.getHours() * 60 + date.getMinutes())
+      console.log('2',  new Date().getHours() * 60 + new Date().getMinutes())
+    if (
+      activityDate != undefined &&
+      activityDate.getFullYear() === new Date().getFullYear() &&
+      activityDate.getMonth() === new Date().getMonth() &&
+      activityDate.getDate() === new Date().getDate() &&
+      date.getHours() * 60 + date.getMinutes() >=
+        (new Date().getHours()+ 2) * 60 + new Date().getMinutes()
+    ) {
+      setActivityStartTime(date);
+      let warningTemp = warning;
+      warningTemp.startTime = false;
+      setWarning(warningTemp);
+      // console.warn('En az 2 saat olmalı');
+      console.log('BURDA 1')
+    } 
+    else if (
+      activityDate != undefined && activityDate.getFullYear() === new Date().getFullYear() &&
+      activityDate.getMonth() === new Date().getMonth() &&
+      activityDate.getDate() > new Date().getDate()
+    ) {
+      setActivityStartTime(date);
+      let warningTemp = warning;
+      warningTemp.startTime = false;
+      setWarning(warningTemp);
+      console.log('BURDA 2')
+    }
+    else {
+      console.log('BURDA 3')
+      Alert.alert(
+        'Warning',
+        'You have to select the time at least 2 hours before'
+      );
+    }
   };
 
   const handleFinishTimeConfirm = (date: Date, activityDate: Date) => {
-    setFinishTimeActionSheetVisibility(false);
+    console.log('date', date.getTime());
+    if (date.getTime() < new Date().getTime() + 7200000) {
+      Alert.alert(
+        'Warning',
+        'You have to select the time at least 2 hours before'
+      );
+    } else if (
+      activityStartTime != undefined &&
+      date.getTime() < activityStartTime.getTime()
+    ) {
+      Alert.alert('Warning', 'The finish time must not be before the start');
+    } else {
+      let warningTemp = warning;
+      warningTemp.finishTime = false;
+      setWarning(warningTemp);
+      setActivityFinishTime(date);
+      setWarningTime(0);
+    }
 
+    setFinishTimeActionSheetVisibility(false);
     // if (
     //   activityDate != null &&
     //   activityDate.getFullYear() === new Date().getFullYear() &&
@@ -374,12 +436,7 @@ const CreateActivityScreen2 = () => {
     //   setWarningTime(1);
     //   // console.warn('En az 2 saat olmalı');
     // } else {
-      let warningTemp = warning;
-      warningTemp.finishTime = false;
-      setWarning(warningTemp);
-      setActivityFinishTime(date);
-      setWarningTime(0);
-      // console.warn('saat');
+    // console.warn('saat');
     // }
   };
 
@@ -387,8 +444,8 @@ const CreateActivityScreen2 = () => {
     let result = 'Seçiniz';
 
     if (
-      activityDate != null &&
-      activityTime != null &&
+      activityDate != undefined &&
+      activityTime != undefined &&
       new Date().getFullYear() === activityDate.getFullYear() &&
       new Date().getMonth() === activityDate.getMonth() &&
       new Date().getDate() === activityDate.getDate() &&
@@ -402,7 +459,8 @@ const CreateActivityScreen2 = () => {
     //     || new Date().getDate() !== activityDate.getDate())) {
     //     result = activityTime.getHours().toString() + ':' + activityTime.getMinutes().toString();
     // }
-    else if (activityTime != null) {
+    else if (activityTime != undefined) {
+      console.log('İçerde')
       if (activityTime.getHours() < 10) {
         result = '0' + activityTime.getHours().toString();
       } else {
@@ -453,8 +511,7 @@ const CreateActivityScreen2 = () => {
         let warningTemp = warning;
         if (place == null) {
           warningTemp.location = true;
-        }
-        else {
+        } else {
           warningTemp.location = false;
         }
         setWarning(warningTemp);
@@ -689,12 +746,11 @@ const CreateActivityScreen2 = () => {
           branchName={branchName}
           ref={activityNameActionSheetRef}
           onSelect={(activityNameValue: number) => {
-           if (activityNameValue % 6 === 0) {
-             warning.activityName = true;
-           }
-           else {
-            warning.activityName = false;
-           }
+            if (activityNameValue % 6 === 0) {
+              warning.activityName = true;
+            } else {
+              warning.activityName = false;
+            }
             setWarning(warning);
             setSelectedActivityNameValue(activityNameValue);
             activityNameActionSheetRef.current?.close();
