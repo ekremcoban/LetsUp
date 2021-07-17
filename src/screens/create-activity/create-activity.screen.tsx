@@ -20,7 +20,7 @@ import { AgeRangeActionSheet } from './action-sheets/ageRange.action-sheet';
 import { QuotaActionSheet } from './action-sheets/quota.action-sheet';
 import { GenderActionSheet } from './action-sheets/gender.action-sheet';
 import { getSelectedGender } from 'models/genders';
-import { getSelectedActivityName } from 'models/activity-names';
+import { activityNames, getSelectedActivityName } from 'models/activity-names';
 import { Selector } from 'components/selector/selector';
 import { ActivityTypeSelector } from 'components/activity-type-selector/activity-type-selector';
 import {
@@ -44,7 +44,7 @@ type Location = {
 
 const CreateActivityScreen2 = () => {
   const navigation = useNavigation();
-  const [branchName, setBranchName] = useState<String>(String || undefined);
+  const [branchName, setBranchName] = useState<string>(String || undefined);
   const [activityName, setActivityName] = useState<string>('');
 
   const [warningTitle, setWarningTitle] = useState<boolean>(false);
@@ -52,9 +52,7 @@ const CreateActivityScreen2 = () => {
   const [warningDate, setWarningDate] = useState<number>(0);
   const [warningTime, setWarningTime] = useState<number>(0);
 
-  const [locations, setLocations] = useState<Location[]>([
-    { id: 0, location: '' },
-  ]);
+  const [locations, setLocations] = useState();
 
   const [activityDate, setActivityDate] = useState<Date>(undefined);
   const [activityStartTime, setActivityStartTime] = useState<Date>(undefined);
@@ -88,6 +86,8 @@ const CreateActivityScreen2 = () => {
     null
   );
 
+  const [warningName, setWarningName] = useState(false);
+
   const insertData = (data: Object) => {
     console.log('data1', data);
     firestore()
@@ -102,12 +102,55 @@ const CreateActivityScreen2 = () => {
   };
 
   const save = () => {
-    const activity = {
-      type: branchName,
-      name: selectedActivityNameValue,
-    };
+    let startActivityTime = null;
+    let finishActivityTime = null;
 
-    console.log('activity', activity);
+    if (activityStartTime != undefined) {
+      startActivityTime = new Date(
+        activityDate.getFullYear(),
+        activityDate.getMonth(),
+        activityDate.getDate(),
+        activityStartTime.getHours(),
+        activityStartTime.getMinutes()
+      );
+    }
+
+    if (activityFinishTime != undefined) {
+      finishActivityTime = new Date(
+        activityDate.getFullYear(),
+        activityDate.getMonth(),
+        activityDate.getDate(),
+        activityFinishTime.getHours(),
+        activityFinishTime.getMinutes()
+      );
+    }
+
+    if (locations != undefined) {
+      const activity = {
+        type: branchName,
+        name: polyglot.t(
+          activityNames.filter((a) => a.value === selectedActivityNameValue)[0]
+            .text
+        ),
+        location: locations,
+        date: activityDate.getTime(),
+        startTime: activityStartTime != null && startActivityTime.getTime(),
+        finishTime: activityFinishTime != null && finishActivityTime.getTime(),
+        gender: selectedGenderValue === 2 ? 'Man' : 'Woman',
+        minAge: selectedAgeRange[0],
+        maxAge: selectedAgeRange[1],
+        minQuota: selectedQuotaRange[0],
+        maxQuota: selectedQuotaRange[1],
+      };
+
+      setWarningName(false);
+      console.log('activity', activity);
+    }
+    else {
+      setWarningName(true);
+    }
+
+ 
     // getData('Users').then(res => {
     //   console.log('users', res)
     //   if (res == null) {
@@ -205,25 +248,25 @@ const CreateActivityScreen2 = () => {
     setActivityDate(date);
     setDateActionSheetVisibility(false);
 
-    if (
-      date.getFullYear() > new Date().getFullYear() ||
-      (date.getFullYear() == new Date().getFullYear() &&
-        date.getMonth() > new Date().getMonth()) ||
-      (date.getFullYear() == new Date().getFullYear() &&
-        date.getMonth() == new Date().getMonth() &&
-        date.getDate() >= new Date().getDate())
-    ) {
-      setActivityDate(date);
-      setActivityStartTime(null);
-      setWarningDate(0);
-      setWarningTime(0);
+    // if (
+    //   date.getFullYear() > new Date().getFullYear() ||
+    //   (date.getFullYear() == new Date().getFullYear() &&
+    //     date.getMonth() > new Date().getMonth()) ||
+    //   (date.getFullYear() == new Date().getFullYear() &&
+    //     date.getMonth() == new Date().getMonth() &&
+    //     date.getDate() >= new Date().getDate())
+    // ) {
+    //   setActivityDate(date);
+    //   setActivityStartTime(null);
+    //   setWarningDate(0);
+    //   setWarningTime(0);
 
-      console.warn('dışarda tarih');
-    } else {
-      setActivityDate(date);
-      setActivityStartTime(null);
-      setWarningDate(1);
-    }
+    //   console.warn('dışarda tarih');
+    // } else {
+    setActivityDate(date);
+    setActivityStartTime(null);
+    setWarningDate(1);
+    // }
   };
 
   const showDateText = (activityDate: Date) => {
@@ -258,22 +301,22 @@ const CreateActivityScreen2 = () => {
   const handleStartTimeConfirm = (date: Date, activityDate: Date) => {
     setStartTimeActionSheetVisibility(false);
 
-    if (
-      activityDate != null &&
-      activityDate.getFullYear() === new Date().getFullYear() &&
-      activityDate.getMonth() === new Date().getMonth() &&
-      activityDate.getDate() === new Date().getDate() &&
-      date.getHours() * 60 + date.getMinutes() <=
-        (new Date().getHours() + 2) * 60 + new Date().getMinutes()
-    ) {
-      setActivityStartTime(null);
-      setWarningTime(1);
-      // console.warn('En az 2 saat olmalı');
-    } else {
-      setActivityStartTime(date);
-      setWarningTime(0);
-      // console.warn('saat');
-    }
+    // if (
+    //   activityDate != null &&
+    //   activityDate.getFullYear() === new Date().getFullYear() &&
+    //   activityDate.getMonth() === new Date().getMonth() &&
+    //   activityDate.getDate() === new Date().getDate() &&
+    //   date.getHours() * 60 + date.getMinutes() <=
+    //     (new Date().getHours() + 2) * 60 + new Date().getMinutes()
+    // ) {
+    //   setActivityStartTime(null);
+    //   setWarningTime(1);
+    //   // console.warn('En az 2 saat olmalı');
+    // } else {
+    setActivityStartTime(date);
+    setWarningTime(0);
+    // console.warn('saat');
+    // }
   };
 
   const handleFinishTimeConfirm = (date: Date, activityDate: Date) => {
@@ -334,36 +377,38 @@ const CreateActivityScreen2 = () => {
     return result;
   };
 
-  const addLocation = () => {
-    if (locations.length === MAX_LOCATION_COUNT) {
-      return;
-    }
+  // const addLocation = () => {
+  //   if (locations.length === MAX_LOCATION_COUNT) {
+  //     return;
+  //   }
 
-    const newId = locations[locations.length - 1].id + 1;
-    const updatedLocations = [...locations, { id: newId, location: '' }];
-    setLocations(updatedLocations);
-  };
+  //   const newId = locations[locations.length - 1].id + 1;
+  //   const updatedLocations = [...locations, { id: newId, location: '' }];
+  //   setLocations(updatedLocations);
+  // };
 
-  const removeLocation = (id: number) => {
-    const updatedLocations = locations.filter((location) => location.id !== id);
-    setLocations(updatedLocations);
-  };
+  // const removeLocation = (id: number) => {
+  //   const updatedLocations = locations.filter((location) => location.id !== id);
+  //   setLocations(updatedLocations);
+  // };
 
-  const updateLocation = (id: number, location: string) => {
-    const indexOldElement = locations.findIndex(
-      (location) => location.id == id
-    );
-    const updatedLocations = Object.assign([...locations], {
-      [indexOldElement]: { id, location },
-    });
+  // const updateLocation = (id: number, location: string) => {
+  //   const indexOldElement = locations.findIndex(
+  //     (location) => location.id == id
+  //   );
+  //   const updatedLocations = Object.assign([...locations], {
+  //     [indexOldElement]: { id, location },
+  //   });
 
-    setLocations(updatedLocations);
-  };
+  //   setLocations(updatedLocations);
+  // };
 
-  const openLocationModal = (id: number) => {
+  const openLocationModal = () => {
     RNGooglePlaces.openAutocompleteModal()
       .then((place) => {
-        updateLocation(id, place.name);
+        console.log('place', place);
+        // updateLocation(id, place);
+        setLocations(place);
       })
       .catch((error) => console.log(error.message)); // error is a Javascript Error object
   };
@@ -380,8 +425,8 @@ const CreateActivityScreen2 = () => {
                 icon={activityType.image}
                 text={polyglot.t(activityType.textKey)}
                 onItemPress={() => {
-                  setBranchName(activityType.image);
                   setSelectedActivityNameValue(null);
+                  setBranchName(activityType.image);
                 }}
               />
             ))}
@@ -390,19 +435,25 @@ const CreateActivityScreen2 = () => {
           <View style={styles.row}>
             <View style={styles.column}>
               <Selector
-                onPress={() =>
+                warning={warningName}
+                onPress={() => {
                   branchName != ''
                     ? activityNameActionSheetRef.current?.open()
                     : Alert.alert(
                         'Warning',
                         'You have to select a branch firstly'
-                      )
-                }
+                      );
+                }}
                 label={`${polyglot.t(
                   'screens.create_activity.inputs.activity_name.label'
                 )}*`}
                 text={(() => {
                   const selectedActivityName = getSelectedActivityName(
+                    selectedActivityNameValue,
+                    branchName
+                  );
+                  console.log(
+                    'selectedActivityNameValue',
                     selectedActivityNameValue
                   );
                   if (!selectedActivityName) {
@@ -427,7 +478,9 @@ const CreateActivityScreen2 = () => {
                     'screens.create_activity.inputs.location.add_more'
                   )}
                 </Text>
-                <TouchableOpacity onPress={addLocation}>
+                <TouchableOpacity
+                // onPress={addLocation}
+                >
                   <View style={styles.locationIconWrapper}>
                     <Ionicons
                       size={15}
@@ -439,15 +492,29 @@ const CreateActivityScreen2 = () => {
               </View>
             </View>
             <View style={styles.locationWrapper}>
-              {locations.map((location) => (
-                <LocationInput
-                  key={location.id}
-                  location={location}
-                  showRemove={locations.length > 1}
-                  onLocationRemove={removeLocation}
-                  onLocationModalOpen={openLocationModal}
-                />
-              ))}
+              <View style={[styles.row, styles.rowLocation]}>
+                <View style={styles.column}>
+                  <Selector
+                    onPress={() => openLocationModal()}
+                    text={locations != null && locations.name}
+                  />
+                </View>
+
+                {/* {props.showRemove && (
+                  <TouchableOpacity
+                    onPress={() => props.onLocationRemove(props.location.id)}
+                  >
+                    <View
+                      style={[
+                        styles.locationIconWrapper,
+                        styles.locationIconRemove,
+                      ]}
+                    >
+                      <Ionicons size={15} name="remove" color={colors.white} />
+                    </View>
+                  </TouchableOpacity>
+                )} */}
+              </View>
             </View>
           </ScrollView>
           <View style={styles.row}>
@@ -571,6 +638,7 @@ const CreateActivityScreen2 = () => {
           branchName={branchName}
           ref={activityNameActionSheetRef}
           onSelect={(activityNameValue: number) => {
+            console.log('af', activityNameValue);
             setSelectedActivityNameValue(activityNameValue);
             activityNameActionSheetRef.current?.close();
           }}
@@ -612,36 +680,6 @@ const CreateActivityScreen2 = () => {
         />
       </View>
     </MenuProvider>
-  );
-};
-
-interface ILocationInput {
-  location: Location;
-  showRemove: boolean;
-  onLocationModalOpen: (id: number) => void;
-  onLocationRemove: (id: number) => void;
-}
-
-const LocationInput = (props: ILocationInput) => {
-  return (
-    <View style={[styles.row, styles.rowLocation]}>
-      <View style={styles.column}>
-        <Selector
-          onPress={() => props.onLocationModalOpen(props.location.id)}
-          text={props.location.location}
-        />
-      </View>
-
-      {props.showRemove && (
-        <TouchableOpacity
-          onPress={() => props.onLocationRemove(props.location.id)}
-        >
-          <View style={[styles.locationIconWrapper, styles.locationIconRemove]}>
-            <Ionicons size={15} name="remove" color={colors.white} />
-          </View>
-        </TouchableOpacity>
-      )}
-    </View>
   );
 };
 

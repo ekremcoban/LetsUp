@@ -8,7 +8,7 @@ import { Picker } from 'components/picker/picker';
 import { activityNames } from 'models/activity-names';
 
 interface IActivityNameActionSheetProps {
-  branchName: String;
+  branchName: string | undefined;
   onSelect: (value: number) => void;
   onCancel: () => void;
 }
@@ -17,54 +17,54 @@ export const ActivityNameActionSheet = forwardRef<
   IActionSheet,
   IActivityNameActionSheetProps
 >((props, ref) => {
-  const [selectedValue, setSelectedValue] = useState(activityNames[0].value);
+  const [selectedValue, setSelectedValue] = useState(0);
 
   const items = () => {
     console.log('branch', props.branchName)
     if (props.branchName === 'jogging') {
-      return activityNames.filter(a => a.value >= 1 && a.value < 6).map((activityName) => ({
+      return activityNames.filter(a => a.value >= 0 && a.value < 6).map((activityName) => ({
         value: activityName.value,
         text: polyglot.t(activityName.text),
       }))
     }
 
     if (props.branchName === 'basketball') {
-      return activityNames.filter(a => a.value >= 6 && a.value < 11).map((activityName) => ({
+      return activityNames.filter(a => a.value >= 6 && a.value < 12).map((activityName) => ({
         value: activityName.value,
         text: polyglot.t(activityName.text),
       }))
     }
 
     if (props.branchName === 'bicycle') {
-      return activityNames.filter(a => a.value >= 11 && a.value < 16).map((activityName) => ({
+      return activityNames.filter(a => a.value >= 12 && a.value < 18).map((activityName) => ({
         value: activityName.value,
         text: polyglot.t(activityName.text),
       }))
     }
     
     if (props.branchName === 'hiking') {
-      return activityNames.filter(a => a.value >= 16 && a.value < 21).map((activityName) => ({
+      return activityNames.filter(a => a.value >= 18 && a.value < 24).map((activityName) => ({
         value: activityName.value,
         text: polyglot.t(activityName.text),
       }))
     }
 
     if (props.branchName === 'tennis') {
-      return activityNames.filter(a => a.value >= 21 && a.value < 26).map((activityName) => ({
+      return activityNames.filter(a => a.value >= 24 && a.value < 30).map((activityName) => ({
         value: activityName.value,
         text: polyglot.t(activityName.text),
       }))
     }
 
     if (props.branchName === 'bowling') {
-      return activityNames.filter(a => a.value >= 26 && a.value < 31).map((activityName) => ({
+      return activityNames.filter(a => a.value >= 30 && a.value < 36).map((activityName) => ({
         value: activityName.value,
         text: polyglot.t(activityName.text),
       }))
     }
 
     if (props.branchName === 'frisbee') {
-      return activityNames.filter(a => a.value >= 31 && a.value < 36).map((activityName) => ({
+      return activityNames.filter(a => a.value >= 36 && a.value < 42).map((activityName) => ({
         value: activityName.value,
         text: polyglot.t(activityName.text),
       }))
