@@ -54,7 +54,7 @@ const CreateActivityScreen2 = () => {
 
   const [locations, setLocations] = useState();
 
-  const [activityDate, setActivityDate] = useState<Date>(undefined);
+  const [activityDate, setActivityDate] = useState<Date>(new Date());
   const [activityStartTime, setActivityStartTime] = useState<Date>(undefined);
   const [activityFinishTime, setActivityFinishTime] = useState<Date>(undefined);
   const [
@@ -304,7 +304,8 @@ const CreateActivityScreen2 = () => {
 
     //   console.warn('dışarda tarih');
     // } else {
-    setActivityStartTime(null);
+    setActivityStartTime(undefined);
+    setActivityFinishTime(undefined);
     setWarningDate(1);
     console.warn('dışarda', activityDate);
     // }
@@ -340,28 +341,10 @@ const CreateActivityScreen2 = () => {
   };
 
   const handleStartTimeConfirm = (date: Date) => {
-    console.log(
-      'activityDate',
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate(),
-      date.getHours(),
-      date.getMinutes()
-    );
-    console.log(
-      'today',
-      new Date().getFullYear(),
-      new Date().getMonth(),
-      new Date().getDate(),
-      new Date().getHours(),
-      new Date().getMinutes()
-    );
-
     setStartTimeActionSheetVisibility(false);
 
-
-    console.log('1', date.getHours() * 60 + date.getMinutes());
-    console.log('2', new Date().getHours() * 60 + new Date().getMinutes());
+    // console.log('1', date.getHours() * 60 + date.getMinutes());
+    // console.log('2', new Date().getHours() * 60 + new Date().getMinutes());
     if (
       activityDate != undefined &&
       activityDate.getFullYear() === new Date().getFullYear() &&
@@ -396,53 +379,79 @@ const CreateActivityScreen2 = () => {
       const minHour =
         new Date().getHours() + 2 < 10
           ? '0' + (new Date().getHours() + 2)
-          : (new Date().getHours() + 2);
+          : new Date().getHours() + 2;
       const minMinute =
         new Date().getMinutes() < 10
           ? '0' + new Date().getMinutes()
           : new Date().getMinutes();
       Alert.alert(
         'Warning',
-        `You selected: ${selectedHour}:${selectedMinute}\nThe time must be minimum: ${minHour}:${minMinute}\n\nNote: You have to select the time at least 2 hours before. `
+        `You selected: ${selectedHour}:${selectedMinute}\nThe time must be minimum: ${minHour}:${minMinute}\n\nNote: You must select the time at least 2 hours before. `
       );
     }
   };
 
-  const handleFinishTimeConfirm = (date: Date, activityDate: Date) => {
-    console.log('date', date.getTime());
-    if (date.getTime() < new Date().getTime() + 7200000) {
-      Alert.alert(
-        'Warning',
-        'You have to select the time at least 2 hours before'
-      );
-    } else if (
-      activityStartTime != undefined &&
-      date.getTime() < activityStartTime.getTime()
+  const handleFinishTimeConfirm = (date: Date) => {
+    setFinishTimeActionSheetVisibility(false);
+
+    console.log('1', date.getHours() * 60 + date.getMinutes());
+    console.log('2', new Date().getHours() * 60 + new Date().getMinutes());
+    console.log('activityStartTime', activityStartTime)
+    if (
+      activityDate != undefined && activityStartTime != undefined &&
+      activityDate.getFullYear() === new Date().getFullYear() &&
+      activityDate.getMonth() === new Date().getMonth() &&
+      activityDate.getDate() === new Date().getDate() &&
+      date.getHours() * 60 + date.getMinutes() >=
+        (activityStartTime.getHours() + 1) * 60 + activityStartTime.getMinutes()
     ) {
-      Alert.alert('Warning', 'The finish time must not be before the start');
-    } else {
+      setActivityFinishTime(date);
       let warningTemp = warning;
       warningTemp.finishTime = false;
       setWarning(warningTemp);
+      // console.warn('En az 2 saat olmalı');
+      console.log('BURDA 1');
+    } else if (
+      activityDate != undefined && activityStartTime != undefined &&
+      activityDate.getFullYear() === activityStartTime.getFullYear() &&
+      activityDate.getMonth() === activityStartTime.getMonth() &&
+      activityDate.getDate() > activityStartTime.getDate() &&
+      date.getHours() * 60 + date.getMinutes() >=
+        (activityStartTime.getHours() + 1) * 60 + activityStartTime.getMinutes()
+    ) {
       setActivityFinishTime(date);
-      setWarningTime(0);
+      let warningTemp = warning;
+      warningTemp.finishTime = false;
+      setWarning(warningTemp);
+      console.log('BURDA 2');
+    } else if (activityStartTime != undefined){
+      console.log('BURDA 3');
+      const selectedHour =
+        date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
+      const selectedMinute =
+        date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+      const minHour =
+        date.getHours() + 1 < 10
+          ? '0' + (activityStartTime.getHours() + 1)
+          : activityStartTime.getHours() + 1;
+      const minMinute =
+      date.getMinutes() < 10
+          ? '0' + date.getMinutes()
+          : date.getMinutes();
+      Alert.alert(
+        'Warning',
+        `You selected: ${selectedHour}:${selectedMinute}\nThe time must be minimum: ${minHour}:${minMinute}\n\nNote: You must select the time at least 1 hour. `
+      );
     }
-
-    setFinishTimeActionSheetVisibility(false);
-    // if (
-    //   activityDate != null &&
-    //   activityDate.getFullYear() === new Date().getFullYear() &&
-    //   activityDate.getMonth() === new Date().getMonth() &&
-    //   activityDate.getDate() === new Date().getDate() &&
-    //   date.getHours() * 60 + date.getMinutes() <=
-    //     (new Date().getHours() + 2) * 60 + new Date().getMinutes()
-    // ) {
-    //   setActivityFinishTime(null);
-    //   setWarningTime(1);
-    //   // console.warn('En az 2 saat olmalı');
-    // } else {
-    // console.warn('saat');
-    // }
+    else if (activityStartTime == undefined){
+      Alert.alert(
+        'Warning',
+        `You must select start time firstly`
+      );
+    }
+    else {
+      console.log('burda 4')
+    }
   };
 
   const showTimeText = (activityDate: Date, activityTime: Date) => {
@@ -554,7 +563,7 @@ const CreateActivityScreen2 = () => {
                     ? activityNameActionSheetRef.current?.open()
                     : Alert.alert(
                         'Warning',
-                        'You have to select a branch firstly'
+                        'You must select a branch firstly'
                       );
                 }}
                 label={`${polyglot.t(
