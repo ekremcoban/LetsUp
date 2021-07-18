@@ -212,7 +212,7 @@ const CreateProfilScreen = () => {
           console.log('User updated!');
         })
         .catch((e) => {
-          console.log('update', e);
+          console.log('update users', e);
         });
     } else {
       firestore()
@@ -220,10 +220,10 @@ const CreateProfilScreen = () => {
         .doc(email)
         .set(data)
         .then(() => {
-          console.log('User updated!');
+          console.log('User insert!');
         })
         .catch((e) => {
-          console.log('insert', e);
+          console.log('insert users', e);
         });
     }
   };

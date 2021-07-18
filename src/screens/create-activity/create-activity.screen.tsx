@@ -27,10 +27,11 @@ import {
   activityTypes,
   IActivityType,
 } from 'components/activity-type-selector/models';
-import { MAX_LOCATION_COUNT } from './constants';
+import { v4 as uuidv4 } from 'uuid';
 import { colors } from 'styles/colors';
 import { useNavigation } from '@react-navigation/native';
 import { getData } from 'db/localDb';
+import { MAX_LOCATION_COUNT } from './constants';
 
 const activityNameActionSheetRef = createRef<IActionSheet>();
 const ageRangeActionSheetRef = createRef<IActionSheet>();
@@ -43,6 +44,7 @@ type Location = {
 };
 
 const CreateActivityScreen2 = () => {
+  let loc = [];
   const navigation = useNavigation();
   const [branchName, setBranchName] = useState<string>(String || undefined);
   const [activityName, setActivityName] = useState<string>('');
@@ -94,20 +96,20 @@ const CreateActivityScreen2 = () => {
     finishTime: false,
   });
 
-  const insertData = (data: Object) => {
-    console.log('data1', data);
+  const insertData = (title: string, data: Object) => {
     firestore()
-      .collection('Test')
-      .add(data)
+      .collection(title)
+      .doc(data.id)
+      .set(data)
       .then(() => {
-        console.log('User added!');
+        console.log(title, ' insert!');
       })
-      .catch((error) => {
-        console.error('Hata', error);
+      .catch((e) => {
+        console.log(title, 'insert', e);
       });
   };
 
-  const save = () => {
+  const save = async () => {
     let warningTemp = {
       activityName: false,
       location: false,
@@ -168,23 +170,48 @@ const CreateActivityScreen2 = () => {
       !warningTemp.startTime &&
       !warningTemp.finishTime
     ) {
-      const activity = {
-        type: branchName,
-        name: polyglot.t(
-          activityNames.filter((a) => a.value === selectedActivityNameValue)[0]
-            .text
-        ),
-        location: locations,
-        date: activityDate.getTime(),
-        startTime: activityStartTime != null && startActivityTime.getTime(),
-        finishTime: activityFinishTime != null && finishActivityTime.getTime(),
-        gender: selectedGenderValue === 2 ? 'Man' : 'Woman',
-        minAge: selectedAgeRange[0],
-        maxAge: selectedAgeRange[1],
-        minQuota: selectedQuotaRange[0],
-        maxQuota: selectedQuotaRange[1],
-      };
-      console.log('activity', activity);
+      getData('Users').then((user) => {
+        console.log(user);
+        const activityId = uuidv4();
+        const activity = {
+          id: activityId,
+          type: branchName,
+          name: polyglot.t(
+            activityNames.filter(
+              (a) => a.value === selectedActivityNameValue
+            )[0].text
+          ),
+          ownerId: user.id,
+          date: activityDate.getTime(),
+          startTime: activityStartTime != null && startActivityTime.getTime(),
+          finishTime:
+            activityFinishTime != null && finishActivityTime.getTime(),
+          gender: selectedGenderValue === 2 ? 'Man' : 'Woman',
+          minAge: selectedAgeRange[0],
+          maxAge: selectedAgeRange[1],
+          minQuota: selectedQuotaRange[0],
+          maxQuota: selectedQuotaRange[1],
+          createdTime: new Date().getTime(),
+        };
+        console.log('activity', activity);
+
+        const activityAddress = {
+          id: uuidv4(),
+          activityId: activityId,
+          country: locations.addressComponents[5].shortName,
+          county: null,
+          city: locations.addressComponents[3].name,
+          geoCode: locations.location,
+          details: null,
+          fullAddress: locations.address,
+          createdTime: new Date().getTime(),
+        };
+
+        // insertData('Activities', activity)
+        // insertData('ActivityAddress', activityAddress);
+
+        console.log('address', activityAddress);
+      });
     }
 
     setWarning(warningTemp);
@@ -342,7 +369,9 @@ const CreateActivityScreen2 = () => {
 
   const handleStartTimeConfirm = (date: Date) => {
     setStartTimeActionSheetVisibility(false);
-
+    let warningTemp = warning;
+    warningTemp.startTime = false;
+    setWarning(warningTemp);
     // console.log('1', date.getHours() * 60 + date.getMinutes());
     // console.log('2', new Date().getHours() * 60 + new Date().getMinutes());
     if (
@@ -354,11 +383,8 @@ const CreateActivityScreen2 = () => {
         (new Date().getHours() + 2) * 60 + new Date().getMinutes()
     ) {
       setActivityStartTime(date);
-      let warningTemp = warning;
-      warningTemp.startTime = false;
-      setWarning(warningTemp);
       // console.warn('En az 2 saat olmalı');
-      console.log('BURDA 1');
+      console.log('BURDA 1', warningTemp);
     } else if (
       activityDate != undefined &&
       activityDate.getFullYear() === new Date().getFullYear() &&
@@ -393,12 +419,16 @@ const CreateActivityScreen2 = () => {
 
   const handleFinishTimeConfirm = (date: Date) => {
     setFinishTimeActionSheetVisibility(false);
+    let warningTemp = warning;
+    warningTemp.finishTime = false;
+    setWarning(warningTemp);
 
     console.log('1', date.getHours() * 60 + date.getMinutes());
     console.log('2', new Date().getHours() * 60 + new Date().getMinutes());
-    console.log('activityStartTime', activityStartTime)
+    console.log('activityFinishTime', activityStartTime);
     if (
-      activityDate != undefined && activityStartTime != undefined &&
+      activityDate != undefined &&
+      activityStartTime != undefined &&
       activityDate.getFullYear() === new Date().getFullYear() &&
       activityDate.getMonth() === new Date().getMonth() &&
       activityDate.getDate() === new Date().getDate() &&
@@ -406,13 +436,11 @@ const CreateActivityScreen2 = () => {
         (activityStartTime.getHours() + 1) * 60 + activityStartTime.getMinutes()
     ) {
       setActivityFinishTime(date);
-      let warningTemp = warning;
-      warningTemp.finishTime = false;
-      setWarning(warningTemp);
       // console.warn('En az 2 saat olmalı');
       console.log('BURDA 1');
     } else if (
-      activityDate != undefined && activityStartTime != undefined &&
+      activityDate != undefined &&
+      activityStartTime != undefined &&
       activityDate.getFullYear() === activityStartTime.getFullYear() &&
       activityDate.getMonth() === activityStartTime.getMonth() &&
       activityDate.getDate() > activityStartTime.getDate() &&
@@ -424,7 +452,7 @@ const CreateActivityScreen2 = () => {
       warningTemp.finishTime = false;
       setWarning(warningTemp);
       console.log('BURDA 2');
-    } else if (activityStartTime != undefined){
+    } else if (activityStartTime != undefined) {
       console.log('BURDA 3');
       const selectedHour =
         date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
@@ -435,22 +463,15 @@ const CreateActivityScreen2 = () => {
           ? '0' + (activityStartTime.getHours() + 1)
           : activityStartTime.getHours() + 1;
       const minMinute =
-      date.getMinutes() < 10
-          ? '0' + date.getMinutes()
-          : date.getMinutes();
+        date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
       Alert.alert(
         'Warning',
         `You selected: ${selectedHour}:${selectedMinute}\nThe time must be minimum: ${minHour}:${minMinute}\n\nNote: You must select the time at least 1 hour. `
       );
-    }
-    else if (activityStartTime == undefined){
-      Alert.alert(
-        'Warning',
-        `You must select start time firstly`
-      );
-    }
-    else {
-      console.log('burda 4')
+    } else if (activityStartTime == undefined) {
+      Alert.alert('Warning', `You must select start time firstly`);
+    } else {
+      console.log('burda 4');
     }
   };
 
@@ -474,7 +495,6 @@ const CreateActivityScreen2 = () => {
     //     result = activityTime.getHours().toString() + ':' + activityTime.getMinutes().toString();
     // }
     else if (activityTime != undefined) {
-      console.log('İçerde');
       if (activityTime.getHours() < 10) {
         result = '0' + activityTime.getHours().toString();
       } else {
@@ -492,31 +512,31 @@ const CreateActivityScreen2 = () => {
     return result;
   };
 
-  // const addLocation = () => {
-  //   if (locations.length === MAX_LOCATION_COUNT) {
-  //     return;
-  //   }
+  const addLocation = () => {
+    if (locations.length === MAX_LOCATION_COUNT) {
+      return;
+    }
 
-  //   const newId = locations[locations.length - 1].id + 1;
-  //   const updatedLocations = [...locations, { id: newId, location: '' }];
-  //   setLocations(updatedLocations);
-  // };
+    const newId = locations[locations.length - 1].id + 1;
+    const updatedLocations = [...locations, { id: newId, location: '' }];
+    setLocations(updatedLocations);
+  };
 
-  // const removeLocation = (id: number) => {
-  //   const updatedLocations = locations.filter((location) => location.id !== id);
-  //   setLocations(updatedLocations);
-  // };
+  const removeLocation = (id: number) => {
+    const updatedLocations = locations.filter((location) => location.id !== id);
+    setLocations(updatedLocations);
+  };
 
-  // const updateLocation = (id: number, location: string) => {
-  //   const indexOldElement = locations.findIndex(
-  //     (location) => location.id == id
-  //   );
-  //   const updatedLocations = Object.assign([...locations], {
-  //     [indexOldElement]: { id, location },
-  //   });
+  const updateLocation = (id: number, location: string) => {
+    const indexOldElement = locations.findIndex(
+      (location) => location.id == id
+    );
+    const updatedLocations = Object.assign([...locations], {
+      [indexOldElement]: { id, location },
+    });
 
-  //   setLocations(updatedLocations);
-  // };
+    setLocations(updatedLocations);
+  };
 
   const openLocationModal = () => {
     RNGooglePlaces.openAutocompleteModal()
@@ -530,6 +550,9 @@ const CreateActivityScreen2 = () => {
         }
         setWarning(warningTemp);
         // updateLocation(id, place);
+        
+        loc.push(place)
+        console.log('loc', loc)
         setLocations(place);
       })
       .catch((error) => console.log(error.message)); // error is a Javascript Error object
@@ -597,7 +620,7 @@ const CreateActivityScreen2 = () => {
                   )}
                 </Text>
                 <TouchableOpacity
-                // onPress={addLocation}
+                onPress={addLocation}
                 >
                   <View style={styles.locationIconWrapper}>
                     <Ionicons
