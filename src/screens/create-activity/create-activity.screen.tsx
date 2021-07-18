@@ -38,12 +38,14 @@ const quotaActionSheetRef = createRef<IActionSheet>();
 const genderActionSheetRef = createRef<IActionSheet>();
 
 const CreateActivityScreen2 = () => {
-  let loc = [];
   let locationCountTemp;
   const navigation = useNavigation();
   const [branchName, setBranchName] = useState<string>(String || undefined);
 
-  const [locations, setLocations] = useState();
+  const [locations, setLocations] = useState([{
+       itemNo: null,
+       location: null
+    }]);
   const [test, setTest] = useState(0);
   const [locationCount, setLocationCount] = useState([]);
 
@@ -218,8 +220,6 @@ const CreateActivityScreen2 = () => {
     // } else {
     setActivityStartTime(undefined);
     setActivityFinishTime(undefined);
-    setWarningDate(1);
-    console.warn('dışarda', activityDate);
     // }
   };
 
@@ -430,10 +430,10 @@ const CreateActivityScreen2 = () => {
     setLocationCount(locationCountTemp);
     let t = test + 1;
     setTest(t);
-    console.log('TEST', test);
   };
 
-  const openLocationModal = () => {
+  const openLocationModal = (itemNo: number) => {
+    console.log('itemNo', itemNo)
     RNGooglePlaces.openAutocompleteModal()
       .then((place) => {
         console.log('place', place);
@@ -444,22 +444,39 @@ const CreateActivityScreen2 = () => {
           warningTemp.location = false;
         }
         setWarning(warningTemp);
-        // updateLocation(id, place);
 
-        loc.push(place);
-        console.log('loc', loc);
-        setLocations(place);
+        if (locations.length === 1) {
+          setLocations([...locations, {itemNo: itemNo, location: place}]);
+          console.log('111111')
+        }
+        else {
+          console.log('222222', itemNo)
+          let updatedItem = [];
+          const kalan = locations.filter(loc => loc.itemNo != itemNo);
+          for (let i = 0; i < kalan.length; i++) {
+           updatedItem.push(kalan[i])
+          }
+
+          // updatedItem.push(locations.filter(loc => loc.itemNo != itemNo));
+          console.log('kalan location', kalan)
+          console.log('silinecek location', locations.filter(loc => loc.itemNo == itemNo))
+          console.log('updatedItem', updatedItem)
+          console.log('-------', {itemNo: itemNo, location: place})
+          setLocations([...updatedItem, {itemNo: itemNo, location: place}]);
+        }
+
+        console.log('locations', locations)
       })
       .catch((error) => console.log(error.message)); // error is a Javascript Error object
   };
 
-  const locationsFrame = (props: any) => {
+  const locationsFrame = (id: number) => {
     return (
-      <View style={[styles.row, styles.rowLocation]}>
+      <View key={id} style={[styles.row, styles.rowLocation]}>
         <View style={styles.column}>
           <Selector
             warning={warning.location}
-            onPress={() => openLocationModal()}
+            onPress={() => openLocationModal(id)}
             text={locations != null && locations.name}
           />
         </View>
@@ -544,12 +561,12 @@ const CreateActivityScreen2 = () => {
                 <View style={styles.column}>
                   <Selector
                     warning={warning.location}
-                    onPress={() => openLocationModal()}
-                    text={locations != null && locations.name}
+                    onPress={() => openLocationModal(0)}
+                    text={locations[1] != undefined && locations[1].location.name}
                   />
                 </View>
               </View>
-              {locationCount.map((a, index) => locationsFrame(index))}
+              {locationCount.map((a, index) => locationsFrame(index + 1))}
 
               {/* {props.showRemove && (
                   <TouchableOpacity
