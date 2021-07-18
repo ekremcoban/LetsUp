@@ -31,30 +31,21 @@ import { v4 as uuidv4 } from 'uuid';
 import { colors } from 'styles/colors';
 import { useNavigation } from '@react-navigation/native';
 import { getData } from 'db/localDb';
-import { MAX_LOCATION_COUNT } from './constants';
 
 const activityNameActionSheetRef = createRef<IActionSheet>();
 const ageRangeActionSheetRef = createRef<IActionSheet>();
 const quotaActionSheetRef = createRef<IActionSheet>();
 const genderActionSheetRef = createRef<IActionSheet>();
 
-type Location = {
-  id: number;
-  location: string;
-};
-
 const CreateActivityScreen2 = () => {
   let loc = [];
+  let locationCountTemp;
   const navigation = useNavigation();
   const [branchName, setBranchName] = useState<string>(String || undefined);
-  const [activityName, setActivityName] = useState<string>('');
-
-  const [warningTitle, setWarningTitle] = useState<boolean>(false);
-  const [warningStartPlace, setWarningStartPlace] = useState<boolean>(false);
-  const [warningDate, setWarningDate] = useState<number>(0);
-  const [warningTime, setWarningTime] = useState<number>(0);
 
   const [locations, setLocations] = useState();
+  const [test, setTest] = useState(0);
+  const [locationCount, setLocationCount] = useState([]);
 
   const [activityDate, setActivityDate] = useState<Date>(new Date());
   const [activityStartTime, setActivityStartTime] = useState<Date>(undefined);
@@ -96,19 +87,6 @@ const CreateActivityScreen2 = () => {
     finishTime: false,
   });
 
-  const insertData = (title: string, data: Object) => {
-    firestore()
-      .collection(title)
-      .doc(data.id)
-      .set(data)
-      .then(() => {
-        console.log(title, ' insert!');
-      })
-      .catch((e) => {
-        console.log(title, 'insert', e);
-      });
-  };
-
   const save = async () => {
     let warningTemp = {
       activityName: false,
@@ -121,7 +99,6 @@ const CreateActivityScreen2 = () => {
     let startActivityTime = null;
     let finishActivityTime = null;
 
-    console.log('selectedActivityNameValue', selectedActivityNameValue);
     if (selectedActivityNameValue == null || selectedActivityNameValue === 0) {
       warningTemp.activityName = true;
     }
@@ -215,98 +192,6 @@ const CreateActivityScreen2 = () => {
     }
 
     setWarning(warningTemp);
-
-    // getData('Users').then(res => {
-    //   console.log('users', res)
-    //   if (res == null) {
-    //     Alert.alert(
-    //       `${polyglot.t('alert.warning')}`,
-    //       `${polyglot.t('alert.create_activity.save_text')}`,
-    //       [
-    //         { text: "OK", onPress: () => navigation.navigate('Login') }
-    //       ]
-    //     );
-    //   }
-    //   else if (res.age == null) {
-    //     Alert.alert(
-    //       `${polyglot.t('alert.warning')}`,
-    //       `${polyglot.t('alert.create_activity.save_text')}`,
-    //       [
-    //         { text: "OK", onPress: () => navigation.navigate('Create Profile') }
-    //       ]
-    //     );
-    //   }
-    //   else {
-    //     Alert.alert('Kayıt Yapıldı')
-    //   }
-    // })
-
-    // TODO: Uncomment when we start implementing save functionality
-    //
-    // console.log('BURDA');
-    // let [month, date, year] = new Date().toLocaleDateString('en-US').split('/');
-    // let [hour, minute, second] = new Date()
-    //   .toLocaleTimeString('tr-TR')
-    //   .split(/:| /);
-    // date = Number(date) < 10 ? '0' + date : date;
-    // month = Number(month) < 10 ? '0' + month : month;
-    // let now =
-    //   year +
-    //   '/' +
-    //   month +
-    //   '/' +
-    //   date +
-    //   ' ' +
-    //   hour +
-    //   ':' +
-    //   minute +
-    //   ':' +
-    //   second;
-    // let sendData = null;
-    // // console.warn('startplace', startPlace)
-    // if (
-    //   title.length > 0 &&
-    //   startPlace !== startPlacePlaceholder &&
-    //   warningDate === 0 &&
-    //   activityTime != undefined
-    // ) {
-    //   setWarningTitle(false);
-    //   Alert.alert('Başarılı');
-    //   sendData = {
-    //     test: {
-    //       id: 1,
-    //       title: title,
-    //       place: startPlace,
-    //       activityTime: activityTime,
-    //       // activityCreateDate: now,
-    //       activityCreateDate: new Date(),
-    //     },
-    //   };
-    //   console.log('send', sendData);
-    //   insertData(sendData);
-    // } else {
-    //   if (title.length == 0) {
-    //     setWarningTitle(true);
-    //   } else {
-    //     setWarningTitle(false);
-    //   }
-    //   if (startPlace !== startPlacePlaceholder) {
-    //     setWarningStartPlace(false);
-    //   } else {
-    //     setWarningStartPlace(true);
-    //   }
-    //   if (activityDate != undefined) {
-    //     setWarningDate(0);
-    //   } else {
-    //     setWarningDate(2);
-    //   }
-    //   if (activityStartTime != undefined) {
-    //     setWarningTime(0);
-    //   } else {
-    //     setWarningTime(2);
-    //   }
-    //   Alert.alert('Başarısız');
-    // }
   };
 
   const handleDateConfirm = (date: Date) => {
@@ -512,30 +397,40 @@ const CreateActivityScreen2 = () => {
     return result;
   };
 
+  // const addLocation = () => {
+  //   if (locations.length === MAX_LOCATION_COUNT) {
+  //     return;
+  //   }
+
+  //   const newId = locations[locations.length - 1].id + 1;
+  //   const updatedLocations = [...locations, { id: newId, location: '' }];
+  //   setLocations(updatedLocations);
+  // };
+
+  // const removeLocation = (id: number) => {
+  //   const updatedLocations = locations.filter((location) => location.id !== id);
+  //   setLocations(updatedLocations);
+  // };
+
+  // const updateLocation = (id: number, location: string) => {
+  //   const indexOldElement = locations.findIndex(
+  //     (location) => location.id == id
+  //   );
+  //   const updatedLocations = Object.assign([...locations], {
+  //     [indexOldElement]: { id, location },
+  //   });
+
+  //   setLocations(updatedLocations);
+  // };
+
   const addLocation = () => {
-    if (locations.length === MAX_LOCATION_COUNT) {
-      return;
-    }
-
-    const newId = locations[locations.length - 1].id + 1;
-    const updatedLocations = [...locations, { id: newId, location: '' }];
-    setLocations(updatedLocations);
-  };
-
-  const removeLocation = (id: number) => {
-    const updatedLocations = locations.filter((location) => location.id !== id);
-    setLocations(updatedLocations);
-  };
-
-  const updateLocation = (id: number, location: string) => {
-    const indexOldElement = locations.findIndex(
-      (location) => location.id == id
-    );
-    const updatedLocations = Object.assign([...locations], {
-      [indexOldElement]: { id, location },
-    });
-
-    setLocations(updatedLocations);
+    locationCountTemp = locationCount;
+    locationCountTemp.push({ x: 'x' });
+    console.log(locationCountTemp);
+    setLocationCount(locationCountTemp);
+    let t = test + 1;
+    setTest(t);
+    console.log('TEST', test);
   };
 
   const openLocationModal = () => {
@@ -550,12 +445,26 @@ const CreateActivityScreen2 = () => {
         }
         setWarning(warningTemp);
         // updateLocation(id, place);
-        
-        loc.push(place)
-        console.log('loc', loc)
+
+        loc.push(place);
+        console.log('loc', loc);
         setLocations(place);
       })
       .catch((error) => console.log(error.message)); // error is a Javascript Error object
+  };
+
+  const locationsFrame = (props: any) => {
+    return (
+      <View style={[styles.row, styles.rowLocation]}>
+        <View style={styles.column}>
+          <Selector
+            warning={warning.location}
+            onPress={() => openLocationModal()}
+            text={locations != null && locations.name}
+          />
+        </View>
+      </View>
+    );
   };
 
   return (
@@ -619,9 +528,7 @@ const CreateActivityScreen2 = () => {
                     'screens.create_activity.inputs.location.add_more'
                   )}
                 </Text>
-                <TouchableOpacity
-                onPress={addLocation}
-                >
+                <TouchableOpacity onPress={addLocation}>
                   <View style={styles.locationIconWrapper}>
                     <Ionicons
                       size={15}
@@ -641,8 +548,10 @@ const CreateActivityScreen2 = () => {
                     text={locations != null && locations.name}
                   />
                 </View>
+              </View>
+              {locationCount.map((a, index) => locationsFrame(index))}
 
-                {/* {props.showRemove && (
+              {/* {props.showRemove && (
                   <TouchableOpacity
                     onPress={() => props.onLocationRemove(props.location.id)}
                   >
@@ -656,7 +565,6 @@ const CreateActivityScreen2 = () => {
                     </View>
                   </TouchableOpacity>
                 )} */}
-              </View>
             </View>
           </ScrollView>
           <View style={styles.row}>
