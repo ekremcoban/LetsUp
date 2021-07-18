@@ -38,16 +38,19 @@ const quotaActionSheetRef = createRef<IActionSheet>();
 const genderActionSheetRef = createRef<IActionSheet>();
 
 const CreateActivityScreen2 = () => {
-  let locationCountTemp;
   const navigation = useNavigation();
   const [branchName, setBranchName] = useState<string>(String || undefined);
 
-  const [locations, setLocations] = useState([{
-       itemNo: null,
-       location: null
-    }]);
-  const [test, setTest] = useState(0);
-  const [locationCount, setLocationCount] = useState([]);
+  const [location0, setLocation0] = useState(null);
+  const [location1, setLocation1] = useState(null);
+  const [location2, setLocation2] = useState(null);
+  const [location3, setLocation3] = useState(null);
+  const [location4, setLocation4] = useState(null);
+  const [showLocation1, setShowLocation1] = useState(null);
+  const [showLocation2, setShowLocation2] = useState(null);
+  const [showLocation3, setShowLocation3] = useState(null);
+  const [showLocation4, setShowLocation4] = useState(null);
+  const [numberShowLocation, setNumberShowLocation] = useState(0);
 
   const [activityDate, setActivityDate] = useState<Date>(new Date());
   const [activityStartTime, setActivityStartTime] = useState<Date>(undefined);
@@ -83,7 +86,11 @@ const CreateActivityScreen2 = () => {
 
   const [warning, setWarning] = useState({
     activityName: false,
-    location: false,
+    location0: false,
+    location1: false,
+    location2: false,
+    location3: false,
+    location4: false,
     date: false,
     startTime: false,
     finishTime: false,
@@ -92,7 +99,11 @@ const CreateActivityScreen2 = () => {
   const save = async () => {
     let warningTemp = {
       activityName: false,
-      location: false,
+      location0: false,
+      location1: false,
+      location2: false,
+      location3: false,
+      location4: false,
       date: false,
       startTime: false,
       finishTime: false,
@@ -105,8 +116,30 @@ const CreateActivityScreen2 = () => {
       warningTemp.activityName = true;
     }
 
-    if (locations == undefined) {
-      warningTemp.location = true;
+    console.log('location0', location0);
+    if (location0 == null) {
+      warningTemp.location0 = true;
+      console.log('BİR')
+    }
+
+    if (location1 == null && showLocation1) {
+      warningTemp.location1 = true;
+      console.log('İKİ')
+    }
+
+    if (location2 == null && showLocation2) {
+      warningTemp.location2 = true;
+      console.log('ÜÇ')
+    }
+
+    if (location3 == null && showLocation3) {
+      warningTemp.location3 = true;
+      console.log('DÖRT')
+    }
+
+    if (location4 == null && showLocation4) {
+      warningTemp.location4 = true;
+      console.log('BEŞ')
     }
 
     if (activityDate == undefined) {
@@ -144,7 +177,11 @@ const CreateActivityScreen2 = () => {
 
     if (
       !warningTemp.activityName &&
-      !warningTemp.location &&
+      // !warningTemp.location0 && location0 != null &&
+      // !warningTemp.location1 && location1 != null &&
+      // !warningTemp.location2 && location2 != null &&
+      // !warningTemp.location3 && location3 != null &&
+      // !warningTemp.location4 && location4 != null &&
       !warningTemp.date &&
       !warningTemp.startTime &&
       !warningTemp.finishTime
@@ -174,22 +211,37 @@ const CreateActivityScreen2 = () => {
         };
         console.log('activity', activity);
 
-        const activityAddress = {
-          id: uuidv4(),
-          activityId: activityId,
-          country: locations.addressComponents[5].shortName,
-          county: null,
-          city: locations.addressComponents[3].name,
-          geoCode: locations.location,
-          details: null,
-          fullAddress: locations.address,
-          createdTime: new Date().getTime(),
-        };
+        if (location0 != null) {
+          console.log('1 kayıt')
+        }
+        if (location1 != null) {
+          console.log('2 kayıt')
+        }
+        if (location2 != null) {
+          console.log('3 kayıt')
+        }
+        if (location3 != null) {
+          console.log('4 kayıt')
+        }
+        if (location4 != null) {
+          console.log('5 kayıt')
+        }
+        // const activityAddress = {
+        //   id: uuidv4(),
+        //   activityId: activityId,
+        //   country: location1.addressComponents[5].shortName,
+        //   county: null,
+        //   city: location1.addressComponents[3].name,
+        //   geoCode: location1.location,
+        //   details: null,
+        //   fullAddress: location1.address,
+        //   createdTime: new Date().getTime(),
+        // };
 
         // insertData('Activities', activity)
         // insertData('ActivityAddress', activityAddress);
 
-        console.log('address', activityAddress);
+        // console.log('address', activityAddress);
       });
     }
 
@@ -344,11 +396,11 @@ const CreateActivityScreen2 = () => {
       const selectedMinute =
         date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
       const minHour =
-        date.getHours() + 1 < 10
+      activityStartTime.getHours() + 1 < 10
           ? '0' + (activityStartTime.getHours() + 1)
           : activityStartTime.getHours() + 1;
       const minMinute =
-        date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+      activityStartTime.getMinutes() < 10 ? '0' + activityStartTime.getMinutes() : activityStartTime.getMinutes();
       Alert.alert(
         'Warning',
         `You selected: ${selectedHour}:${selectedMinute}\nThe time must be minimum: ${minHour}:${minMinute}\n\nNote: You must select the time at least 1 hour. `
@@ -397,92 +449,179 @@ const CreateActivityScreen2 = () => {
     return result;
   };
 
-  // const addLocation = () => {
-  //   if (locations.length === MAX_LOCATION_COUNT) {
-  //     return;
-  //   }
-
-  //   const newId = locations[locations.length - 1].id + 1;
-  //   const updatedLocations = [...locations, { id: newId, location: '' }];
-  //   setLocations(updatedLocations);
-  // };
-
-  // const removeLocation = (id: number) => {
-  //   const updatedLocations = locations.filter((location) => location.id !== id);
-  //   setLocations(updatedLocations);
-  // };
-
-  // const updateLocation = (id: number, location: string) => {
-  //   const indexOldElement = locations.findIndex(
-  //     (location) => location.id == id
-  //   );
-  //   const updatedLocations = Object.assign([...locations], {
-  //     [indexOldElement]: { id, location },
-  //   });
-
-  //   setLocations(updatedLocations);
-  // };
-
   const addLocation = () => {
-    locationCountTemp = locationCount;
-    locationCountTemp.push({ x: 'x' });
-    console.log(locationCountTemp);
-    setLocationCount(locationCountTemp);
-    let t = test + 1;
-    setTest(t);
+    if (numberShowLocation < 2) {
+      setShowLocation1(true)
+    }
+    if (numberShowLocation < 3) {
+      setShowLocation2(true)
+    }
+    if (numberShowLocation < 4) {
+      setShowLocation3(true)
+    }
+    if (numberShowLocation < 5) {
+      setShowLocation4(true)
+    }
+
+    if (numberShowLocation < 4) {
+      let t = numberShowLocation + 1;
+      setNumberShowLocation(t);
+    }
   };
 
+  const removeLocation = (index: number) => {
+    let t = numberShowLocation - 1;
+    setNumberShowLocation(t);
+    console.log('----')
+    if (index === 1) {
+      setLocation1(null);
+      setShowLocation1(false)
+    }
+    else if (index === 2) {
+      setLocation2(null);
+      setShowLocation2(false)
+    }
+    else if (index === 3) {
+      setLocation3(null);
+      setShowLocation3(false)
+    }
+    else if (index === 4) {
+      setLocation4(null);
+      setShowLocation4(false)
+    }
+  }
+
   const openLocationModal = (itemNo: number) => {
-    console.log('itemNo', itemNo)
+    console.log('itemNo', itemNo);
     RNGooglePlaces.openAutocompleteModal()
       .then((place) => {
         console.log('place', place);
-        let warningTemp = warning;
-        if (place == null) {
-          warningTemp.location = true;
-        } else {
-          warningTemp.location = false;
-        }
-        setWarning(warningTemp);
 
-        if (locations.length === 1) {
-          setLocations([...locations, {itemNo: itemNo, location: place}]);
-          console.log('111111')
+        if (itemNo === 0) {
+          setLocation0(place);
         }
-        else {
-          console.log('222222', itemNo)
-          let updatedItem = [];
-          const kalan = locations.filter(loc => loc.itemNo != itemNo);
-          for (let i = 0; i < kalan.length; i++) {
-           updatedItem.push(kalan[i])
-          }
-
-          // updatedItem.push(locations.filter(loc => loc.itemNo != itemNo));
-          console.log('kalan location', kalan)
-          console.log('silinecek location', locations.filter(loc => loc.itemNo == itemNo))
-          console.log('updatedItem', updatedItem)
-          console.log('-------', {itemNo: itemNo, location: place})
-          setLocations([...updatedItem, {itemNo: itemNo, location: place}]);
+        else if (itemNo === 1) {
+          setLocation1(place);
         }
-
-        console.log('locations', locations)
+        else if (itemNo === 2) {
+          setLocation2(place);
+        }
+        else if (itemNo === 3) {
+          setLocation3(place);
+        }
+        else if (itemNo === 4) {
+          setLocation4(place);
+        }
       })
       .catch((error) => console.log(error.message)); // error is a Javascript Error object
   };
 
-  const locationsFrame = (id: number) => {
-    return (
-      <View key={id} style={[styles.row, styles.rowLocation]}>
-        <View style={styles.column}>
-          <Selector
-            warning={warning.location}
-            onPress={() => openLocationModal(id)}
-            text={locations != null && locations.name}
-          />
-        </View>
+  const openLocation = async (index: number) => {
+    const warningTemp = warning;
+    
+    if (index === 0) {
+      warningTemp.location0 = false;
+    }
+    else if (index === 1) {
+      warningTemp.location1 = false;
+    }
+    else if (index === 2) {
+      warningTemp.location2 = false;
+    }
+    else if (index === 3) {
+      warningTemp.location3 = false;
+    }
+    else if (index === 4) {
+      warningTemp.location4 = false;
+    }
+
+    await setWarning(warningTemp);
+    openLocationModal(index)
+  }
+
+  const locationArea0 = (
+    <View style={[styles.row, styles.rowLocation]}>
+      <View style={styles.column}>
+        <Selector
+          warning={warning.location0}
+          onPress={() => openLocation(0)}
+          text={location0 != null && location0.name}
+        />
       </View>
-    );
-  };
+    </View>
+  );
+
+  const locationArea1 = (
+    <View style={[styles.row, styles.rowLocation]}>
+      <View style={styles.column}>
+        <Selector
+          warning={warning.location1}
+          onPress={() => openLocation(1)}
+          text={location1 != null && location1.name}
+        />
+      </View>
+      <Ionicons
+        size={20}
+        name="remove-circle-outline"
+        onPress={() => removeLocation(1)}
+        color={colors.darkRed}
+      />
+    </View>
+  );
+
+  const locationArea2 = (
+    <View style={[styles.row, styles.rowLocation]}>
+      <View style={styles.column}>
+        <Selector
+          warning={warning.location2}
+          onPress={() => openLocation(2)}
+          text={location2 != null && location2.name}
+        />
+      </View>
+      <Ionicons
+        size={20}
+        name="remove-circle-outline"
+        onPress={() => removeLocation(2)}
+        color={colors.darkRed}
+      />
+    </View>
+  );
+
+  const locationArea3 = (
+    <View style={[styles.row, styles.rowLocation]}>
+      <View style={styles.column}>
+        <Selector
+          warning={warning.location3}
+          onPress={() => openLocation(3)}
+          text={location3 != null && location3.name}
+        />
+      </View>
+      <Ionicons
+        size={20}
+        name="remove-circle-outline"
+        onPress={() => removeLocation(3)}
+        color={colors.darkRed}
+      />
+    </View>
+  );
+
+  const locationArea4 = (
+    <View style={[styles.row, styles.rowLocation]}>
+      <View style={styles.column}>
+        <Selector
+          warning={warning.location4}
+          onPress={() => openLocation(4)}
+          text={location4 != null && location4.name}
+        />
+      </View>
+      <Ionicons
+        size={20}
+        name="remove-circle-outline"
+        onPress={() => removeLocation(4)}
+        color={colors.darkRed}
+      />
+    </View>
+  );
 
   return (
     <MenuProvider>
@@ -557,31 +696,11 @@ const CreateActivityScreen2 = () => {
               </View>
             </View>
             <View style={styles.locationWrapper}>
-              <View style={[styles.row, styles.rowLocation]}>
-                <View style={styles.column}>
-                  <Selector
-                    warning={warning.location}
-                    onPress={() => openLocationModal(0)}
-                    text={locations[1] != undefined && locations[1].location.name}
-                  />
-                </View>
-              </View>
-              {locationCount.map((a, index) => locationsFrame(index + 1))}
-
-              {/* {props.showRemove && (
-                  <TouchableOpacity
-                    onPress={() => props.onLocationRemove(props.location.id)}
-                  >
-                    <View
-                      style={[
-                        styles.locationIconWrapper,
-                        styles.locationIconRemove,
-                      ]}
-                    >
-                      <Ionicons size={15} name="remove" color={colors.white} />
-                    </View>
-                  </TouchableOpacity>
-                )} */}
+              {locationArea0}
+              {showLocation1 && locationArea1}
+              {showLocation2 && locationArea2}
+              {showLocation3 && locationArea3}
+              {showLocation4 && locationArea4}
             </View>
           </ScrollView>
           <View style={styles.row}>
