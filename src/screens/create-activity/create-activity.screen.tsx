@@ -340,51 +340,45 @@ const CreateActivityScreen2 = () => {
   };
 
   const handleStartTimeConfirm = (date: Date) => {
-    console.log('activityDate', date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes());
-    console.log('today', new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes());
-    // if (date.getTime() < new Date().getTime() + 7200000) {
-    //   Alert.alert(
-    //     'Warning',
-    //     'You have to select the time at least 2 hours before'
-    //   );
-    // }
-    // else if (activityFinishTime != undefined && date.getTime() > activityFinishTime.getTime()) {
-    //   Alert.alert(
-    //     'Warning',
-    //     'Thw start time must not be after the finish'
-    //   );
-    // }
-    // else {
-    //   // if (activityStartTime) {
-    //   let warningTemp = warning;
-    //   warningTemp.startTime = false;
-    //   setWarning(warningTemp);
-    //   setActivityStartTime(date);
-    //   setWarningTime(0);
-    // }
+    console.log(
+      'activityDate',
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      date.getHours(),
+      date.getMinutes()
+    );
+    console.log(
+      'today',
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      new Date().getDate(),
+      new Date().getHours(),
+      new Date().getMinutes()
+    );
 
     setStartTimeActionSheetVisibility(false);
-    // }
 
-      console.log('1', date.getHours() * 60 + date.getMinutes())
-      console.log('2',  new Date().getHours() * 60 + new Date().getMinutes())
+
+    console.log('1', date.getHours() * 60 + date.getMinutes());
+    console.log('2', new Date().getHours() * 60 + new Date().getMinutes());
     if (
       activityDate != undefined &&
       activityDate.getFullYear() === new Date().getFullYear() &&
       activityDate.getMonth() === new Date().getMonth() &&
       activityDate.getDate() === new Date().getDate() &&
       date.getHours() * 60 + date.getMinutes() >=
-        (new Date().getHours()+ 2) * 60 + new Date().getMinutes()
+        (new Date().getHours() + 2) * 60 + new Date().getMinutes()
     ) {
       setActivityStartTime(date);
       let warningTemp = warning;
       warningTemp.startTime = false;
       setWarning(warningTemp);
       // console.warn('En az 2 saat olmalı');
-      console.log('BURDA 1')
-    } 
-    else if (
-      activityDate != undefined && activityDate.getFullYear() === new Date().getFullYear() &&
+      console.log('BURDA 1');
+    } else if (
+      activityDate != undefined &&
+      activityDate.getFullYear() === new Date().getFullYear() &&
       activityDate.getMonth() === new Date().getMonth() &&
       activityDate.getDate() > new Date().getDate()
     ) {
@@ -392,13 +386,24 @@ const CreateActivityScreen2 = () => {
       let warningTemp = warning;
       warningTemp.startTime = false;
       setWarning(warningTemp);
-      console.log('BURDA 2')
-    }
-    else {
-      console.log('BURDA 3')
+      console.log('BURDA 2');
+    } else {
+      console.log('BURDA 3');
+      const selectedHour =
+        date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
+      const selectedMinute =
+        date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+      const minHour =
+        new Date().getHours() + 2 < 10
+          ? '0' + (new Date().getHours() + 2)
+          : (new Date().getHours() + 2);
+      const minMinute =
+        new Date().getMinutes() < 10
+          ? '0' + new Date().getMinutes()
+          : new Date().getMinutes();
       Alert.alert(
         'Warning',
-        'You have to select the time at least 2 hours before'
+        `You selected: ${selectedHour}:${selectedMinute}\nThe time must be minimum: ${minHour}:${minMinute}\n\nNote: You have to select the time at least 2 hours before. `
       );
     }
   };
@@ -449,7 +454,7 @@ const CreateActivityScreen2 = () => {
       new Date().getFullYear() === activityDate.getFullYear() &&
       new Date().getMonth() === activityDate.getMonth() &&
       new Date().getDate() === activityDate.getDate() &&
-      activityTime.getHours() * 60 + activityTime.getMinutes() <=
+      activityTime.getHours() * 60 + activityTime.getMinutes() <
         (new Date().getHours() + 2) * 60 + new Date().getMinutes()
     ) {
       result = 'Seçiniz';
@@ -460,7 +465,7 @@ const CreateActivityScreen2 = () => {
     //     result = activityTime.getHours().toString() + ':' + activityTime.getMinutes().toString();
     // }
     else if (activityTime != undefined) {
-      console.log('İçerde')
+      console.log('İçerde');
       if (activityTime.getHours() < 10) {
         result = '0' + activityTime.getHours().toString();
       } else {
