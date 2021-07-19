@@ -107,9 +107,9 @@ let App = () => {
   const getLocations = async () => {
     let location = await getLocationFromIp('https://ipapi.co/json/');
     console.log('location', location)
-    if (location == undefined || location == null || location.eror) {
-      location = await getLocationFromIp('https://ipinfo.io/json/');
-      console.log('ipinfo', location)
+    if (location == undefined || location == null || location.error) {
+      location = await getLocationFromIp('http://api.ipstack.com/217.138.197.90?access_key=84ce184e1841433c0e8ca4070334a724');
+      console.log('ipstack', location)
     }
     setLocation(location)
 }

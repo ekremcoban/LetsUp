@@ -96,6 +96,43 @@ const CreateActivityScreen2 = () => {
     finishTime: false,
   });
 
+  const convertLocation = (location: any, activityId: string) => {
+    let country = null;
+    let county = null;
+    let city = null;
+    for (let i = location.addressComponents.length - 1; 0 <= i; i--) {
+      if (location.addressComponents[i].types[0] === 'country') {
+        country = location.addressComponents[i].name;
+      } else if (location.addressComponents[i].types[0] === 'locality') {
+        city = location.addressComponents[i].name;
+      } else if (
+        city == null &&
+        location.addressComponents[i].types[0] === 'administrative_area_level_1'
+      ) {
+        city = location.addressComponents[i].name;
+      } else if (
+        city != null &&
+        location.addressComponents[i].types[0] === 'administrative_area_level_2'
+      ) {
+        county = location.addressComponents[i].name;
+      }
+    }
+    const activityAddress = {
+      id: uuidv4(),
+      activityId: activityId,
+      country: country,
+      county: county,
+      city: city,
+      geoCode: location.location,
+      details: null,
+      fullAddress: location.address,
+      nodeNumber: 0,
+      nodeCount: numberShowLocation,
+      createdTime: new Date().getTime(),
+    };
+console.log('aaa', activityAddress)
+  };
+
   const save = async () => {
     let warningTemp = {
       activityName: false,
@@ -119,27 +156,27 @@ const CreateActivityScreen2 = () => {
     console.log('location0', location0);
     if (location0 == null) {
       warningTemp.location0 = true;
-      console.log('BİR')
+      console.log('BİR');
     }
 
     if (location1 == null && showLocation1) {
       warningTemp.location1 = true;
-      console.log('İKİ')
+      console.log('İKİ');
     }
 
     if (location2 == null && showLocation2) {
       warningTemp.location2 = true;
-      console.log('ÜÇ')
+      console.log('ÜÇ');
     }
 
     if (location3 == null && showLocation3) {
       warningTemp.location3 = true;
-      console.log('DÖRT')
+      console.log('DÖRT');
     }
 
     if (location4 == null && showLocation4) {
       warningTemp.location4 = true;
-      console.log('BEŞ')
+      console.log('BEŞ');
     }
 
     if (activityDate == undefined) {
@@ -177,11 +214,11 @@ const CreateActivityScreen2 = () => {
 
     if (
       !warningTemp.activityName &&
-      // !warningTemp.location0 && location0 != null &&
-      // !warningTemp.location1 && location1 != null &&
-      // !warningTemp.location2 && location2 != null &&
-      // !warningTemp.location3 && location3 != null &&
-      // !warningTemp.location4 && location4 != null &&
+      !warningTemp.location0 &&
+      !warningTemp.location1 &&
+      !warningTemp.location2 &&
+      !warningTemp.location3 &&
+      !warningTemp.location4 &&
       !warningTemp.date &&
       !warningTemp.startTime &&
       !warningTemp.finishTime
@@ -212,37 +249,33 @@ const CreateActivityScreen2 = () => {
         console.log('activity', activity);
 
         if (location0 != null) {
-          console.log('1 kayıt')
+          convertLocation(location0, activityId);
+          console.log('1 kayıt');
         }
         if (location1 != null) {
-          console.log('2 kayıt')
+          convertLocation(location1, activityId);
+          console.log('2 kayıt');
         }
         if (location2 != null) {
-          console.log('3 kayıt')
+          convertLocation(location2, activityId);
+          console.log('3 kayıt');
         }
         if (location3 != null) {
-          console.log('4 kayıt')
+          convertLocation(location3, activityId);
+          console.log('4 kayıt');
         }
         if (location4 != null) {
-          console.log('5 kayıt')
+          convertLocation(location4, activityId);
+          console.log('5 kayıt');
         }
-        // const activityAddress = {
-        //   id: uuidv4(),
-        //   activityId: activityId,
-        //   country: location1.addressComponents[5].shortName,
-        //   county: null,
-        //   city: location1.addressComponents[3].name,
-        //   geoCode: location1.location,
-        //   details: null,
-        //   fullAddress: location1.address,
-        //   createdTime: new Date().getTime(),
-        // };
 
         // insertData('Activities', activity)
         // insertData('ActivityAddress', activityAddress);
 
         // console.log('address', activityAddress);
       });
+    } else {
+      console.error('GİRİŞ YAPILAMADI', numberShowLocation);
     }
 
     setWarning(warningTemp);
@@ -396,11 +429,13 @@ const CreateActivityScreen2 = () => {
       const selectedMinute =
         date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
       const minHour =
-      activityStartTime.getHours() + 1 < 10
+        activityStartTime.getHours() + 1 < 10
           ? '0' + (activityStartTime.getHours() + 1)
           : activityStartTime.getHours() + 1;
       const minMinute =
-      activityStartTime.getMinutes() < 10 ? '0' + activityStartTime.getMinutes() : activityStartTime.getMinutes();
+        activityStartTime.getMinutes() < 10
+          ? '0' + activityStartTime.getMinutes()
+          : activityStartTime.getMinutes();
       Alert.alert(
         'Warning',
         `You selected: ${selectedHour}:${selectedMinute}\nThe time must be minimum: ${minHour}:${minMinute}\n\nNote: You must select the time at least 1 hour. `
@@ -449,50 +484,47 @@ const CreateActivityScreen2 = () => {
     return result;
   };
 
-  const addLocation = async() => {
-    console.log('add', numberShowLocation)
-    if (numberShowLocation < 2) {
-      setShowLocation1(true)
+  const addLocation = async () => {
+    if (numberShowLocation > 0) {
+      setShowLocation1(true);
     }
-    if (1 < numberShowLocation && numberShowLocation < 3) {
-      setShowLocation2(true)
+    if (numberShowLocation > 1) {
+      setShowLocation2(true);
     }
-    if (2 < numberShowLocation && numberShowLocation < 4) {
-      setShowLocation3(true)
+    if (numberShowLocation > 2) {
+      setShowLocation3(true);
     }
-    if (3 < numberShowLocation && numberShowLocation < 5) {
-      setShowLocation4(true)
+    if (numberShowLocation > 3) {
+      setShowLocation4(true);
     }
 
     if (numberShowLocation < 5) {
       let t = numberShowLocation + 1;
       await setNumberShowLocation(t);
+      console.log('add', numberShowLocation);
     }
   };
 
   const removeLocation = async (index: number) => {
     let t = numberShowLocation - 1;
     await setNumberShowLocation(t);
-    console.log('----')
+    console.log('----');
     if (index === 1) {
       setLocation1(null);
-      setShowLocation1(false)
-    }
-    else if (index === 2) {
+      setShowLocation1(false);
+    } else if (index === 2) {
       setLocation2(null);
-      setShowLocation2(false)
-    }
-    else if (index === 3) {
+      setShowLocation2(false);
+    } else if (index === 3) {
       setLocation3(null);
-      setShowLocation3(false)
-    }
-    else if (index === 4) {
+      setShowLocation3(false);
+    } else if (index === 4) {
       setLocation4(null);
-      setShowLocation4(false)
+      setShowLocation4(false);
     }
 
-    console.log('numberShowLocation', numberShowLocation)
-  }
+    console.log('numberShowLocation', numberShowLocation);
+  };
 
   const openLocationModal = (itemNo: number) => {
     console.log('itemNo', itemNo);
@@ -502,17 +534,13 @@ const CreateActivityScreen2 = () => {
 
         if (itemNo === 0) {
           setLocation0(place);
-        }
-        else if (itemNo === 1) {
+        } else if (itemNo === 1) {
           setLocation1(place);
-        }
-        else if (itemNo === 2) {
+        } else if (itemNo === 2) {
           setLocation2(place);
-        }
-        else if (itemNo === 3) {
+        } else if (itemNo === 3) {
           setLocation3(place);
-        }
-        else if (itemNo === 4) {
+        } else if (itemNo === 4) {
           setLocation4(place);
         }
       })
@@ -521,26 +549,22 @@ const CreateActivityScreen2 = () => {
 
   const openLocation = async (index: number) => {
     const warningTemp = warning;
-    
+
     if (index === 0) {
       warningTemp.location0 = false;
-    }
-    else if (index === 1) {
+    } else if (index === 1) {
       warningTemp.location1 = false;
-    }
-    else if (index === 2) {
+    } else if (index === 2) {
       warningTemp.location2 = false;
-    }
-    else if (index === 3) {
+    } else if (index === 3) {
       warningTemp.location3 = false;
-    }
-    else if (index === 4) {
+    } else if (index === 4) {
       warningTemp.location4 = false;
     }
 
     await setWarning(warningTemp);
-    openLocationModal(index)
-  }
+    openLocationModal(index);
+  };
 
   const locationArea0 = (
     <View style={[styles.row, styles.rowLocation]}>
