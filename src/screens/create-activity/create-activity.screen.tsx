@@ -97,32 +97,52 @@ const CreateActivityScreen2 = () => {
   });
 
   const convertLocation = (location: any, activityId: string) => {
+    let isState = false;
     let country = null;
-    let county = null;
     let city = null;
+    let district = null;
+
     for (let i = location.addressComponents.length - 1; 0 <= i; i--) {
       if (location.addressComponents[i].types[0] === 'country') {
         country = location.addressComponents[i].name;
-      } else if (location.addressComponents[i].types[0] === 'locality') {
-        city = location.addressComponents[i].name;
-      } else if (
-        city == null &&
-        location.addressComponents[i].types[0] === 'administrative_area_level_1'
-      ) {
-        city = location.addressComponents[i].name;
-      } else if (
-        city != null &&
-        location.addressComponents[i].types[0] === 'administrative_area_level_2'
-      ) {
-        county = location.addressComponents[i].name;
+      }
+      // Eyalet sistemi var mı bilgisi icin
+      else if (location.addressComponents[i].types[0] === 'locality') {
+        isState = true;
       }
     }
+
+    for (let i = 0; i < location.addressComponents.length; i++) {
+      // Eyalet sistemi varsa sehir bilgisi
+      if (isState) {
+        if (location.addressComponents[i].types[0] === 'locality') {
+          city = location.addressComponents[i].name;
+        } else if (
+          location.addressComponents[i].types[0] === 'sublocality_level_1'
+        ) {
+          district = location.addressComponents[i].name;
+        }
+      } else {
+        if (
+          location.addressComponents[i].types[0] ===
+          'administrative_area_level_1'
+        ) {
+          city = location.addressComponents[i].name;
+        } else if (
+          location.addressComponents[i].types[0] ===
+          'administrative_area_level_2'
+        ) {
+          district = location.addressComponents[i].name;
+        }
+      }
+    }
+
     const activityAddress = {
       id: uuidv4(),
       activityId: activityId,
       country: country,
-      county: county,
       city: city,
+      district: district,
       geoCode: location.location,
       details: null,
       fullAddress: location.address,
@@ -130,7 +150,7 @@ const CreateActivityScreen2 = () => {
       nodeCount: numberShowLocation,
       createdTime: new Date().getTime(),
     };
-console.log('aaa', activityAddress)
+    console.log('aaa', activityAddress);
   };
 
   const save = async () => {
@@ -568,6 +588,13 @@ console.log('aaa', activityAddress)
 
   const locationArea0 = (
     <View style={[styles.row, styles.rowLocation]}>
+      {(branchName === 'jogging' ||
+        branchName === 'bicycle' ||
+        branchName === 'hiking') && (
+        <View style={styles.locationTitle}>
+          <Text>START</Text>
+        </View>
+      )}
       <View style={styles.column}>
         <Selector
           warning={warning.location0}
@@ -580,6 +607,9 @@ console.log('aaa', activityAddress)
 
   const locationArea1 = (
     <View style={[styles.row, styles.rowLocation]}>
+      <View style={styles.locationTitle}>
+        {numberShowLocation === 2 ? <Text>FINISH</Text> : <Text>DEST</Text>}
+      </View>
       <View style={styles.column}>
         <Selector
           warning={warning.location1}
@@ -587,17 +617,26 @@ console.log('aaa', activityAddress)
           text={location1 != null && location1.name}
         />
       </View>
-      <Ionicons
-        size={20}
-        name="remove-circle-outline"
-        onPress={() => removeLocation(1)}
-        color={colors.darkRed}
-      />
+      {numberShowLocation !== 2 && (
+        <Ionicons
+          size={20}
+          name="remove-circle-outline"
+          onPress={() => removeLocation(1)}
+          color={colors.darkRed}
+        />
+      )}
     </View>
   );
 
   const locationArea2 = (
     <View style={[styles.row, styles.rowLocation]}>
+      <View style={styles.locationTitle}>
+        {numberShowLocation === 3 || numberShowLocation === 2 ? (
+          <Text>FINISH</Text>
+        ) : (
+          <Text>DEST</Text>
+        )}
+      </View>
       <View style={styles.column}>
         <Selector
           warning={warning.location2}
@@ -605,17 +644,28 @@ console.log('aaa', activityAddress)
           text={location2 != null && location2.name}
         />
       </View>
-      <Ionicons
-        size={20}
-        name="remove-circle-outline"
-        onPress={() => removeLocation(2)}
-        color={colors.darkRed}
-      />
+      {numberShowLocation !== 2 && numberShowLocation !== 3 && (
+        <Ionicons
+          size={20}
+          name="remove-circle-outline"
+          onPress={() => removeLocation(2)}
+          color={colors.darkRed}
+        />
+      )}
     </View>
   );
 
   const locationArea3 = (
     <View style={[styles.row, styles.rowLocation]}>
+      <View style={styles.locationTitle}>
+        {numberShowLocation === 4 ||
+        numberShowLocation === 3 ||
+        numberShowLocation === 2 ? (
+          <Text>FINISH</Text>
+        ) : (
+          <Text>DEST</Text>
+        )}
+      </View>
       <View style={styles.column}>
         <Selector
           warning={warning.location3}
@@ -623,17 +673,31 @@ console.log('aaa', activityAddress)
           text={location3 != null && location3.name}
         />
       </View>
-      <Ionicons
-        size={20}
-        name="remove-circle-outline"
-        onPress={() => removeLocation(3)}
-        color={colors.darkRed}
-      />
+      {numberShowLocation !== 2 &&
+        numberShowLocation !== 3 &&
+        numberShowLocation !== 4 && (
+          <Ionicons
+            size={20}
+            name="remove-circle-outline"
+            onPress={() => removeLocation(3)}
+            color={colors.darkRed}
+          />
+        )}
     </View>
   );
 
   const locationArea4 = (
     <View style={[styles.row, styles.rowLocation]}>
+      <View style={styles.locationTitle}>
+        {numberShowLocation === 5 ||
+        numberShowLocation === 4 ||
+        numberShowLocation === 3 ||
+        numberShowLocation === 2 ? (
+          <Text>FINISH</Text>
+        ) : (
+          <Text>DEST</Text>
+        )}
+      </View>
       <View style={styles.column}>
         <Selector
           warning={warning.location4}
@@ -641,12 +705,30 @@ console.log('aaa', activityAddress)
           text={location4 != null && location4.name}
         />
       </View>
-      <Ionicons
-        size={20}
-        name="remove-circle-outline"
-        onPress={() => removeLocation(4)}
-        color={colors.darkRed}
-      />
+      {numberShowLocation !== 2 &&
+        numberShowLocation !== 3 &&
+        numberShowLocation !== 4 &&
+        numberShowLocation !== 5 && (
+          <Ionicons
+            size={20}
+            name="remove-circle-outline"
+            onPress={() => removeLocation(4)}
+            color={colors.darkRed}
+          />
+        )}
+    </View>
+  );
+
+  const addMoreButton = (
+    <View style={styles.locationAddMore}>
+      <Text style={styles.locationAddMoreLabel}>
+        {polyglot.t('screens.create_activity.inputs.location.add_more')}
+      </Text>
+      <TouchableOpacity onPress={addLocation}>
+        <View style={styles.locationIconWrapper}>
+          <Ionicons size={15} name="add-outline" color={colors.white} />
+        </View>
+      </TouchableOpacity>
     </View>
   );
 
@@ -664,6 +746,24 @@ console.log('aaa', activityAddress)
                 onItemPress={() => {
                   setSelectedActivityNameValue(null);
                   setBranchName(activityType.image);
+                  if (
+                    activityType.image !== 'jogging' &&
+                    activityType.image !== 'bicycle' &&
+                    activityType.image !== 'hiking'
+                  ) {
+                    setShowLocation1(false);
+                    setShowLocation2(false);
+                    setShowLocation3(false);
+                    setShowLocation4(false);
+                    setLocation1(null);
+                    setLocation2(null);
+                    setLocation3(null);
+                    setLocation4(null);
+                    setNumberShowLocation(2)
+                  }
+                  else {
+                    setShowLocation1(true);
+                  }
                 }}
               />
             ))}
@@ -704,23 +804,10 @@ console.log('aaa', activityAddress)
                   'screens.create_activity.inputs.location.label'
                 )}*`}
               </Text>
-
-              <View style={styles.locationAddMore}>
-                <Text style={styles.locationAddMoreLabel}>
-                  {polyglot.t(
-                    'screens.create_activity.inputs.location.add_more'
-                  )}
-                </Text>
-                <TouchableOpacity onPress={addLocation}>
-                  <View style={styles.locationIconWrapper}>
-                    <Ionicons
-                      size={15}
-                      name="add-outline"
-                      color={colors.white}
-                    />
-                  </View>
-                </TouchableOpacity>
-              </View>
+              {(branchName === 'jogging' ||
+                branchName === 'bicycle' ||
+                branchName === 'hiking') &&
+                addMoreButton}
             </View>
             <View style={styles.locationWrapper}>
               {locationArea0}
@@ -922,6 +1009,10 @@ const styles = StyleSheet.create({
   },
   rowLocation: {
     marginBottom: 10,
+  },
+  locationTitle: {
+    paddingStart: 10,
+    width: 70,
   },
   locationWrapper: {
     marginBottom: 10,

@@ -91,7 +91,6 @@ const LoginScreen = ({ navigation }: any) => {
           photo: _data.photo,
           geoCode: _data.geoCode,
           city: _data.city,
-          county: _data.county,
           country: _data.country,
           createdTime: _data.createdTime,
         };
@@ -109,7 +108,6 @@ const LoginScreen = ({ navigation }: any) => {
           interestedIn: null,
           photo: userInfo.user.photo,
           geoCode: null,
-          county: null,
           country: data.country_name,
           region: data.region,
           city: data.city,

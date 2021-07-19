@@ -120,7 +120,6 @@ const CreateProfilScreen = () => {
       photo: imageName != null ? null : photo,
       geoCode: user.geoCode,
       city: location.city,
-      county: location.region,
       country: location.country,
       postal: location.postal,
       type: 0,
