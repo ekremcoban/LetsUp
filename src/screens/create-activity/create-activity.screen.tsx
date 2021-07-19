@@ -50,7 +50,7 @@ const CreateActivityScreen2 = () => {
   const [showLocation2, setShowLocation2] = useState(null);
   const [showLocation3, setShowLocation3] = useState(null);
   const [showLocation4, setShowLocation4] = useState(null);
-  const [numberShowLocation, setNumberShowLocation] = useState(0);
+  const [numberShowLocation, setNumberShowLocation] = useState(1);
 
   const [activityDate, setActivityDate] = useState<Date>(new Date());
   const [activityStartTime, setActivityStartTime] = useState<Date>(undefined);
@@ -449,29 +449,30 @@ const CreateActivityScreen2 = () => {
     return result;
   };
 
-  const addLocation = () => {
+  const addLocation = async() => {
+    console.log('add', numberShowLocation)
     if (numberShowLocation < 2) {
       setShowLocation1(true)
     }
-    if (numberShowLocation < 3) {
+    if (1 < numberShowLocation && numberShowLocation < 3) {
       setShowLocation2(true)
     }
-    if (numberShowLocation < 4) {
+    if (2 < numberShowLocation && numberShowLocation < 4) {
       setShowLocation3(true)
     }
-    if (numberShowLocation < 5) {
+    if (3 < numberShowLocation && numberShowLocation < 5) {
       setShowLocation4(true)
     }
 
-    if (numberShowLocation < 4) {
+    if (numberShowLocation < 5) {
       let t = numberShowLocation + 1;
-      setNumberShowLocation(t);
+      await setNumberShowLocation(t);
     }
   };
 
-  const removeLocation = (index: number) => {
+  const removeLocation = async (index: number) => {
     let t = numberShowLocation - 1;
-    setNumberShowLocation(t);
+    await setNumberShowLocation(t);
     console.log('----')
     if (index === 1) {
       setLocation1(null);
@@ -489,6 +490,8 @@ const CreateActivityScreen2 = () => {
       setLocation4(null);
       setShowLocation4(false)
     }
+
+    console.log('numberShowLocation', numberShowLocation)
   }
 
   const openLocationModal = (itemNo: number) => {
