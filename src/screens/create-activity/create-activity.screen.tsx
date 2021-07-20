@@ -499,7 +499,9 @@ const CreateActivityScreen2 = () => {
       activityDate != undefined &&
       activityStartTime != undefined &&
       activityDate.getFullYear() === activityStartTime.getFullYear() &&
-      activityDate.getMonth() > activityStartTime.getMonth()) {
+      activityDate.getMonth() > new Date().getMonth() &&
+      date.getHours() * 60 + date.getMinutes() >=
+      (activityStartTime.getHours() + 1) * 60 + activityStartTime.getMinutes()) {
         setActivityFinishTime(date);
         let warningTemp = warning;
         warningTemp.finishTime = false;
@@ -508,7 +510,9 @@ const CreateActivityScreen2 = () => {
     } 
     else if (activityDate != undefined &&
       activityStartTime != undefined &&
-      activityDate.getFullYear() > activityStartTime.getFullYear()) {
+      activityDate.getFullYear() > new Date().getFullYear() &&
+      date.getHours() * 60 + date.getMinutes() >=
+      (activityStartTime.getHours() + 1) * 60 + activityStartTime.getMinutes()) {
         setActivityFinishTime(date);
         let warningTemp = warning;
         warningTemp.finishTime = false;
@@ -516,7 +520,7 @@ const CreateActivityScreen2 = () => {
         console.log('BURDA 4');
     }
     else if (activityStartTime != undefined) {
-      console.log('BURDA 5');
+      console.log('BURDA 5', activityStartTime, date);
       const selectedHour =
         date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
       const selectedMinute =
@@ -529,6 +533,7 @@ const CreateActivityScreen2 = () => {
         activityStartTime.getMinutes() < 10
           ? '0' + activityStartTime.getMinutes()
           : activityStartTime.getMinutes();
+
       Alert.alert(
         'Warning',
         `You selected: ${selectedHour}:${selectedMinute}\nThe time must be minimum: ${minHour}:${minMinute}\n\nNote: You must select the time at least 1 hour. `
@@ -536,7 +541,7 @@ const CreateActivityScreen2 = () => {
     } else if (activityStartTime == undefined) {
       Alert.alert('Warning', `You must select start time firstly`);
     } else {
-      console.log('burda 4');
+      console.log('burda 6', activityStartTime, activityFinishTime);
     }
   };
 

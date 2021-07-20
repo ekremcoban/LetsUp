@@ -18,7 +18,7 @@ const noti = [
     },
     {
         id: 2,
-        pic: require('assets/img/bcycle.png'),
+        pic: require('assets/img/bicycle.png'),
         boldText: 'İki teker Karaköy Turu',
         text: 'etkinliği iptal edildi',
         date: 'April 18, 09:00'

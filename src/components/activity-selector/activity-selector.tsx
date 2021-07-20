@@ -12,7 +12,7 @@ interface IAcivitySelectorProps {
     | ReactElement<IActivitySelectorCardProps>[];
 }
 interface IActivitySelectorCardProps {
-  icon?: string;
+  branchType?: string;
   title?: string;
   location?: string;
   date?: string;
@@ -53,11 +53,17 @@ const ActivitySelector: FC<IAcivitySelectorProps> &
 const ActivitySelectorCard: FC<IActivitySelectorCardProps> = (
   props: IActivitySelectorCardProps
 ) => {
+  console.log('props', props.branchType)
   return (
     <TouchableOpacity onPress={props.onPress}>
       <View style={cardStyles.wrapper}>
         <Image
-          source={require('assets/img/hiking.png')}
+          source={props.branchType === 'basketball' ? require('assets/img/basketball.png')
+          : props.branchType === 'bicycle' ? require('assets/img/bicycle.png')
+          : props.branchType === 'hiking' ? require('assets/img/hiking.png')
+          : props.branchType === 'jogging' ? require('assets/img/jogging.png')
+          : props.branchType === 'tennis' ? require('assets/img/tennis.png')
+        : require('assets/img/join.png')}
           style={cardStyles.icon}
         />
         <View style={cardStyles.content}>
