@@ -31,6 +31,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { colors } from 'styles/colors';
 import { useNavigation } from '@react-navigation/native';
 import { getData } from 'db/localDb';
+import { convertLowerString } from 'components/functions/common';
 
 const activityNameActionSheetRef = createRef<IActionSheet>();
 const ageRangeActionSheetRef = createRef<IActionSheet>();
@@ -146,7 +147,9 @@ const CreateActivityScreen2 = () => {
       activityId: activityId,
       country: country,
       city: city,
+      cityEng: convertLowerString(city),
       district: district,
+      districtEng: convertLowerString(district),
       geoCode: location.location,
       details: null,
       fullAddress: location.address,
@@ -304,7 +307,12 @@ const CreateActivityScreen2 = () => {
           startTime: activityStartTime != null && startActivityTime.getTime(),
           finishTime:
             activityFinishTime != null && finishActivityTime.getTime(),
-          gender: selectedGenderValue === 2 ? 'Man' : selectedGenderValue === 2 ? 'Woman' : null,
+          gender:
+            selectedGenderValue === 2
+              ? 'Man'
+              : selectedGenderValue === 2
+              ? 'Woman'
+              : null,
           minAge: selectedAgeRange[0],
           maxAge: selectedAgeRange[1],
           minQuota: selectedQuotaRange[0],

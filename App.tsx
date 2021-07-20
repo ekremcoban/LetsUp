@@ -32,6 +32,7 @@ import LoginScreen from 'screens/LoginScreen';
 import ContextApi from 'context/ContextApi';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { getData, removeItem } from 'db/localDb';
+import {NetworkInfo} from 'react-native-network-info';
 
 let App = () => {
   const [user, setUser,] = useState();
@@ -108,8 +109,8 @@ let App = () => {
     let location = await getLocationFromIp('https://ipapi.co/json/');
     console.log('location', location)
     if (location == undefined || location == null || location.error) {
-      location = await getLocationFromIp('http://api.ipstack.com/217.138.197.90?access_key=84ce184e1841433c0e8ca4070334a724');
-      console.log('ipstack', location)
+      location = await getLocationFromIp('https://ipapi.co/json/');
+      console.log('ipapi', location)
     }
     setLocation(location)
 }
