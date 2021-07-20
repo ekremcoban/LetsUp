@@ -96,7 +96,11 @@ const CreateActivityScreen2 = () => {
     finishTime: false,
   });
 
-  const convertLocation = (location: any, activityId: string) => {
+  const convertLocation = (
+    location: any,
+    activityId: string,
+    nodeNumber: number
+  ) => {
     let isState = false;
     let country = null;
     let city = null;
@@ -146,11 +150,52 @@ const CreateActivityScreen2 = () => {
       geoCode: location.location,
       details: null,
       fullAddress: location.address,
-      nodeNumber: 0,
+      nodeNumber: nodeNumber,
       nodeCount: numberShowLocation,
       createdTime: new Date().getTime(),
     };
-    console.log('aaa', activityAddress);
+    return activityAddress;
+  };
+
+  const convertAndSendAddressToServer = (parentId: string) => {
+    if (location0 != null) {
+      const post = convertLocation(location0, parentId, 1);
+      fireStoreFunction('ActivityAddress', post.id, post);
+      console.log('1 kayıt', post);
+    }
+    if (location1 != null) {
+      const post = convertLocation(location1, parentId, 2);
+      fireStoreFunction('ActivityAddress', post.id, post);
+      console.log('2 kayıt', post);
+    }
+    if (location2 != null) {
+      const post = convertLocation(location2, parentId, 3);
+      fireStoreFunction('ActivityAddress', post.id, post);
+      console.log('3 kayıt', post);
+    }
+    if (location3 != null) {
+      const post = convertLocation(location3, parentId, 4);
+      fireStoreFunction('ActivityAddress', post.id, post);
+      console.log('4 kayıt', post);
+    }
+    if (location4 != null) {
+      const post = convertLocation(location4, parentId, 5);
+      fireStoreFunction('ActivityAddress', post.id, post);
+      console.log('5 kayıt', post);
+    }
+  };
+
+  const fireStoreFunction = (title: string, id: string, data: Object) => {
+    firestore()
+      .collection(title)
+      .doc(id)
+      .set(data)
+      .then(() => {
+        console.log('Adress insert!');
+      })
+      .catch((e) => {
+        console.log('insert Adress', e);
+      });
   };
 
   const save = async () => {
@@ -259,7 +304,7 @@ const CreateActivityScreen2 = () => {
           startTime: activityStartTime != null && startActivityTime.getTime(),
           finishTime:
             activityFinishTime != null && finishActivityTime.getTime(),
-          gender: selectedGenderValue === 2 ? 'Man' : 'Woman',
+          gender: selectedGenderValue === 2 ? 'Man' : selectedGenderValue === 2 ? 'Woman' : null,
           minAge: selectedAgeRange[0],
           maxAge: selectedAgeRange[1],
           minQuota: selectedQuotaRange[0],
@@ -268,31 +313,9 @@ const CreateActivityScreen2 = () => {
         };
         console.log('activity', activity);
 
-        if (location0 != null) {
-          convertLocation(location0, activityId);
-          console.log('1 kayıt');
-        }
-        if (location1 != null) {
-          convertLocation(location1, activityId);
-          console.log('2 kayıt');
-        }
-        if (location2 != null) {
-          convertLocation(location2, activityId);
-          console.log('3 kayıt');
-        }
-        if (location3 != null) {
-          convertLocation(location3, activityId);
-          console.log('4 kayıt');
-        }
-        if (location4 != null) {
-          convertLocation(location4, activityId);
-          console.log('5 kayıt');
-        }
-
-        // insertData('Activities', activity)
-        // insertData('ActivityAddress', activityAddress);
-
-        // console.log('address', activityAddress);
+        // Activity bilgisini sunucuya yazar
+        fireStoreFunction('Activities', activity.id, activity);
+        convertAndSendAddressToServer(activityId);
       });
     } else {
       console.error('GİRİŞ YAPILAMADI', numberShowLocation);
@@ -608,7 +631,11 @@ const CreateActivityScreen2 = () => {
   const locationArea1 = (
     <View style={[styles.row, styles.rowLocation]}>
       <View style={styles.locationTitle}>
-        {numberShowLocation === 2 && (!showLocation3 && !showLocation4) ? <Text>FINISH 1</Text> : <Text>DEST 1</Text>}
+        {numberShowLocation === 2 && !showLocation3 && !showLocation4 ? (
+          <Text>FINISH 1</Text>
+        ) : (
+          <Text>DEST 1</Text>
+        )}
       </View>
       <View style={styles.column}>
         <Selector
@@ -631,7 +658,9 @@ const CreateActivityScreen2 = () => {
   const locationArea2 = (
     <View style={[styles.row, styles.rowLocation]}>
       <View style={styles.locationTitle}>
-        {(numberShowLocation === 3 || numberShowLocation === 2) && !showLocation3 && !showLocation4 ? (
+        {(numberShowLocation === 3 || numberShowLocation === 2) &&
+        !showLocation3 &&
+        !showLocation4 ? (
           <Text>FINISH 2</Text>
         ) : (
           <Text>DEST 2</Text>
@@ -644,14 +673,15 @@ const CreateActivityScreen2 = () => {
           text={location2 != null && location2.name}
         />
       </View>
-      {(numberShowLocation !== 2 || numberShowLocation !== 3) && (showLocation3 || showLocation4) && (
-        <Ionicons
-          size={20}
-          name="remove-circle-outline"
-          onPress={() => removeLocation(2)}
-          color={colors.darkRed}
-        />
-      )}
+      {(numberShowLocation !== 2 || numberShowLocation !== 3) &&
+        (showLocation3 || showLocation4) && (
+          <Ionicons
+            size={20}
+            name="remove-circle-outline"
+            onPress={() => removeLocation(2)}
+            color={colors.darkRed}
+          />
+        )}
     </View>
   );
 
@@ -659,8 +689,9 @@ const CreateActivityScreen2 = () => {
     <View style={[styles.row, styles.rowLocation]}>
       <View style={styles.locationTitle}>
         {(numberShowLocation === 4 ||
-        numberShowLocation === 3 ||
-        numberShowLocation === 2) && !showLocation4 ? (
+          numberShowLocation === 3 ||
+          numberShowLocation === 2) &&
+        !showLocation4 ? (
           <Text>FINISH 3</Text>
         ) : (
           <Text>DEST 3</Text>
@@ -675,7 +706,8 @@ const CreateActivityScreen2 = () => {
       </View>
       {(numberShowLocation !== 2 ||
         numberShowLocation !== 3 ||
-        numberShowLocation !== 4) && showLocation4 && (
+        numberShowLocation !== 4) &&
+        showLocation4 && (
           <Ionicons
             size={20}
             name="remove-circle-outline"
@@ -689,7 +721,7 @@ const CreateActivityScreen2 = () => {
   const locationArea4 = (
     <View style={[styles.row, styles.rowLocation]}>
       <View style={styles.locationTitle}>
-          <Text>FINISH 4</Text>
+        <Text>FINISH 4</Text>
       </View>
       <View style={styles.column}>
         <Selector
@@ -728,7 +760,7 @@ const CreateActivityScreen2 = () => {
                 onItemPress={() => {
                   setSelectedActivityNameValue(null);
                   setBranchName(activityType.image);
-                  setNumberShowLocation(2)
+                  setNumberShowLocation(2);
                   if (
                     activityType.image !== 'jogging' &&
                     activityType.image !== 'bicycle' &&
@@ -742,9 +774,8 @@ const CreateActivityScreen2 = () => {
                     setLocation2(null);
                     setLocation3(null);
                     setLocation4(null);
-                    setNumberShowLocation(2)
-                  }
-                  else {
+                    setNumberShowLocation(2);
+                  } else {
                     setShowLocation1(true);
                   }
                 }}
