@@ -528,7 +528,7 @@ const CreateActivityScreen2 = () => {
   const removeLocation = async (index: number) => {
     let t = numberShowLocation - 1;
     await setNumberShowLocation(t);
-    console.log('----');
+    console.log('----', t);
     if (index === 1) {
       setLocation1(null);
       setShowLocation1(false);
@@ -608,7 +608,7 @@ const CreateActivityScreen2 = () => {
   const locationArea1 = (
     <View style={[styles.row, styles.rowLocation]}>
       <View style={styles.locationTitle}>
-        {numberShowLocation === 2 ? <Text>FINISH</Text> : <Text>DEST</Text>}
+        {numberShowLocation === 2 && (!showLocation3 && !showLocation4) ? <Text>FINISH 1</Text> : <Text>DEST 1</Text>}
       </View>
       <View style={styles.column}>
         <Selector
@@ -617,7 +617,7 @@ const CreateActivityScreen2 = () => {
           text={location1 != null && location1.name}
         />
       </View>
-      {numberShowLocation !== 2 && (
+      {(numberShowLocation !== 2 || showLocation4) && (
         <Ionicons
           size={20}
           name="remove-circle-outline"
@@ -631,10 +631,10 @@ const CreateActivityScreen2 = () => {
   const locationArea2 = (
     <View style={[styles.row, styles.rowLocation]}>
       <View style={styles.locationTitle}>
-        {numberShowLocation === 3 || numberShowLocation === 2 ? (
-          <Text>FINISH</Text>
+        {(numberShowLocation === 3 || numberShowLocation === 2) && !showLocation3 && !showLocation4 ? (
+          <Text>FINISH 2</Text>
         ) : (
-          <Text>DEST</Text>
+          <Text>DEST 2</Text>
         )}
       </View>
       <View style={styles.column}>
@@ -644,7 +644,7 @@ const CreateActivityScreen2 = () => {
           text={location2 != null && location2.name}
         />
       </View>
-      {numberShowLocation !== 2 && numberShowLocation !== 3 && (
+      {(numberShowLocation !== 2 || numberShowLocation !== 3) && (showLocation3 || showLocation4) && (
         <Ionicons
           size={20}
           name="remove-circle-outline"
@@ -658,12 +658,12 @@ const CreateActivityScreen2 = () => {
   const locationArea3 = (
     <View style={[styles.row, styles.rowLocation]}>
       <View style={styles.locationTitle}>
-        {numberShowLocation === 4 ||
+        {(numberShowLocation === 4 ||
         numberShowLocation === 3 ||
-        numberShowLocation === 2 ? (
-          <Text>FINISH</Text>
+        numberShowLocation === 2) && !showLocation4 ? (
+          <Text>FINISH 3</Text>
         ) : (
-          <Text>DEST</Text>
+          <Text>DEST 3</Text>
         )}
       </View>
       <View style={styles.column}>
@@ -673,9 +673,9 @@ const CreateActivityScreen2 = () => {
           text={location3 != null && location3.name}
         />
       </View>
-      {numberShowLocation !== 2 &&
-        numberShowLocation !== 3 &&
-        numberShowLocation !== 4 && (
+      {(numberShowLocation !== 2 ||
+        numberShowLocation !== 3 ||
+        numberShowLocation !== 4) && showLocation4 && (
           <Ionicons
             size={20}
             name="remove-circle-outline"
@@ -689,14 +689,7 @@ const CreateActivityScreen2 = () => {
   const locationArea4 = (
     <View style={[styles.row, styles.rowLocation]}>
       <View style={styles.locationTitle}>
-        {numberShowLocation === 5 ||
-        numberShowLocation === 4 ||
-        numberShowLocation === 3 ||
-        numberShowLocation === 2 ? (
-          <Text>FINISH</Text>
-        ) : (
-          <Text>DEST</Text>
-        )}
+          <Text>FINISH 4</Text>
       </View>
       <View style={styles.column}>
         <Selector
@@ -705,17 +698,6 @@ const CreateActivityScreen2 = () => {
           text={location4 != null && location4.name}
         />
       </View>
-      {numberShowLocation !== 2 &&
-        numberShowLocation !== 3 &&
-        numberShowLocation !== 4 &&
-        numberShowLocation !== 5 && (
-          <Ionicons
-            size={20}
-            name="remove-circle-outline"
-            onPress={() => removeLocation(4)}
-            color={colors.darkRed}
-          />
-        )}
     </View>
   );
 
@@ -746,6 +728,7 @@ const CreateActivityScreen2 = () => {
                 onItemPress={() => {
                   setSelectedActivityNameValue(null);
                   setBranchName(activityType.image);
+                  setNumberShowLocation(2)
                   if (
                     activityType.image !== 'jogging' &&
                     activityType.image !== 'bicycle' &&
