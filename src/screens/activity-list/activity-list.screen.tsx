@@ -23,7 +23,7 @@ export const ActivityListScreen = () => {
   const { location } = useContext(ContextApi);
   const navigation = useNavigation();
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
-  const [ activityList, setActivityList ] = useState();
+  const [activityList, setActivityList] = useState();
   let activityId = [];
   let activityTemp = [];
 
@@ -50,26 +50,26 @@ export const ActivityListScreen = () => {
             // console.log('Activity Address: ', documentSnapshot.id, documentSnapshot.data());
             activityId.push(documentSnapshot.data().activityId);
           });
-      
-          const subscriber = firestore().collection('Activities').onSnapshot(snapShot => {
-            activityTemp = [];
-            // setActivityList(snapShot.docs)
-            console.log('snap', snapShot.docs)
-            snapShot.forEach((snap) => {
-              activityTemp.push(snap.data())
+
+          const subscriber = firestore()
+            .collection('Activities')
+            .onSnapshot((snapShot) => {
+              activityTemp = [];
+              // setActivityList(snapShot.docs)
+              console.log('snap', snapShot.docs);
+              snapShot.forEach((snap) => {
+                activityTemp.push(snap.data());
+              });
+
+              setActivityList([...activityTemp]);
+              // forceUpdate();
             });
-            
-            setActivityList([...activityTemp]);
-            // forceUpdate();
-          })
 
           return () => subscriber();
         });
-       
     }
-    console.log('activityList', activityList)
+    console.log('activityList', activityList);
     // Stop listening for updates when no longer required
-    
   }, []);
 
   const _activityTypes = activityTypes.map(
@@ -106,17 +106,27 @@ export const ActivityListScreen = () => {
       <Divider style={styles.divider} />
 
       <ActivitySelector>
-        {activityList != null && activityList != undefined && activityList.map(activity => (
-          <ActivitySelector.Card
-            key={activity.id}
-            title={activity.name}
-            icon={'kosu.png'}
-            location={'TEST'}
-            date={'TEST'}
-            time={'TEST'}
-            onPress={() => navigation.navigate('Activity')}
-          />
-        ))}
+        {activityList != null &&
+          activityList != undefined &&
+          activityList.map((activity) => (
+            <ActivitySelector.Card
+              key={activity.id}
+              title={activity.name}
+              icon={'kosu.png'}
+              location={'TEST'}
+              date={new Date(activity.startTime).toString().substring(0, 15)}
+              time={
+                (new Date(activity.startTime).getHours() < 10
+                  ? '0' + new Date(activity.startTime).getHours()
+                  : new Date(activity.startTime).getHours()) +
+                ':' +
+                (new Date(activity.startTime).getMinutes() < 10
+                  ? '0' + new Date(activity.startTime).getMinutes()
+                  : new Date(activity.startTime).getMinutes())
+              }
+              onPress={() => navigation.navigate('Activity')}
+            />
+          ))}
       </ActivitySelector>
 
       <AgeActionSheet

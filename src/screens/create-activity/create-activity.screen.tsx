@@ -417,8 +417,29 @@ const CreateActivityScreen2 = () => {
       warningTemp.startTime = false;
       setWarning(warningTemp);
       console.log('BURDA 2');
-    } else {
-      console.log('BURDA 3');
+    } 
+    else if (
+      activityDate != undefined &&
+      activityDate.getFullYear() === new Date().getFullYear() &&
+      activityDate.getMonth() > new Date().getMonth() ) {
+        console.log('BURDA 3');
+        setActivityStartTime(date);
+        let warningTemp = warning;
+        warningTemp.startTime = false;
+        setWarning(warningTemp);
+    }
+    else if (
+      activityDate != undefined &&
+      activityDate.getFullYear() > new Date().getFullYear() 
+    ) {
+      console.log('BURDA 4');
+      setActivityStartTime(date);
+      let warningTemp = warning;
+      warningTemp.startTime = false;
+      setWarning(warningTemp);
+    }
+    else {
+      console.log('BURDA 5');
       const selectedHour =
         date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
       const selectedMinute =
@@ -473,8 +494,29 @@ const CreateActivityScreen2 = () => {
       warningTemp.finishTime = false;
       setWarning(warningTemp);
       console.log('BURDA 2');
-    } else if (activityStartTime != undefined) {
-      console.log('BURDA 3');
+    } 
+    else if (
+      activityDate != undefined &&
+      activityStartTime != undefined &&
+      activityDate.getFullYear() === activityStartTime.getFullYear() &&
+      activityDate.getMonth() > activityStartTime.getMonth()) {
+        setActivityFinishTime(date);
+        let warningTemp = warning;
+        warningTemp.finishTime = false;
+        setWarning(warningTemp);
+        console.log('BURDA 3');
+    } 
+    else if (activityDate != undefined &&
+      activityStartTime != undefined &&
+      activityDate.getFullYear() > activityStartTime.getFullYear()) {
+        setActivityFinishTime(date);
+        let warningTemp = warning;
+        warningTemp.finishTime = false;
+        setWarning(warningTemp);
+        console.log('BURDA 4');
+    }
+    else if (activityStartTime != undefined) {
+      console.log('BURDA 5');
       const selectedHour =
         date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
       const selectedMinute =
