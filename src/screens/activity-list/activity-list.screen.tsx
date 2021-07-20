@@ -51,28 +51,26 @@ export const ActivityListScreen = () => {
             activityId.push(documentSnapshot.data().activityId);
           });
       
-          firestore()
-            .collection('Activities')
-            // Filter results
-            .where('id', 'in', activityId)
-            .get()
-            .then((querySnapshot) => {
-              console.log('Total Activity: ', querySnapshot.size);
-
-              querySnapshot.forEach((documentSnapshot) => {
-                console.log('Activities: ', documentSnapshot.id, documentSnapshot.data())
-                activityTemp.push(documentSnapshot.data())
-              });
-              console.log('activityTemp', activityTemp)
-              setActivityList(activityTemp);
+          const subscriber = firestore().collection('Activities').onSnapshot(snapShot => {
+            activityTemp = [];
+            // setActivityList(snapShot.docs)
+            console.log('snap', snapShot.docs)
+            snapShot.forEach((snap) => {
+              activityTemp.push(snap.data())
             });
+            
+            setActivityList([...activityTemp]);
+            // forceUpdate();
+          })
+
+          return () => subscriber();
         });
        
     }
     console.log('activityList', activityList)
     // Stop listening for updates when no longer required
-    // return () => subscriber();
-  }, [activityList]);
+    
+  }, []);
 
   const _activityTypes = activityTypes.map(
     (activityType: IActivityType, index: number) => (
