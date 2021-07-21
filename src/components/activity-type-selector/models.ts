@@ -2,6 +2,7 @@ export interface IActivityType {
   id: number;
   image: string;
   textKey: string;
+  warning: boolean;
 }
 
 export const activityTypes: IActivityType[] = [

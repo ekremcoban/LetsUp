@@ -45,7 +45,8 @@ const LoginScreen = ({ navigation }: any) => {
         await retrieveData(user, usersCollection, data, userInfo);
     }
     catch (error) {
-      console.error('GoogleSignin', error);
+      setSpinner(false);
+      console.log('GoogleSignin', error);
     }
   };
 

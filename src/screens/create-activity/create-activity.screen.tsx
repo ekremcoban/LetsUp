@@ -41,7 +41,7 @@ const genderActionSheetRef = createRef<IActionSheet>();
 
 const CreateActivityScreen2 = () => {
   const navigation = useNavigation();
-  const { setIsCreateActivity } = useContext(ContextApi);
+  const { user, setIsCreateActivity } = useContext(ContextApi);
   const [branchName, setBranchName] = useState<string>(String || undefined);
 
   const [location0, setLocation0] = useState(null);
@@ -283,7 +283,37 @@ const CreateActivityScreen2 = () => {
       );
     }
 
-    if (
+    if (user == undefined || user == null) {
+      Alert.alert('Warning', 'You have to login to create a new activity', [
+        {
+          text: 'No',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () => {
+            navigation.navigate('Login')
+          },
+        },
+      ]);
+    }
+    else if (user.age == null || user.gender == null) {
+      Alert.alert('Warning', 'You have to enter your age and gender', [
+        {
+          text: 'No',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () => {
+            navigation.navigate('Create Profile', {from: 'Create Activity'})
+          },
+        },
+      ]);
+    }
+    else if (
       !warningTemp.activityName &&
       !warningTemp.location0 &&
       !warningTemp.location1 &&
@@ -294,71 +324,75 @@ const CreateActivityScreen2 = () => {
       !warningTemp.startTime &&
       !warningTemp.finishTime
     ) {
+      setWarning(warningTemp);
       getData('Users').then((user) => {
-        console.log(user);
-        const activityId = uuidv4();
-        const activity = {
-          id: activityId,
-          type: branchName,
-          name: polyglot.t(
-            activityNames.filter(
-              (a) => a.value === selectedActivityNameValue
-            )[0].text
-          ),
-          ownerId: user.id,
-          date: activityDate.getTime(),
-          startTime: activityStartTime != null && startActivityTime.getTime(),
-          finishTime:
-            activityFinishTime != null && finishActivityTime.getTime(),
-          gender:
-            selectedGenderValue === 2
-              ? 'Man'
-              : selectedGenderValue === 2
-              ? 'Woman'
-              : null,
-          minAge: selectedAgeRange[0],
-          maxAge: selectedAgeRange[1],
-          minQuota: selectedQuotaRange[0],
-          maxQuota: selectedQuotaRange[1],
-          createdTime: new Date().getTime(),
-        };
-        console.log('activity', activity);
+        if (user != null) {
+          console.log('user', user);
+          const activityId = uuidv4();
+          const activity = {
+            id: activityId,
+            type: branchName,
+            name: polyglot.t(
+              activityNames.filter(
+                (a) => a.value === selectedActivityNameValue
+              )[0].text
+            ),
+            owner: user.email,
+            ownerPicture: user.photo,
+            date: activityDate.getTime(),
+            startTime: activityStartTime != null && startActivityTime.getTime(),
+            finishTime:
+              activityFinishTime != null && finishActivityTime.getTime(),
+            gender:
+              selectedGenderValue === 2
+                ? 'Man'
+                : selectedGenderValue === 2
+                ? 'Woman'
+                : null,
+            minAge: selectedAgeRange[0],
+            maxAge: selectedAgeRange[1],
+            minQuota: selectedQuotaRange[0],
+            maxQuota: selectedQuotaRange[1],
+            createdTime: new Date().getTime(),
+          };
+          console.log('activity', activity);
 
-        Alert.alert('Info', 'Do you confirm to create a new activity?', [
-          {
-            text: 'No',
-            onPress: () => console.log('Cancel Pressed'),
-            style: 'cancel',
-          },
-          {
-            text: 'Yes',
-            onPress: () => {
-              setIsCreateActivity(true);
-              // Activity bilgisini sunucuya yazar
-              fireStoreFunction('Activities', activity.id, activity);
-              convertAndSendAddressToServer(activity);
-              setBranchName(String || undefined);
-              setLocation0(null);
-              setLocation1(null);
-              setLocation2(null);
-              setLocation3(null);
-              setLocation4(null);
-              setActivityDate(new Date());
-              setActivityStartTime(null);
-              setActivityFinishTime(null);
-              setSelectedActivityNameValue(null);
-              setSelectedAgeRange([null, null]);
-              setSelectedQuotaRange([null, null]);
-              setSelectedGenderValue(null);
+          Alert.alert('Info', 'Do you confirm to create a new activity?', [
+            {
+              text: 'No',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
             },
-          },
-        ]);
+            {
+              text: 'Yes',
+              onPress: () => {
+                setIsCreateActivity(true);
+                // Activity bilgisini sunucuya yazar
+                fireStoreFunction('Activities', activity.id, activity);
+                convertAndSendAddressToServer(activity);
+
+                setBranchName(String || undefined);
+                setLocation0(null);
+                setLocation1(null);
+                setLocation2(null);
+                setLocation3(null);
+                setLocation4(null);
+                setActivityDate(new Date());
+                setActivityStartTime(null);
+                setActivityFinishTime(null);
+                setSelectedActivityNameValue(null);
+                setSelectedAgeRange([null, null]);
+                setSelectedQuotaRange([null, null]);
+                setSelectedGenderValue(null);
+              },
+            },
+          ]);
+        }
       });
     } else {
-      console.error('GİRİŞ YAPILAMADI', numberShowLocation);
+      setWarning(warningTemp);
+      console.log('GİRİŞ YAPILAMADI', numberShowLocation);
     }
-
-    setWarning(warningTemp);
   };
 
   const handleDateConfirm = (date: Date) => {
@@ -446,28 +480,26 @@ const CreateActivityScreen2 = () => {
       warningTemp.startTime = false;
       setWarning(warningTemp);
       console.log('BURDA 2');
-    } 
-    else if (
+    } else if (
       activityDate != undefined &&
       activityDate.getFullYear() === new Date().getFullYear() &&
-      activityDate.getMonth() > new Date().getMonth() ) {
-        console.log('BURDA 3');
-        setActivityStartTime(date);
-        let warningTemp = warning;
-        warningTemp.startTime = false;
-        setWarning(warningTemp);
-    }
-    else if (
+      activityDate.getMonth() > new Date().getMonth()
+    ) {
+      console.log('BURDA 3');
+      setActivityStartTime(date);
+      let warningTemp = warning;
+      warningTemp.startTime = false;
+      setWarning(warningTemp);
+    } else if (
       activityDate != undefined &&
-      activityDate.getFullYear() > new Date().getFullYear() 
+      activityDate.getFullYear() > new Date().getFullYear()
     ) {
       console.log('BURDA 4');
       setActivityStartTime(date);
       let warningTemp = warning;
       warningTemp.startTime = false;
       setWarning(warningTemp);
-    }
-    else {
+    } else {
       console.log('BURDA 5');
       const selectedHour =
         date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
@@ -523,32 +555,32 @@ const CreateActivityScreen2 = () => {
       warningTemp.finishTime = false;
       setWarning(warningTemp);
       console.log('BURDA 2');
-    } 
-    else if (
+    } else if (
       activityDate != undefined &&
       activityStartTime != undefined &&
       activityDate.getFullYear() === activityStartTime.getFullYear() &&
       activityDate.getMonth() > new Date().getMonth() &&
       date.getHours() * 60 + date.getMinutes() >=
-      (activityStartTime.getHours() + 1) * 60 + activityStartTime.getMinutes()) {
-        setActivityFinishTime(date);
-        let warningTemp = warning;
-        warningTemp.finishTime = false;
-        setWarning(warningTemp);
-        console.log('BURDA 3');
-    } 
-    else if (activityDate != undefined &&
+        (activityStartTime.getHours() + 1) * 60 + activityStartTime.getMinutes()
+    ) {
+      setActivityFinishTime(date);
+      let warningTemp = warning;
+      warningTemp.finishTime = false;
+      setWarning(warningTemp);
+      console.log('BURDA 3');
+    } else if (
+      activityDate != undefined &&
       activityStartTime != undefined &&
       activityDate.getFullYear() > new Date().getFullYear() &&
       date.getHours() * 60 + date.getMinutes() >=
-      (activityStartTime.getHours() + 1) * 60 + activityStartTime.getMinutes()) {
-        setActivityFinishTime(date);
-        let warningTemp = warning;
-        warningTemp.finishTime = false;
-        setWarning(warningTemp);
-        console.log('BURDA 4');
-    }
-    else if (activityStartTime != undefined) {
+        (activityStartTime.getHours() + 1) * 60 + activityStartTime.getMinutes()
+    ) {
+      setActivityFinishTime(date);
+      let warningTemp = warning;
+      warningTemp.finishTime = false;
+      setWarning(warningTemp);
+      console.log('BURDA 4');
+    } else if (activityStartTime != undefined) {
       console.log('BURDA 5', activityStartTime, date);
       const selectedHour =
         date.getHours() < 10 ? '0' + date.getHours() : date.getHours();

@@ -141,6 +141,7 @@ const CreateProfilScreen = () => {
         .doc(email)
         .get();
 
+        console.log('data 1', data)
       // Veriler sunucuya gonderildi
       sendData(usersCollection, data);
 
@@ -152,7 +153,7 @@ const CreateProfilScreen = () => {
       if (from === 'Login') {
         navigation.goBack();
         navigation.goBack();
-      } else if (from === 'Profile Info') {
+      } else if (from === 'Profile Info' || from === 'Create Activity') {
         navigation.goBack();
       }
     }
