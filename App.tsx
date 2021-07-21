@@ -112,6 +112,9 @@ let App = () => {
     if (location == undefined || location == null || location.error) {
       location = await getLocationFromIp('https://freegeoip.app/json/');
       console.log('ipapi', location)
+      if (location == undefined || location == null || location.error) {
+        console.log('google lazım')
+      }
     }
     setLocation(location)
 }
@@ -283,10 +286,10 @@ const getLocationFromIp = (url: string) => {
                 // }}
               />
               <Stack.Screen
-                name="Activity"
+                name="Activity Info"
                 component={ActivityInfoScreen}
                 options={{
-                  title: 'Activity',
+                  title: 'Activity Info',
                   headerStyle: {
                     backgroundColor: colors.bar,
                   },

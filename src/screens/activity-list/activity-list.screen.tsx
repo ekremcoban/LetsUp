@@ -234,7 +234,7 @@ export const ActivityListScreen = () => {
                         ? '0' + new Date(activity.startTime).getMinutes()
                         : new Date(activity.startTime).getMinutes())
                     }
-                    onPress={() => navigation.navigate('Activity')}
+                    onPress={() => navigation.navigate('Activity Info', {activity: activity, activityList: activityList})}
                   />
                 ))}
           </ActivitySelector>
