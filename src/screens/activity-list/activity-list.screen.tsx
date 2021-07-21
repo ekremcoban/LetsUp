@@ -20,7 +20,9 @@ import { convertLowerString } from 'components/functions/common';
 const ageActionSheetRef = createRef<IActionSheet>();
 
 export const ActivityListScreen = () => {
-  const { location, isCreateActivity, setIsCreateActivity } = useContext(ContextApi);
+  const { location, isCreateActivity, setIsCreateActivity } = useContext(
+    ContextApi
+  );
   const navigation = useNavigation();
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
   const [activityList, setActivityList] = useState();
@@ -47,7 +49,12 @@ export const ActivityListScreen = () => {
 
           querySnapshot.forEach((documentSnapshot) => {
             // console.log('Activity Address: ', documentSnapshot.id, documentSnapshot.data());
-            if (documentSnapshot.data().cityEng === convertLowerString(location.city)) {
+
+            // Sadece bulundugu sehirdeki aktiviteleri aldik
+            if (
+              documentSnapshot.data().cityEng ===
+              convertLowerString('malatya')
+            ) {
               activityId.push(documentSnapshot.data().activityId);
               addressTemp.push(documentSnapshot.data());
             }
@@ -78,27 +85,36 @@ export const ActivityListScreen = () => {
       let subscriber;
 
       if (isCreateActivity) {
-        console.log('İÇERDE')
+        console.log('İÇERDE');
         setIsCreateActivity(false);
         if (location != null) {
           firestore()
             .collection('ActivityAddress')
-            .where('country', '==', location.country_name)
+            // .where('country', '==', location.country_name)
             // .where('cityEng', '==', convertLowerString(location.city))
+            .where('time', '>=', new Date().getTime())
+            // .where('time', '<=', new Date().getTime() + 30 * 86400000)
+            .orderBy('time')
             .get()
             .then((querySnapshot) => {
               // console.log('Total users: ', querySnapshot.size);
               addressTemp = [];
-  
+
               querySnapshot.forEach((documentSnapshot) => {
                 // console.log('Activity Address: ', documentSnapshot.id, documentSnapshot.data());
-                activityId.push(documentSnapshot.data().activityId);
-                addressTemp.push(documentSnapshot.data());
+                // Sadece bulundugu sehirdeki aktiviteleri aldik
+                if (
+                  documentSnapshot.data().cityEng ===
+                  convertLowerString(location.city)
+                ) {
+                  activityId.push(documentSnapshot.data().activityId);
+                  addressTemp.push(documentSnapshot.data());
+                }
               });
-               console.log('addressTemp', addressTemp);
+              console.log('addressTemp', addressTemp);
               // console.log('activityId', activityId);
               setAddressList([...addressTemp]);
-  
+
               subscriber = firestore()
                 .collection('Activities')
                 .where('id', 'in', activityId)
@@ -112,9 +128,8 @@ export const ActivityListScreen = () => {
                 });
             });
         }
-      }
-      else {
-        console.log('DIŞARDA')
+      } else {
+        console.log('DIŞARDA');
       }
     });
 
