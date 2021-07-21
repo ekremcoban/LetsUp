@@ -110,7 +110,7 @@ let App = () => {
     let location = await getLocationFromIp('https://ipapi.co/json/');
     console.log('location', location)
     if (location == undefined || location == null || location.error) {
-      location = await getLocationFromIp('https://ipapi.co/json/');
+      location = await getLocationFromIp('https://freegeoip.app/json/');
       console.log('ipapi', location)
     }
     setLocation(location)

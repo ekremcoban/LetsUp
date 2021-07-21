@@ -1,5 +1,12 @@
 import React, { useReducer, createRef, useContext, useState } from 'react';
-import { Alert, SafeAreaView, StyleSheet, ScrollView } from 'react-native';
+import {
+  Alert,
+  SafeAreaView,
+  StyleSheet,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import { Divider } from 'react-native-elements';
 import { IActionSheet } from 'components/action-sheet/action-sheet';
 import firestore from '@react-native-firebase/firestore';
@@ -16,6 +23,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useEffect } from 'react';
 import ContextApi from 'context/ContextApi';
 import { convertLowerString } from 'components/functions/common';
+import DisplaySpinner from '../../components/spinner';
 
 const ageActionSheetRef = createRef<IActionSheet>();
 
@@ -25,8 +33,9 @@ export const ActivityListScreen = () => {
   );
   const navigation = useNavigation();
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
-  const [activityList, setActivityList] = useState();
-  const [addressList, setAddressList] = useState();
+  const [spinner, setSpinner] = useState<boolean>(true);
+  const [activityList, setActivityList] = useState(null);
+  const [addressList, setAddressList] = useState(null);
 
   useEffect(() => {
     let activityId = [];
@@ -53,7 +62,7 @@ export const ActivityListScreen = () => {
             // Sadece bulundugu sehirdeki aktiviteleri aldik
             if (
               documentSnapshot.data().cityEng ===
-              convertLowerString('malatya')
+              convertLowerString(location.city)
             ) {
               activityId.push(documentSnapshot.data().activityId);
               addressTemp.push(documentSnapshot.data());
@@ -74,7 +83,11 @@ export const ActivityListScreen = () => {
                 activityTemp.push(s.data());
               });
               setActivityList([...activityTemp]);
+              setSpinner(false);
             });
+        }).catch(e => {
+          setSpinner(false) 
+          setActivityList(null)
         });
     }
 
@@ -125,8 +138,9 @@ export const ActivityListScreen = () => {
                     activityTemp.push(s.data());
                   });
                   setActivityList([...activityTemp]);
+                  setSpinner(false);
                 });
-            });
+            }).catch(e => setSpinner(false) );
         }
       } else {
         console.log('DIŞARDA');
@@ -169,52 +183,64 @@ export const ActivityListScreen = () => {
 
   return (
     <SafeAreaView style={styles.wrapper}>
+      {spinner && <DisplaySpinner />}
       <ActivityTypeSelector multiple>{_activityTypes}</ActivityTypeSelector>
 
       <Divider style={styles.divider} />
-      <ScrollView>
-        <ActivitySelector>
-          {activityList != null &&
-            activityList != undefined &&
-            activityList
-              .sort((a, b) => {
-                return a.startTime - b.startTime;
-              })
-              .map((activity) => (
-                <ActivitySelector.Card
-                  key={activity.id}
-                  title={activity.name}
-                  branchType={activity.type}
-                  location={
-                    addressList != null &&
-                    addressList.filter(
-                      (address) => address.activityId === activity.id
-                    )[0] != null &&
-                    addressList.filter(
-                      (address) => address.activityId === activity.id
-                    )[0].city +
-                      ', ' +
+      {activityList != null &&
+      activityList != undefined &&
+      activityTypes != [] && (
+        <ScrollView>
+          <ActivitySelector>
+            {activityList != null &&
+              activityList != undefined &&
+              activityList
+                .sort((a, b) => {
+                  return a.startTime - b.startTime;
+                })
+                .map((activity) => (
+                  <ActivitySelector.Card
+                    key={activity.id}
+                    title={activity.name}
+                    branchType={activity.type}
+                    location={
+                      addressList != null &&
                       addressList.filter(
                         (address) => address.activityId === activity.id
-                      )[0].district
-                  }
-                  date={new Date(activity.startTime)
-                    .toString()
-                    .substring(0, 15)}
-                  time={
-                    (new Date(activity.startTime).getHours() < 10
-                      ? '0' + new Date(activity.startTime).getHours()
-                      : new Date(activity.startTime).getHours()) +
-                    ':' +
-                    (new Date(activity.startTime).getMinutes() < 10
-                      ? '0' + new Date(activity.startTime).getMinutes()
-                      : new Date(activity.startTime).getMinutes())
-                  }
-                  onPress={() => navigation.navigate('Activity')}
-                />
-              ))}
-        </ActivitySelector>
-      </ScrollView>
+                      )[0] != null &&
+                      addressList.filter(
+                        (address) => address.activityId === activity.id
+                      )[0].city +
+                        ', ' +
+                        addressList.filter(
+                          (address) => address.activityId === activity.id
+                        )[0].district
+                    }
+                    date={new Date(activity.startTime)
+                      .toString()
+                      .substring(0, 15)}
+                    time={
+                      (new Date(activity.startTime).getHours() < 10
+                        ? '0' + new Date(activity.startTime).getHours()
+                        : new Date(activity.startTime).getHours()) +
+                      ':' +
+                      (new Date(activity.startTime).getMinutes() < 10
+                        ? '0' + new Date(activity.startTime).getMinutes()
+                        : new Date(activity.startTime).getMinutes())
+                    }
+                    onPress={() => navigation.navigate('Activity')}
+                  />
+                ))}
+          </ActivitySelector>
+        </ScrollView>
+      )}
+        {!spinner && activityList == null && (<View
+          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Text>There is not any activity in your city now</Text>
+          <Text></Text>
+          <Text>Let's create first activity</Text>
+        </View>)}
       <AgeActionSheet
         ref={ageActionSheetRef}
         onSelect={([min, max]: [number, number]) => {
