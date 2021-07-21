@@ -483,18 +483,20 @@ const CreateActivityScreen2 = () => {
       activityDate.getMonth() === new Date().getMonth() &&
       activityDate.getDate() > new Date().getDate()
     ) {
-      setActivityStartTime(date);
+      const startDate = new Date(activityDate.getFullYear(), activityDate.getMonth(), activityDate.getDate(), date.getHours(), date.getMinutes());
+      setActivityStartTime(startDate);
       let warningTemp = warning;
       warningTemp.startTime = false;
       setWarning(warningTemp);
-      console.log('BURDA 2');
+      console.log('BURDA 2', activityStartTime);
     } else if (
       activityDate != undefined &&
       activityDate.getFullYear() === new Date().getFullYear() &&
       activityDate.getMonth() > new Date().getMonth()
     ) {
-      console.log('BURDA 3');
-      setActivityStartTime(date);
+      const startDate = new Date(activityDate.getFullYear(), activityDate.getMonth(), activityDate.getDate(), date.getHours(), date.getMinutes());
+      console.log('BURDA 3', startDate);
+      setActivityStartTime(startDate);
       let warningTemp = warning;
       warningTemp.startTime = false;
       setWarning(warningTemp);
@@ -552,21 +554,22 @@ const CreateActivityScreen2 = () => {
     } else if (
       activityDate != undefined &&
       activityStartTime != undefined &&
-      activityDate.getFullYear() === activityStartTime.getFullYear() &&
-      activityDate.getMonth() === activityStartTime.getMonth() &&
-      activityDate.getDate() > activityStartTime.getDate() &&
+      activityDate.getFullYear() === new Date().getFullYear() &&
+      activityDate.getMonth() === new Date().getMonth() &&
+      activityDate.getDate() > new Date().getDate() &&
       date.getHours() * 60 + date.getMinutes() >=
         (activityStartTime.getHours() + 1) * 60 + activityStartTime.getMinutes()
     ) {
-      setActivityFinishTime(date);
+      const finishDate = new Date(activityDate.getFullYear(), activityDate.getMonth(), activityDate.getDate(), date.getHours(), date.getMinutes());
+      setActivityFinishTime(finishDate);
       let warningTemp = warning;
       warningTemp.finishTime = false;
       setWarning(warningTemp);
-      console.log('BURDA 2');
+      console.log('BURDA 2', finishDate);
     } else if (
       activityDate != undefined &&
       activityStartTime != undefined &&
-      activityDate.getFullYear() === activityStartTime.getFullYear() &&
+      activityDate.getFullYear() === new Date().getFullYear() &&
       activityDate.getMonth() > new Date().getMonth() &&
       date.getHours() * 60 + date.getMinutes() >=
         (activityStartTime.getHours() + 1) * 60 + activityStartTime.getMinutes()
