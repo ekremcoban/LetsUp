@@ -101,7 +101,7 @@ const CreateActivityScreen2 = () => {
 
   const convertLocation = (
     location: any,
-    activityId: string,
+    activity: Object,
     nodeNumber: number
   ) => {
     let isState = false;
@@ -146,45 +146,46 @@ const CreateActivityScreen2 = () => {
 
     const activityAddress = {
       id: uuidv4(),
-      activityId: activityId,
+      activityId: activity.id,
       country: country,
       city: city,
-      cityEng: convertLowerString(city),
+      cityEng: city != null ? convertLowerString(city) : null,
       district: district,
-      districtEng: convertLowerString(district),
+      districtEng: district != null ? convertLowerString(district) : null,
       geoCode: location.location,
       details: null,
       fullAddress: location.address,
       nodeNumber: nodeNumber,
       nodeCount: numberShowLocation,
+      time: activity.startTime,
       createdTime: new Date().getTime(),
     };
     return activityAddress;
   };
 
-  const convertAndSendAddressToServer = (parentId: string) => {
+  const convertAndSendAddressToServer = (activity: Object) => {
     if (location0 != null) {
-      const post = convertLocation(location0, parentId, 1);
+      const post = convertLocation(location0, activity, 1);
       fireStoreFunction('ActivityAddress', post.id, post);
       console.log('1 kayıt', post);
     }
     if (location1 != null) {
-      const post = convertLocation(location1, parentId, 2);
+      const post = convertLocation(location1, activity, 2);
       fireStoreFunction('ActivityAddress', post.id, post);
       console.log('2 kayıt', post);
     }
     if (location2 != null) {
-      const post = convertLocation(location2, parentId, 3);
+      const post = convertLocation(location2, activity, 3);
       fireStoreFunction('ActivityAddress', post.id, post);
       console.log('3 kayıt', post);
     }
     if (location3 != null) {
-      const post = convertLocation(location3, parentId, 4);
+      const post = convertLocation(location3, activity, 4);
       fireStoreFunction('ActivityAddress', post.id, post);
       console.log('4 kayıt', post);
     }
     if (location4 != null) {
-      const post = convertLocation(location4, parentId, 5);
+      const post = convertLocation(location4, activity, 5);
       fireStoreFunction('ActivityAddress', post.id, post);
       console.log('5 kayıt', post);
     }

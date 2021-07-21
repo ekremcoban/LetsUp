@@ -36,19 +36,19 @@ export const ActivityListScreen = () => {
       firestore()
         .collection('ActivityAddress')
         .where('country', '==', location.country_name)
-        .where('cityEng', '==', convertLowerString(location.city))
+        // .where('cityEng', '==', convertLowerString(location.city))
         .get()
         .then((querySnapshot) => {
           // console.log('Total users: ', querySnapshot.size);
           addressTemp = [];
 
           querySnapshot.forEach((documentSnapshot) => {
-            // console.log('Activity Address: ', documentSnapshot.id, documentSnapshot.data());
+            console.log('Activity Address: ', documentSnapshot.id, documentSnapshot.data());
             activityId.push(documentSnapshot.data().activityId);
             addressTemp.push(documentSnapshot.data());
           });
           console.log('addressTemp', addressTemp);
-          // console.log('activityId', activityId);
+           console.log('activityId 1', activityId);
           setAddressList([...addressTemp]);
 
           subscriber = firestore()
@@ -79,7 +79,7 @@ export const ActivityListScreen = () => {
           firestore()
             .collection('ActivityAddress')
             .where('country', '==', location.country_name)
-            .where('cityEng', '==', convertLowerString(location.city))
+            // .where('cityEng', '==', convertLowerString(location.city))
             .get()
             .then((querySnapshot) => {
               // console.log('Total users: ', querySnapshot.size);
