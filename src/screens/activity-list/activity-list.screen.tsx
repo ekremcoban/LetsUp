@@ -33,11 +33,19 @@ export const ActivityListScreen = () => {
     let subscriber;
 
     if (location != null) {
-      firestore()
-        .collection('ActivityAddress')
-        .where('country', '==', location.country_name)
+      var query = firestore()
+      .collection('ActivityAddress')
+      // .where('country', '==', location.country_name);
+         query = query.where('cityEng', '==', convertLowerString(location.city))
+        //  query = query.where('time', '>=', 1626865440000)
+        //  query = query.where('cityEng', '<=', convertLowerString('İstanbul'))
+        //  query = query.where('time', '>=', 1626865440000)
+      //  query = query.orderBy('time').startAt(1626865440001)
+      // firestore()
+      //   .collection('ActivityAddress')
+      //   .where('country', '==', location.country_name)
         // .where('cityEng', '==', convertLowerString(location.city))
-        .get()
+        query.get()
         .then((querySnapshot) => {
           // console.log('Total users: ', querySnapshot.size);
           addressTemp = [];
