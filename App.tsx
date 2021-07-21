@@ -32,13 +32,14 @@ import LoginScreen from 'screens/LoginScreen';
 import ContextApi from 'context/ContextApi';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { getData, removeItem } from 'db/localDb';
-import {NetworkInfo} from 'react-native-network-info';
 
 let App = () => {
   const [user, setUser,] = useState();
   const [userPhoto, setUserPhoto] = useState();
   const [location, setLocation] = useState();
-  const value = { user, setUser, userPhoto, setUserPhoto, location, setLocation };
+  const [isCreateActivity, setIsCreateActivity] = useState();
+  const value = { user, setUser, userPhoto, setUserPhoto, 
+    location, setLocation, isCreateActivity, setIsCreateActivity };
 
   const scheme = useColorScheme();
   const Stack = createStackNavigator();

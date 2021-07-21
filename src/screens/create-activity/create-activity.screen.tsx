@@ -1,4 +1,4 @@
-import React, { useState, createRef } from 'react';
+import React, { useState, createRef, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -32,6 +32,7 @@ import { colors } from 'styles/colors';
 import { useNavigation } from '@react-navigation/native';
 import { getData } from 'db/localDb';
 import { convertLowerString } from 'components/functions/common';
+import ContextApi from 'context/ContextApi';
 
 const activityNameActionSheetRef = createRef<IActionSheet>();
 const ageRangeActionSheetRef = createRef<IActionSheet>();
@@ -40,6 +41,7 @@ const genderActionSheetRef = createRef<IActionSheet>();
 
 const CreateActivityScreen2 = () => {
   const navigation = useNavigation();
+  const { setIsCreateActivity } = useContext(ContextApi);
   const [branchName, setBranchName] = useState<string>(String || undefined);
 
   const [location0, setLocation0] = useState(null);
@@ -321,9 +323,35 @@ const CreateActivityScreen2 = () => {
         };
         console.log('activity', activity);
 
-        // Activity bilgisini sunucuya yazar
-        fireStoreFunction('Activities', activity.id, activity);
-        convertAndSendAddressToServer(activityId);
+        Alert.alert('Info', 'Do you confirm to create a new activity?', [
+          {
+            text: 'No',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+          {
+            text: 'Yes',
+            onPress: () => {
+              setIsCreateActivity(true);
+              // Activity bilgisini sunucuya yazar
+              fireStoreFunction('Activities', activity.id, activity);
+              convertAndSendAddressToServer(activity);
+              setBranchName(String || undefined);
+              setLocation0(null);
+              setLocation1(null);
+              setLocation2(null);
+              setLocation3(null);
+              setLocation4(null);
+              setActivityDate(new Date());
+              setActivityStartTime(null);
+              setActivityFinishTime(null);
+              setSelectedActivityNameValue(null);
+              setSelectedAgeRange([null, null]);
+              setSelectedQuotaRange([null, null]);
+              setSelectedGenderValue(null);
+            },
+          },
+        ]);
       });
     } else {
       console.error('GİRİŞ YAPILAMADI', numberShowLocation);

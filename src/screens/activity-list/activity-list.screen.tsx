@@ -66,7 +66,7 @@ export const ActivityListScreen = () => {
     }
 
     // Stop listening for updates when no longer required
-    return () => subscriber();
+    return () => subscriber;
   }, []);
 
   const _activityTypes = activityTypes.map(
