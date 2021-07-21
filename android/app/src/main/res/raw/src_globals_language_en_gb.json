@@ -1,15 +1,53 @@
 {
   "activity_names": {
-    "0": "Bisiklet Bizim İşimiz",
-    "1": "Koşmaya Var Mısın?",
-    "2": "Bisiklet Turu",
-    "3": "Basketbol Maçı",
-    "4": "Test 1",
-    "5": "Test 2",
-    "6": "Test 3",
-    "7": "Test 4",
-    "8": "Test 5",
-    "9": "Test 6"
+    "0": "Please Select",
+    "1": "Lets Run",
+    "2": "Lets Race",
+    "3": "How fast are you?",
+    "4": "Do you want to join us?",
+    "5": "The streets are waiting for us",
+
+    "6": "Please Select",
+    "7": "Let's go basketball",
+    "8": "Basketball is our business",
+    "9": "Basketball lovers",
+    "10": "Let's socialize",
+    "11": "Double Double",
+
+    "12": "Please Select",
+    "13": "Let's bike",
+    "14": "Lets Race",
+    "15": "Join us with your bikes",
+    "16": "Cycling for Health",
+    "17": "Cycling for pleasure",
+
+    "18": "Please Select",
+    "19": "Let's go nature",
+    "20": "Hiking this weekend",
+    "21": "We missed fresh air",
+    "22": "Enjoy nature",
+    "23": "Grab your backpack",
+
+    "24": "Please Select",
+    "25": "Lets go tennis",
+    "26": "Grab your racket",
+    "27": "Will you be my rival?",
+    "28": "Do you play tennis with me?",
+    "29": "Tennis is my fav",
+
+    "30": "Please Select",
+    "31": "Lets go bowling",
+    "32": "Let's socialize",
+    "33": "Come if you're bored",
+    "34": "Will you be my rival?",
+    "35": "Do you play bowling with us?",
+   
+    "36": "Please Select",
+    "37": "Let's play frisbee",
+    "38": "Let's socialize",
+    "39": "Come if you're bored",
+    "40": "Will you be my rival?",
+    "41": "Do you play frisbee with us?"
   },
   "activity_types": {
     "basketball": "Basketball",
