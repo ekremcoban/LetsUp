@@ -33,30 +33,27 @@ export const ActivityListScreen = () => {
     let subscriber;
 
     if (location != null) {
-      var query = firestore()
-      .collection('ActivityAddress')
-      // .where('country', '==', location.country_name);
-         query = query.where('cityEng', '==', convertLowerString(location.city))
-        //  query = query.where('time', '>=', 1626865440000)
-        //  query = query.where('cityEng', '<=', convertLowerString('İstanbul'))
-        //  query = query.where('time', '>=', 1626865440000)
-      //  query = query.orderBy('time').startAt(1626865440001)
-      // firestore()
-      //   .collection('ActivityAddress')
-      //   .where('country', '==', location.country_name)
+      firestore()
+        .collection('ActivityAddress')
+        // .where('country', '==', location.country_name)
         // .where('cityEng', '==', convertLowerString(location.city))
-        query.get()
+        .where('time', '>=', new Date().getTime())
+        // .where('time', '<=', new Date().getTime() + 30 * 86400000)
+        .orderBy('time')
+        .get()
         .then((querySnapshot) => {
           // console.log('Total users: ', querySnapshot.size);
           addressTemp = [];
 
           querySnapshot.forEach((documentSnapshot) => {
-            console.log('Activity Address: ', documentSnapshot.id, documentSnapshot.data());
-            activityId.push(documentSnapshot.data().activityId);
-            addressTemp.push(documentSnapshot.data());
+            // console.log('Activity Address: ', documentSnapshot.id, documentSnapshot.data());
+            if (documentSnapshot.data().cityEng === convertLowerString(location.city)) {
+              activityId.push(documentSnapshot.data().activityId);
+              addressTemp.push(documentSnapshot.data());
+            }
           });
-          console.log('addressTemp', addressTemp);
-           console.log('activityId 1', activityId);
+          // console.log('addressTemp', addressTemp);
+          //  console.log('activityId 1', activityId);
           setAddressList([...addressTemp]);
 
           subscriber = firestore()

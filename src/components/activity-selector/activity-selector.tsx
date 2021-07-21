@@ -53,7 +53,7 @@ const ActivitySelector: FC<IAcivitySelectorProps> &
 const ActivitySelectorCard: FC<IActivitySelectorCardProps> = (
   props: IActivitySelectorCardProps
 ) => {
-  console.log('props', props.branchType)
+  // console.log('props', props.branchType)
   return (
     <TouchableOpacity onPress={props.onPress}>
       <View style={cardStyles.wrapper}>
