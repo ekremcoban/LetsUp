@@ -20,7 +20,7 @@ import { convertLowerString } from 'components/functions/common';
 const ageActionSheetRef = createRef<IActionSheet>();
 
 export const ActivityListScreen = () => {
-  const { location } = useContext(ContextApi);
+  const { location, isCreateActivity, setIsCreateActivity } = useContext(ContextApi);
   const navigation = useNavigation();
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
   const [activityList, setActivityList] = useState();
@@ -39,7 +39,7 @@ export const ActivityListScreen = () => {
         .where('cityEng', '==', convertLowerString(location.city))
         .get()
         .then((querySnapshot) => {
-          console.log('Total users: ', querySnapshot.size);
+          // console.log('Total users: ', querySnapshot.size);
           addressTemp = [];
 
           querySnapshot.forEach((documentSnapshot) => {
@@ -48,16 +48,17 @@ export const ActivityListScreen = () => {
             addressTemp.push(documentSnapshot.data());
           });
           console.log('addressTemp', addressTemp);
-          console.log('activityId', activityId);
+          // console.log('activityId', activityId);
           setAddressList([...addressTemp]);
 
           subscriber = firestore()
             .collection('Activities')
             .where('id', 'in', activityId)
+            // .where('ime', '>', 1626820440000)
             .onSnapshot((documentSnapshot) => {
               activityTemp = [];
               documentSnapshot.docs.forEach((s) => {
-                console.log('User data: ', s.data());
+                // console.log('User data: ', s.data());
                 activityTemp.push(s.data());
               });
               setActivityList([...activityTemp]);
@@ -65,9 +66,59 @@ export const ActivityListScreen = () => {
         });
     }
 
-    // Stop listening for updates when no longer required
-    return () => subscriber;
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      let activityId = [];
+      let addressTemp = [];
+      let activityTemp = [];
+      let subscriber;
+
+      if (isCreateActivity) {
+        console.log('İÇERDE')
+        setIsCreateActivity(false);
+        if (location != null) {
+          firestore()
+            .collection('ActivityAddress')
+            .where('country', '==', location.country_name)
+            .where('cityEng', '==', convertLowerString(location.city))
+            .get()
+            .then((querySnapshot) => {
+              // console.log('Total users: ', querySnapshot.size);
+              addressTemp = [];
+  
+              querySnapshot.forEach((documentSnapshot) => {
+                // console.log('Activity Address: ', documentSnapshot.id, documentSnapshot.data());
+                activityId.push(documentSnapshot.data().activityId);
+                addressTemp.push(documentSnapshot.data());
+              });
+               console.log('addressTemp', addressTemp);
+              // console.log('activityId', activityId);
+              setAddressList([...addressTemp]);
+  
+              subscriber = firestore()
+                .collection('Activities')
+                .where('id', 'in', activityId)
+                .onSnapshot((documentSnapshot) => {
+                  activityTemp = [];
+                  documentSnapshot.docs.forEach((s) => {
+                    console.log('User data: ', s.data());
+                    activityTemp.push(s.data());
+                  });
+                  setActivityList([...activityTemp]);
+                });
+            });
+        }
+      }
+      else {
+        console.log('DIŞARDA')
+      }
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return {
+      unsubscribe,
+      subscriber,
+    };
+  }, [navigation]);
 
   const _activityTypes = activityTypes.map(
     (activityType: IActivityType, index: number) => (
@@ -105,37 +156,43 @@ export const ActivityListScreen = () => {
         <ActivitySelector>
           {activityList != null &&
             activityList != undefined &&
-            activityList.map((activity) => (
-              <ActivitySelector.Card
-                key={activity.id}
-                title={activity.name}
-                branchType={activity.type}
-                location={
-                  addressList != null &&
-                  addressList.filter(
-                    (address) => address.activityId === activity.id
-                  )[0] != null &&
-                  addressList.filter(
-                    (address) => address.activityId === activity.id
-                  )[0].city +
-                    ', ' +
+            activityList
+              .sort((a, b) => {
+                return a.startTime - b.startTime;
+              })
+              .map((activity) => (
+                <ActivitySelector.Card
+                  key={activity.id}
+                  title={activity.name}
+                  branchType={activity.type}
+                  location={
+                    addressList != null &&
                     addressList.filter(
                       (address) => address.activityId === activity.id
-                    )[0].district
-                }
-                date={new Date(activity.startTime).toString().substring(0, 15)}
-                time={
-                  (new Date(activity.startTime).getHours() < 10
-                    ? '0' + new Date(activity.startTime).getHours()
-                    : new Date(activity.startTime).getHours()) +
-                  ':' +
-                  (new Date(activity.startTime).getMinutes() < 10
-                    ? '0' + new Date(activity.startTime).getMinutes()
-                    : new Date(activity.startTime).getMinutes())
-                }
-                onPress={() => navigation.navigate('Activity')}
-              />
-            ))}
+                    )[0] != null &&
+                    addressList.filter(
+                      (address) => address.activityId === activity.id
+                    )[0].city +
+                      ', ' +
+                      addressList.filter(
+                        (address) => address.activityId === activity.id
+                      )[0].district
+                  }
+                  date={new Date(activity.startTime)
+                    .toString()
+                    .substring(0, 15)}
+                  time={
+                    (new Date(activity.startTime).getHours() < 10
+                      ? '0' + new Date(activity.startTime).getHours()
+                      : new Date(activity.startTime).getHours()) +
+                    ':' +
+                    (new Date(activity.startTime).getMinutes() < 10
+                      ? '0' + new Date(activity.startTime).getMinutes()
+                      : new Date(activity.startTime).getMinutes())
+                  }
+                  onPress={() => navigation.navigate('Activity')}
+                />
+              ))}
         </ActivitySelector>
       </ScrollView>
       <AgeActionSheet
