@@ -154,6 +154,24 @@ export const ActivityListScreen = () => {
     };
   }, [navigation]);
 
+  const getPlace = (activity: Object) => {
+    if (addressList != null) {
+      const place = addressList.filter(
+        (address) => address.activityId === activity.id
+      )[0];
+
+      if (place != null && place.city != null && place.district != null) {
+        return place.city + ', ' + place.district;
+      }
+      else if (place != null && place.city != null) {
+        return place.city;
+      }
+      else if (place != null && place.district != null) {
+        return place.district;
+      }
+    }
+  }
+
   const _activityTypes = activityTypes.map(
     (activityType: IActivityType, index: number) => (
       <ActivityTypeSelector.TextItem
@@ -203,19 +221,7 @@ export const ActivityListScreen = () => {
                     key={activity.id}
                     title={activity.name}
                     branchType={activity.type}
-                    location={
-                      addressList != null &&
-                      addressList.filter(
-                        (address) => address.activityId === activity.id
-                      )[0] != null &&
-                      addressList.filter(
-                        (address) => address.activityId === activity.id
-                      )[0].city +
-                        ', ' +
-                        addressList.filter(
-                          (address) => address.activityId === activity.id
-                        )[0].district
-                    }
+                    location={getPlace(activity)}
                     date={new Date(activity.startTime)
                       .toString()
                       .substring(0, 15)}
