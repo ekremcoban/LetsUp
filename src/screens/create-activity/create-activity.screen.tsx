@@ -356,6 +356,14 @@ const CreateActivityScreen2 = () => {
             createdTime: new Date().getTime(),
           };
           console.log('activity', activity);
+          if (activity.ownerPicture == null) {
+            getData('Photo').then(p => {
+              if (p != null) {
+                activity.ownerPicture = p;
+              }
+            })
+          }
+
 
           Alert.alert('Info', 'Do you confirm to create a new activity?', [
             {
