@@ -31,15 +31,24 @@ import MoreScreen from 'screens/MoreScreen';
 import LoginScreen from 'screens/LoginScreen';
 import ContextApi from 'context/ContextApi';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { getData, removeItem } from 'db/localDb';
+import { getData, removeItem, storeData } from 'db/localDb';
+import { convertLowerString } from 'components/functions/common';
 
 let App = () => {
-  const [user, setUser,] = useState();
+  const [user, setUser] = useState();
   const [userPhoto, setUserPhoto] = useState();
   const [location, setLocation] = useState();
   const [isCreateActivity, setIsCreateActivity] = useState();
-  const value = { user, setUser, userPhoto, setUserPhoto, 
-    location, setLocation, isCreateActivity, setIsCreateActivity };
+  const value = {
+    user,
+    setUser,
+    userPhoto,
+    setUserPhoto,
+    location,
+    setLocation,
+    isCreateActivity,
+    setIsCreateActivity,
+  };
 
   const scheme = useColorScheme();
   const Stack = createStackNavigator();
@@ -47,19 +56,48 @@ let App = () => {
 
   useEffect(() => {
     CodePush.sync();
-    
-    getLocations();
 
-    getData('Users').then(res => {
-      console.log('user', res.photo)
-      setUser(res)
-      if (res.photo == null) {
-        getData('Photo').then(res => {
-          setUserPhoto(res)
-          console.log('Photo', res)
-        })
+    const subscriber1 = getData('myLocation').then((myLocation) => {
+      console.log('muy', myLocation);
+      if (myLocation == null) {
+        getLocations().then((getLocation) => {
+          console.log('getLocation 0', getLocation.city);
+          console.log('Şehir YOHafızadaK');
+          setLocation(getLocation);
+          storeData('myLocation', getLocation);
+        });
+      } else {
+        console.log('myLocation 0', myLocation.city);
+        setLocation(myLocation);
+        //  storeData('myLocation', {city: 'Malatya'});
+
+        getLocations().then((getLocation) => {
+          console.log('getLocation 1', getLocation.city);
+          console.log('myLocation 1', myLocation.city);
+          if (
+            convertLowerString(myLocation.city) !==
+            convertLowerString(getLocation.city)
+          ) {
+            setLocation(getLocation);
+            storeData('myLocation', getLocation);
+            console.log('Şehir değişti');
+          }
+        });
       }
-  });
+    });
+
+    const subscriber2 = getData('Users').then((res) => {
+      if (res != null) {
+        console.log('user', res);
+        setUser(res);
+        if (res.photo == null) {
+          getData('Photo').then((res) => {
+            setUserPhoto(res);
+            console.log('Photo', res);
+          });
+        }
+      }
+    });
     // auth()
     //   .createUserWithEmailAndPassword(
     //     'osman@example.com',
@@ -104,22 +142,26 @@ let App = () => {
 
     //   // Stop listening for updates when no longer required
     //   return () => subscriber();
+    return {
+      subscriber1,
+      subscriber2,
+    };
   }, []);
 
   const getLocations = async () => {
     let location = await getLocationFromIp('https://ipapi.co/json/');
-    console.log('location', location)
+    console.log('location', location);
     if (location == undefined || location == null || location.error) {
       location = await getLocationFromIp('https://freegeoip.app/json/');
-      console.log('ipapi', location)
+      console.log('ipapi', location);
       if (location == undefined || location == null || location.error) {
-        console.log('google lazım')
+        console.log('google lazım');
       }
     }
-    setLocation(location)
-}
+    return location;
+  };
 
-const getLocationFromIp = (url: string) => {
+  const getLocationFromIp = (url: string) => {
     return fetch(url)
       .then((response) => response.json())
       .then((data) => {
@@ -133,7 +175,9 @@ const getLocationFromIp = (url: string) => {
   const logOutTitle = (navigation: any, user: any, photo: any) => (
     <TouchableOpacity onPress={() => navigation.navigate('Profile Info')}>
       <Image
-        source={{uri: user != null && user.photo != null ? user.photo : photo}}
+        source={{
+          uri: user != null && user.photo != null ? user.photo : photo,
+        }}
         style={{ width: 25, height: 25, borderRadius: 20 }}
       />
     </TouchableOpacity>
@@ -147,17 +191,15 @@ const getLocationFromIp = (url: string) => {
 
   const exitAccount = (navigation: any) => {
     setUser(null);
-    removeItem('Photo')
-    removeItem('Users')
+    removeItem('Photo');
+    removeItem('Users');
     GoogleSignin.signOut();
     GoogleSignin.revokeAccess();
-    navigation.navigate('Activity List')
+    navigation.navigate('Activity List');
   };
 
   const exit = (navigation: any) => (
-    <TouchableOpacity
-    onPress={() => exitAccount(navigation)}
-    >
+    <TouchableOpacity onPress={() => exitAccount(navigation)}>
       <Ionicons name={'log-out-outline'} size={25} color={'white'} />
     </TouchableOpacity>
   );
@@ -265,7 +307,7 @@ const getLocationFromIp = (url: string) => {
                     <View style={{ flexDirection: 'row', margin: 5 }}>
                       {user == null
                         ? loginInTitle(navigation)
-                        : logOutTitle(navigation, user, userPhoto)} 
+                        : logOutTitle(navigation, user, userPhoto)}
                     </View>
                   ),
                 })}

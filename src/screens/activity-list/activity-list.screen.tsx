@@ -1,4 +1,10 @@
-import React, { useReducer, createRef, useContext, useState } from 'react';
+import React, {
+  useReducer,
+  createRef,
+  useContext,
+  useState,
+  useRef,
+} from 'react';
 import {
   Alert,
   SafeAreaView,
@@ -36,13 +42,37 @@ export const ActivityListScreen = () => {
   const [spinner, setSpinner] = useState<boolean>(true);
   const [activityList, setActivityList] = useState(null);
   const [addressList, setAddressList] = useState(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  let activityId = [];
+  let addressTemp = [];
+  let activityTemp = [];
 
   useEffect(() => {
-    let activityId = [];
-    let addressTemp = [];
-    let activityTemp = [];
-    let subscriber;
+    setIsMounted(true);
+    if (!isMounted) {
+      getFirebase();
+    }
 
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (isCreateActivity) {
+        console.log('İÇERDE');
+        setIsCreateActivity(false);
+        if (!isMounted) {
+          getFirebase();
+        }
+      } else {
+        console.log('DIŞARDA');
+      }
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return () => {
+      unsubscribe(), setIsMounted(false);
+    };
+  }, [navigation]);
+
+  const getFirebase = () => {
     if (location != null) {
       firestore()
         .collection('ActivityAddress')
@@ -68,11 +98,11 @@ export const ActivityListScreen = () => {
               addressTemp.push(documentSnapshot.data());
             }
           });
-          // console.log('addressTemp', addressTemp);
+          console.log('addressTemp', addressTemp);
           //  console.log('activityId 1', activityId);
           setAddressList([...addressTemp]);
 
-          subscriber = firestore()
+          firestore()
             .collection('Activities')
             .where('id', 'in', activityId)
             // .where('ime', '>', 1626820440000)
@@ -82,77 +112,17 @@ export const ActivityListScreen = () => {
                 // console.log('User data: ', s.data());
                 activityTemp.push(s.data());
               });
+              console.log('activityTemp 1', activityTemp);
               setActivityList([...activityTemp]);
               setSpinner(false);
             });
-        }).catch(e => {
-          setSpinner(false) 
-          setActivityList(null)
+        })
+        .catch((e) => {
+          setSpinner(false);
+          setActivityList(null);
         });
     }
-
-    const unsubscribe = navigation.addListener('focus', () => {
-      let activityId = [];
-      let addressTemp = [];
-      let activityTemp = [];
-      let subscriber;
-
-      if (isCreateActivity) {
-        console.log('İÇERDE');
-        setIsCreateActivity(false);
-        if (location != null) {
-          firestore()
-            .collection('ActivityAddress')
-            // .where('country', '==', location.country_name)
-            // .where('cityEng', '==', convertLowerString(location.city))
-            .where('time', '>=', new Date().getTime())
-            // .where('time', '<=', new Date().getTime() + 30 * 86400000)
-            .orderBy('time')
-            .get()
-            .then((querySnapshot) => {
-              // console.log('Total users: ', querySnapshot.size);
-              addressTemp = [];
-
-              querySnapshot.forEach((documentSnapshot) => {
-                // console.log('Activity Address: ', documentSnapshot.id, documentSnapshot.data());
-                // Sadece bulundugu sehirdeki aktiviteleri aldik
-                if (
-                  documentSnapshot.data().cityEng ===
-                  convertLowerString(location.city)
-                ) {
-                  activityId.push(documentSnapshot.data().activityId);
-                  addressTemp.push(documentSnapshot.data());
-                }
-              });
-              console.log('addressTemp', addressTemp);
-              // console.log('activityId', activityId);
-              setAddressList([...addressTemp]);
-
-              subscriber = firestore()
-                .collection('Activities')
-                .where('id', 'in', activityId)
-                .onSnapshot((documentSnapshot) => {
-                  activityTemp = [];
-                  documentSnapshot.docs.forEach((s) => {
-                    console.log('User data: ', s.data());
-                    activityTemp.push(s.data());
-                  });
-                  setActivityList([...activityTemp]);
-                  setSpinner(false);
-                });
-            }).catch(e => setSpinner(false) );
-        }
-      } else {
-        console.log('DIŞARDA');
-      }
-    });
-
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return {
-      unsubscribe,
-      subscriber,
-    };
-  }, [navigation]);
+  };
 
   const getPlace = (activity: Object) => {
     if (addressList != null) {
@@ -162,15 +132,13 @@ export const ActivityListScreen = () => {
 
       if (place != null && place.city != null && place.district != null) {
         return place.city + ', ' + place.district;
-      }
-      else if (place != null && place.city != null) {
+      } else if (place != null && place.city != null) {
         return place.city;
-      }
-      else if (place != null && place.district != null) {
+      } else if (place != null && place.district != null) {
         return place.district;
       }
     }
-  }
+  };
 
   const _activityTypes = activityTypes.map(
     (activityType: IActivityType, index: number) => (
@@ -206,47 +174,54 @@ export const ActivityListScreen = () => {
 
       <Divider style={styles.divider} />
       {activityList != null &&
-      activityList != undefined &&
-      activityTypes != [] && (
-        <ScrollView>
-          <ActivitySelector>
-            {activityList != null &&
-              activityList != undefined &&
-              activityList
-                .sort((a, b) => {
-                  return a.startTime - b.startTime;
-                })
-                .map((activity) => (
-                  <ActivitySelector.Card
-                    key={activity.id}
-                    title={activity.name}
-                    branchType={activity.type}
-                    location={getPlace(activity)}
-                    date={new Date(activity.startTime)
-                      .toString()
-                      .substring(0, 15)}
-                    time={
-                      (new Date(activity.startTime).getHours() < 10
-                        ? '0' + new Date(activity.startTime).getHours()
-                        : new Date(activity.startTime).getHours()) +
-                      ':' +
-                      (new Date(activity.startTime).getMinutes() < 10
-                        ? '0' + new Date(activity.startTime).getMinutes()
-                        : new Date(activity.startTime).getMinutes())
-                    }
-                    onPress={() => navigation.navigate('Activity Info', {activity: activity, activityList: activityList})}
-                  />
-                ))}
-          </ActivitySelector>
-        </ScrollView>
-      )}
-        {!spinner && activityList == null && (<View
+        activityList != undefined &&
+        activityTypes != [] && (
+          <ScrollView>
+            <ActivitySelector>
+              {activityList != null &&
+                activityList != undefined &&
+                activityList
+                  .sort((a, b) => {
+                    return a.startTime - b.startTime;
+                  })
+                  .map((activity) => (
+                    <ActivitySelector.Card
+                      key={activity.id}
+                      title={activity.name}
+                      branchType={activity.type}
+                      location={getPlace(activity)}
+                      date={new Date(activity.startTime)
+                        .toString()
+                        .substring(0, 15)}
+                      time={
+                        (new Date(activity.startTime).getHours() < 10
+                          ? '0' + new Date(activity.startTime).getHours()
+                          : new Date(activity.startTime).getHours()) +
+                        ':' +
+                        (new Date(activity.startTime).getMinutes() < 10
+                          ? '0' + new Date(activity.startTime).getMinutes()
+                          : new Date(activity.startTime).getMinutes())
+                      }
+                      onPress={() =>
+                        navigation.navigate('Activity Info', {
+                          activity: activity,
+                          activityList: activityList,
+                        })
+                      }
+                    />
+                  ))}
+            </ActivitySelector>
+          </ScrollView>
+        )}
+      {!spinner && activityList == null && (
+        <View
           style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
         >
           <Text>There is not any activity in your city now</Text>
           <Text></Text>
           <Text>Let's create first activity</Text>
-        </View>)}
+        </View>
+      )}
       <AgeActionSheet
         ref={ageActionSheetRef}
         onSelect={([min, max]: [number, number]) => {
