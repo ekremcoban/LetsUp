@@ -21,12 +21,10 @@ class ActivityInfoScreen extends Component {
         isStar: false,
         clickChooseMap: false,
         location: null,
-        owner: null,
     }
 
     componentDidMount() {
         console.log('Info', this.props.route.params)
-        this.getOwner();
 
         // setTimeout(() => {
         //     console.log('timer')
@@ -91,12 +89,6 @@ class ActivityInfoScreen extends Component {
                 console.log(res)
             });
         }
-    }
-
-    getOwner = async () => {
-        const owner = await (await firestore().collection('Users').where('email', '==', this.props.route.params.activity.owner).get()).docs[0].data();
-        this.setState({owner})
-        console.log('owner', owner)
     }
 
     render() {
@@ -170,14 +162,14 @@ class ActivityInfoScreen extends Component {
                     <View style={styles.viewIconPic}>
                         <TouchableNativeFeedback onPress={() => this.props.navigation.navigate('Profile Info')}>
                             <Image
-                                source={{uri: this.props.route.params.activity.ownerPicture}}
+                                source={{uri: this.props.route.params.activity.owner.ownerPicture}}
                                 style={styles.imgIconPic}
                             />
                         </TouchableNativeFeedback>
                     </View>
                     <View style={styles.viewOwnerName}>
                         <TouchableNativeFeedback onPress={() => this.props.navigation.navigate('Profile Info')}>
-                            <Text style={styles.textOwnerName}>{this.state.owner != null && this.state.owner.name + ' ' + this.state.owner.surname}</Text>
+                            <Text style={styles.textOwnerName}>{this.props.route.params.activity.owner.name + ' ' + this.props.route.params.activity.owner.surname}</Text>
                         </TouchableNativeFeedback>
                     </View>
                     <View style={styles.viewAction}>
