@@ -546,9 +546,9 @@ const CreateActivityScreen2 = () => {
       const selectedMinute =
         date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
       const minHour =
-        new Date().getHours() + 2 < 10
-          ? '0' + (new Date().getHours() + 2)
-          : new Date().getHours() + 2;
+        (new Date().getHours() + 2 < 10 || new Date().getHours() + 2 == 24
+          ? '0' + ((new Date().getHours() + 2) % 24)
+          : (new Date().getHours() + 2) % 24) ;
       const minMinute =
         new Date().getMinutes() < 10
           ? '0' + new Date().getMinutes()
@@ -628,9 +628,9 @@ const CreateActivityScreen2 = () => {
       const selectedMinute =
         date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
       const minHour =
-        activityStartTime.getHours() + 1 < 10
-          ? '0' + (activityStartTime.getHours() + 1)
-          : activityStartTime.getHours() + 1;
+        (activityStartTime.getHours() + 1) % 24 < 10 || activityStartTime.getHours() + 1 == 24
+          ? '0' + ((activityStartTime.getHours() + 1) % 24)
+          : (activityStartTime.getHours() + 1) % 24;
       const minMinute =
         activityStartTime.getMinutes() < 10
           ? '0' + activityStartTime.getMinutes()
