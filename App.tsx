@@ -98,50 +98,7 @@ let App = () => {
         }
       }
     });
-    // auth()
-    //   .createUserWithEmailAndPassword(
-    //     'osman@example.com',
-    //     'SuperSecretPassword!'
-    //   )
-    //   .then((x) => {
-    //     console.log('x', x);
-    //     console.log('user', auth().currentUser);
-    //     console.log('User account created & signed in!');
-    //   })
-    //   .catch((error) => {
-    //     if (error.code === 'auth/email-already-in-use') {
-    //       // console.log('That email address is already in use!', error);
-    //       // console.log('user1', auth().currentUser)
-    //     }
 
-    //     if (error.code === 'auth/invalid-email') {
-    //       console.log('That email address is invalid!', error);
-    //     }
-
-    //     console.error(error);
-    // });
-
-    // auth().signInWithEmailAndPassword('osmana@example.com', 'SuperSecretPassword!')
-    //   .then((userCredential) => {
-    //     // Signed in
-    //     var user = userCredential.user;
-    //     console.log('user2', user)
-    //     // ...
-    //   })
-    //   .catch((error) => {
-    //     var errorCode = error.code;
-    //     var errorMessage = error.message;
-    //     console.log('user2', errorMessage)
-    //   });
-    //   const subscriber = firestore()
-    //     .collection('Test')
-    //     .doc(userId)
-    //     .onSnapshot(documentSnapshot => {
-    //       console.log('User data: ', documentSnapshot.data());
-    //     });
-
-    //   // Stop listening for updates when no longer required
-    //   return () => subscriber();
     return {
       subscriber1,
       subscriber2,

@@ -108,6 +108,10 @@ const CreateActivityScreen2 = () => {
     let country = null;
     let city = null;
     let district = null;
+    let city1 = 'a';
+    let city2 = 'b';
+    let city3 = 'c';
+    let district1 = null;
 
     for (let i = location.addressComponents.length - 1; 0 <= i; i--) {
       if (location.addressComponents[i].types[0] === 'country') {
@@ -121,13 +125,40 @@ const CreateActivityScreen2 = () => {
 
     for (let i = 0; i < location.addressComponents.length; i++) {
       // Eyalet sistemi varsa sehir bilgisi
+
+
       if (isState) {
         if (location.addressComponents[i].types[0] === 'locality') {
-          city = location.addressComponents[i].name;
-        } else if (
+          city1 = location.addressComponents[i].name;
+          console.log('locality', city1)
+        }
+        if (location.addressComponents[i].types[0] === 'administrative_area_level_4') {
+          city2 = location.addressComponents[i].name;
+          console.log('administrative_area_level_4', city2)
+        }
+        if (location.addressComponents[i].types[0] === 'administrative_area_level_1') {
+          city3 = location.addressComponents[i].name;
+          console.log('administrative_area_level_1', city3)
+        }
+        if (city1 == city2) {
+          city = city3
+          console.log('1, 3', city)
+        }
+        else if (city1 != 'a' && city2 != 'b' && city3 != 'c') {
+          city = city1
+          console.log('1, 1', city)
+        }
+        
+        if (
           location.addressComponents[i].types[0] === 'sublocality_level_1'
         ) {
+          district1 = location.addressComponents[i].name;
+        }
+        if (district1 == null && location.addressComponents[i].types[0] === 'administrative_area_level_2') {
           district = location.addressComponents[i].name;
+        }
+        else if (district1 != null){
+          district = district1
         }
       } else {
         if (
@@ -337,8 +368,7 @@ const CreateActivityScreen2 = () => {
                 (a) => a.value === selectedActivityNameValue
               )[0].text
             ),
-            owner: user.email,
-            ownerPicture: user.photo,
+            owner: user,
             date: activityDate.getTime(),
             startTime: activityStartTime != null && startActivityTime.getTime(),
             finishTime:

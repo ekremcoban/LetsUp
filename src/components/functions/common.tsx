@@ -20,7 +20,7 @@ export const convertLowerString = (phrase: string) => {
   if (returnString.length > maxLength)
     returnString = returnString.substring(0, maxLength);
   // add hyphens
-  returnString = returnString.replace(/\s/g, '-');
+  // returnString = returnString.replace(/\s/g, '-');
 
   return returnString;
 };
