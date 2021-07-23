@@ -58,6 +58,7 @@ let App = () => {
   useEffect(() => {
     CodePush.sync();
     requestUserPermission();
+    subscribeToTopic()
 
     const subscriber1 = getData('myLocation').then((myLocation) => {
       console.log('muy', myLocation);
@@ -106,6 +107,10 @@ let App = () => {
       subscriber2,
     };
   }, []);
+
+  const subscribeToTopic = async () => {
+    await messaging().subscribeToTopic('notification');
+  }
 
   const requestUserPermission = async () => {
     const authStatus = await messaging().requestPermission();
