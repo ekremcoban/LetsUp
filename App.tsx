@@ -33,6 +33,7 @@ import ContextApi from 'context/ContextApi';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { getData, removeItem, storeData } from 'db/localDb';
 import { convertLowerString } from 'components/functions/common';
+import messaging from '@react-native-firebase/messaging';
 
 let App = () => {
   const [user, setUser] = useState();
@@ -56,6 +57,7 @@ let App = () => {
 
   useEffect(() => {
     CodePush.sync();
+    requestUserPermission();
 
     const subscriber1 = getData('myLocation').then((myLocation) => {
       console.log('muy', myLocation);
@@ -104,6 +106,28 @@ let App = () => {
       subscriber2,
     };
   }, []);
+
+  const requestUserPermission = async () => {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+      getFcmToken();
+      console.log('Authorization status:', authStatus);
+    }
+  }
+
+  const getFcmToken = async () => {
+    const fcmToken = await messaging().getToken();
+    if (fcmToken) {
+     console.log(fcmToken);
+     console.log("Your Firebase Token is:", fcmToken);
+    } else {
+     console.log("Failed", "No token received");
+    }
+  }
 
   const getLocations = async () => {
     let location = await getLocationFromIp('https://ipapi.co/json/');

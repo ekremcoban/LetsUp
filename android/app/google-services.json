@@ -37,6 +37,13 @@
             {
               "client_id": "302760440961-62l3brhdrhu0372cobb5ted76gtk43pe.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "302760440961-klg2kjjec9fihu18uhda04j9crmrhin3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.letsup.letsup"
+              }
             }
           ]
         }
