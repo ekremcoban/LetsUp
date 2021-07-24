@@ -19,6 +19,7 @@ import { Popup } from 'react-native-map-link';
 import { OpenMapDirections } from 'react-native-navigation-directions';
 import firestore from '@react-native-firebase/firestore';
 import ContextApi from 'context/ContextApi';
+import messaging from '@react-native-firebase/messaging';
 
 const IconStart = locationTag['start'];
 const IconJoin = locationTag['join'];
@@ -39,7 +40,7 @@ class ActivityInfoScreen extends Component {
   };
 
   componentDidMount() {
-    console.log('Info', this.props.route.params);
+    this.isMember();
 
     // setTimeout(() => {
     //     console.log('timer')
@@ -60,6 +61,21 @@ class ActivityInfoScreen extends Component {
     // `)
     // }, 1200);
   }
+
+  isMember = async () => {
+    // Istek kayitli mi bilgisi
+    const result = await firestore()
+      .collection('Members')
+      .where('activityId', '==', this.props.route.params.activity.id)
+      .where('memberMail', '==', this.context.user.email)
+      .get();
+
+    console.log('te', result.docs);
+    if (result.docs.length > 0) {
+      console.log(result.docs[0].data().cancel);
+      this.setState({ isJoin: result.docs[0].data().cancel });
+    }
+  };
 
   chooseMap = (value: string) => {
     this.setState({
@@ -103,35 +119,44 @@ class ActivityInfoScreen extends Component {
   };
 
   sendRequest = async () => {
-    await this.setState((prev) => ({ isJoin: !prev.isJoin }));
+    const token = await messaging().getToken();
     let context = this.context;
     let memberCollection;
 
-    console.log('aaaa', request.length);
     // Istek kayitli mi bilgisi
     memberCollection = await firestore()
       .collection('Members')
       .where('activityId', '==', this.props.route.params.activity.id)
-      .where('owner', '==', this.props.route.params.activity.owner.email)
+      .where('memberMail', '==', context.user.email)
       .get();
 
-    console.log('memberCollection 1', memberCollection.docs);
+    if (memberCollection.docs.length > 0) {
+      request = memberCollection.docs[0].data();
+      console.log('memberCollection 1', request);
+    }
+
     console.log('memberCollection 2', memberCollection.docs.length);
 
-    if (this.state.isJoin && memberCollection.docs.length == 0) {
+    if (memberCollection.docs.length == 0) {
+      this.setState((prev) => ({ isJoin: true }));
       request = {
         id: uuidv4(),
-        owner: this.props.route.params.activity.owner.email,
-        member: context.user.email,
+        ownerToken: this.props.route.params.activity.owner.token,
+        ownerMail: this.props.route.params.activity.owner.email,
+        ownerName: this.props.route.params.activity.owner.name,
+        memberToken: context.user.token,
+        memberMail: context.user.email,
+        memberName: context.user.name,
         activityId: this.props.route.params.activity.id,
         state: false,
         cancel: false,
+        startTime: this.props.route.params.activity.startTime,
         createdTime: new Date().getTime(),
       };
       console.log('ilk kayıt', request);
       this.fireStoreInsertFunction('Members', request.id, request);
-    } else if (this.state.isJoin) {
-      request = memberCollection.docs[0].data();
+    } else if (request.cancel === true) {
+      this.setState((prev) => ({ isJoin: false }));
       request.cancel = false;
       console.log('ilk güncelleme', request);
       this.fireStoreUpdateFunction(
@@ -139,9 +164,9 @@ class ActivityInfoScreen extends Component {
         memberCollection?.docs[0].data().id,
         request
       );
-    } else {
+    } else if (request.cancel === false) {
+      this.setState((prev) => ({ isJoin: true }));
       console.log('ikinci güncelleme', request);
-      request = memberCollection.docs[0].data();
       request.cancel = true;
       this.fireStoreUpdateFunction(
         'Members',

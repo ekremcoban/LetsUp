@@ -20,30 +20,52 @@ const db = admin.firestore();
 // .then(a => console.log('Sent'), noti) 
 // })
 
-exports.members = functions.firestore.document('Members/{id}')
-.onWrite( event => {
+// exports.members = functions.firestore.document('Members/{id}')
+// .onWrite( event => {
 
-    const id = event.after.id;
-    // const notification = {
-    //     content:'Test 1',
-    //     user: 'Ekrem',
-    //     time: admin.firestore.FieldValue.serverTimestamp()
-    // }
-        var message = {
+//     const id = event.after.id;
+//     // const notification = {
+//     //     content:'Test 1',
+//     //     user: 'Ekrem',
+//     //     time: admin.firestore.FieldValue.serverTimestamp()
+//     // }
+//         var message = {
+//         notification: {
+//             title:'Test 1',
+//             body: 'Ekrem',
+//         },
+//     };
+
+//     const topis = "notification"
+
+//     return admin.messaging().sendToTopic(topis, message).then(res => {
+//         console.log('basarili', res);
+//     }).catch(err => {
+//         console('hata', err)
+//     })
+// })
+
+exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite(async event => {
+    const id = event.after.get('id')
+    const ownerName = event.after.get('ownerName');
+    const memberName = event.after.get('memberName');
+
+    const message = {
         notification: {
-            title:'Test 1',
-            body: 'Ekrem',
-        },
-    };
+            title: 'New Request',
+            body: `${memberName} sent a request`
+        }
+    }
 
-    const topis = "notification"
+    const topic = 'memberNotifications';
+    console.log('id', id)
 
-    return admin.messaging().sendToTopic(topis, message).then(res => {
-        console.log('basarili', res);
-    }).catch(err => {
-        console('hata', err)
+    return admin.messaging().sendToTopic(topic, message).then(res => {
+        console.log('memberNotifications is succeess', ownerName, memberName)
+    }).catch(e => {
+        console.log('memberNotifications is error')
     })
-})
+});
 
 
 

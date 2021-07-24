@@ -109,7 +109,7 @@ let App = () => {
   }, []);
 
   const subscribeToTopic = async () => {
-    await messaging().subscribeToTopic('notification');
+    await messaging().subscribeToTopic('memberNotifications');
   }
 
   const requestUserPermission = async () => {

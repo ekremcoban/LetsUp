@@ -108,9 +108,6 @@ const CreateActivityScreen2 = () => {
     let country = null;
     let city = null;
     let district = null;
-    let city1 = 'a';
-    let city2 = 'b';
-    let city3 = 'c';
     let district1 = null;
 
     for (let i = location.addressComponents.length - 1; 0 <= i; i--) {
@@ -118,35 +115,21 @@ const CreateActivityScreen2 = () => {
         country = location.addressComponents[i].name;
       }
       // Eyalet sistemi var mı bilgisi icin
-      else if (location.addressComponents[i].types[0] === 'locality') {
+      else if (location.addressComponents[i].types[0] === 'sublocality_level_1') {
         isState = true;
       }
     }
 
-    for (let i = 0; i < location.addressComponents.length; i++) {
+    for (let i = location.addressComponents.length - 1; i >= 0 ; i--) {
       // Eyalet sistemi varsa sehir bilgisi
 
 
       if (isState) {
         if (location.addressComponents[i].types[0] === 'locality') {
-          city1 = location.addressComponents[i].name;
-          console.log('locality', city1)
+          city = location.addressComponents[i].name;
         }
-        if (location.addressComponents[i].types[0] === 'administrative_area_level_4') {
-          city2 = location.addressComponents[i].name;
-          console.log('administrative_area_level_4', city2)
-        }
-        if (location.addressComponents[i].types[0] === 'administrative_area_level_1') {
-          city3 = location.addressComponents[i].name;
-          console.log('administrative_area_level_1', city3)
-        }
-        if (city1 == city2) {
-          city = city3
-          console.log('1, 3', city)
-        }
-        else if (city1 != 'a' && city2 != 'b' && city3 != 'c') {
-          city = city1
-          console.log('1, 1', city)
+        else if (location.addressComponents[i].types[0] === 'administrative_area_level_1') {
+          city = location.addressComponents[i].name;
         }
         
         if (
@@ -161,20 +144,27 @@ const CreateActivityScreen2 = () => {
           district = district1
         }
       } else {
-        if (
-          location.addressComponents[i].types[0] ===
-          'administrative_area_level_1'
+        let bosnia = true;
+        if (location.addressComponents[i].types[0] === 'administrative_area_level_4') {
+          bosnia = false;
+        }
+        else if (bosnia && location.addressComponents[i].types[0] === 'locality') {
+          city = location.addressComponents[i].name;
+        }
+        else if (
+          location.addressComponents[i].types[0] === 'administrative_area_level_1'
         ) {
           city = location.addressComponents[i].name;
         } else if (
-          location.addressComponents[i].types[0] ===
-          'administrative_area_level_2'
+          location.addressComponents[i].types[0] === 'administrative_area_level_2'
         ) {
           district = location.addressComponents[i].name;
         }
       }
     }
 
+    console.log('city', city)
+    console.log('district', district)
     const activityAddress = {
       id: uuidv4(),
       activityId: activity.id,
@@ -356,10 +346,10 @@ const CreateActivityScreen2 = () => {
       !warningTemp.finishTime
     ) {
       setWarning(warningTemp);
+      const activityId = uuidv4();
       getData('Users').then((user) => {
         if (user != null) {
           console.log('user', user);
-          const activityId = uuidv4();
           const activity = {
             id: activityId,
             type: branchName,

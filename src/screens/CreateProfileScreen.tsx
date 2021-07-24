@@ -36,6 +36,7 @@ import { utils } from '@react-native-firebase/app';
 import storage from '@react-native-firebase/storage';
 import ContextApi from 'context/ContextApi';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import messaging from '@react-native-firebase/messaging';
 
 const genderActionSheetRef = createRef<IActionSheet>();
 const ageActionSheetRef = createRef<IActionSheet>();
@@ -101,8 +102,10 @@ const CreateProfilScreen = () => {
   }, []);
 
   const create = async () => {
+    const token = await messaging().getToken();
     let data = {
       id: user.id,
+      token: token,
       email: user.email,
       nick: user.nick,
       name: user.name,
@@ -118,10 +121,13 @@ const CreateProfilScreen = () => {
       weight: selectedWeight,
       interestedIn: user.interestedIn,
       photo: imageName != null ? null : photo,
-      geoCode: user.geoCode,
+      geoCode: {
+        latitude: location.latitude,
+        longitude: location.longitude,
+      },
       city: location.city,
-      country: location.country,
-      postal: location.postal,
+      country: location.country_name,
+      postal: location.zip_code != undefined ? location.zip_code : location.postal,
       type: 0,
       createdTime: user.createdTime,
     };
