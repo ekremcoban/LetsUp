@@ -87,7 +87,11 @@ export const ActivityListScreen = () => {
           addressTemp = [];
 
           querySnapshot.forEach((documentSnapshot) => {
-            console.log('Activity Address: ', documentSnapshot.id, documentSnapshot.data());
+            console.log(
+              'Activity Address: ',
+              documentSnapshot.id,
+              documentSnapshot.data()
+            );
 
             // Sadece bulundugu sehirdeki aktiviteleri aldik
             if (
@@ -99,23 +103,127 @@ export const ActivityListScreen = () => {
             }
           });
           console.log('addressTemp', addressTemp);
-          //  console.log('activityId 1', activityId);
+          console.log('activityId 1', activityId);
           setAddressList([...addressTemp]);
 
-          firestore()
-            .collection('Activities')
-            .where('id', 'in', activityId)
-            // .where('ime', '>', 1626820440000)
-            .onSnapshot((documentSnapshot) => {
-              activityTemp = [];
-              documentSnapshot.docs.forEach((s) => {
-                // console.log('User data: ', s.data());
-                activityTemp.push(s.data());
-              });
-              console.log('activityTemp 1', activityTemp);
-              setActivityList([...activityTemp]);
-              setSpinner(false);
-            });
+          console.log('sayı', Math.ceil(activityId.length / 10));
+          let index = 0;
+          const partion = Math.ceil(activityId.length / 10);
+
+          for (let i = 0; i < partion; i++) {
+            let stackTen = [];
+            while (index < activityId.length) {
+              stackTen.push(activityId[index++]);
+              if (index % 10 === 0) {
+                console.log(i, 'gonder', stackTen);
+                firestore()
+                  .collection('Activities')
+                  .where('id', 'in', stackTen)
+                  // .where('ime', '>', 1626820440000)
+                  .onSnapshot((documentSnapshot) => {
+                    documentSnapshot.docs.forEach((s) => {
+                      // console.log('User data: ', s.data());
+                      const isIt = activityTemp.filter(a => a.id === s.data().id)
+
+                      if (isIt.length === 0) {
+                        activityTemp.push(s.data());
+                      }
+                      
+                    });
+                    console.log('activityTemp 1', activityTemp);
+                    setActivityList([...activityTemp]);
+                    setSpinner(false);
+                  });
+
+                stackTen = [];
+              } else {
+                if (index === activityId.length) {
+                  console.log(i, 'falza', stackTen);
+                  firestore()
+                    .collection('Activities')
+                    .where('id', 'in', stackTen)
+                    // .where('ime', '>', 1626820440000)
+                    .onSnapshot((documentSnapshot) => {
+                      documentSnapshot.docs.forEach((s) => {
+                        // console.log('User data: ', s.data());
+                        const isIt = activityTemp.filter(a => a.id === s.data().id)
+
+                        if (isIt.length === 0) {
+                          activityTemp.push(s.data());
+                        }
+                      });
+                      console.log('activityTemp 2', activityTemp);
+                      setActivityList([...activityTemp]);
+                      setSpinner(false);
+                    });
+
+                  stackTen = [];
+                }
+              }
+            }
+          }
+
+          // if (activityId.length > 10) {
+            // for (let i = 0; i < Math.floor(activityId.length / 10); i++) {
+            //   // where deki in icin 10 luk blok haline gitirir
+            //   let stackTen = [];
+            //   for (let j = i * 10; j < (i + 1) * 10; j++) {
+            //     stackTen.push(activityId[j]);
+            //   }
+            //   index += 10;
+            //   console.log('x: ', stackTen, index);
+            //   firestore()
+            //     .collection('Activities')
+            //     .where('id', 'in', stackTen)
+            //     // .where('ime', '>', 1626820440000)
+            //     .onSnapshot((documentSnapshot) => {
+            //       documentSnapshot.docs.forEach((s) => {
+            //         // console.log('User data: ', s.data());
+            //         activityTemp.push(s.data());
+            //       });
+            //       console.log('activityTemp 1', activityTemp);
+            //       setActivityList([...activityTemp]);
+            //       setSpinner(false);
+            //     });
+            // }
+            // console.log('index ', index, 'length ', activityId.length)
+            // if (index !== activityId.length) {
+            //   let stackTen = [];
+            //   for (let i = index; i < activityId.length; i++) {
+            //     stackTen.push(activityId[i]);
+            //   }
+            //   console.log('hadia', stackTen)
+            //   firestore()
+            //       .collection('Activities')
+            //       .where('id', 'in', stackTen)
+            //       // .where('ime', '>', 1626820440000)
+            //       .onSnapshot((documentSnapshot) => {
+            //         documentSnapshot.docs.forEach((s) => {
+            //           // console.log('User data: ', s.data());
+            //           activityTemp.push(s.data());
+            //         });
+            //         console.log('activityTemp 2', activityTemp);
+            //         setActivityList([...activityTemp]);
+            //         setSpinner(false);
+            //       });
+            // }
+          // } else {
+          //   firestore()
+          //     .collection('Activities')
+          //     .where('id', 'in', activityId)
+          //     // .where('ime', '>', 1626820440000)
+          //     .onSnapshot((documentSnapshot) => {
+          //       documentSnapshot.docs.forEach((s) => {
+          //         activityTemp = [];
+          //         // console.log('User data: ', s.data());
+          //         activityTemp.push(s.data());
+          //       });
+
+          //       console.log('activityTemp 1', activityTemp);
+          //       setActivityList([...activityTempSet]);
+          //       setSpinner(false);
+          //     });
+          // }
         })
         .catch((e) => {
           setSpinner(false);
