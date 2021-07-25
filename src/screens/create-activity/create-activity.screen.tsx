@@ -104,74 +104,112 @@ const CreateActivityScreen2 = () => {
     activity: Object,
     nodeNumber: number
   ) => {
-    let isState = false;
+    // let isState = false;
+    // let district1 = null;
+
+    // for (let i = location.addressComponents.length - 1; 0 <= i; i--) {
+    //   if (location.addressComponents[i].types[0] === 'country') {
+    //     country = location.addressComponents[i].name;
+    //   }
+    //   // Eyalet sistemi var mı bilgisi icin
+    //   else if (location.addressComponents[i].types[0] === 'sublocality_level_1') {
+    //     isState = true;
+    //   }
+    // }
+
+    // for (let i = location.addressComponents.length - 1; i >= 0 ; i--) {
+    //   // Eyalet sistemi varsa sehir bilgisi
+
+
+    //   if (isState) {
+    //     console.log('0')
+    //     if (location.addressComponents[i].types[0] === 'locality') {
+    //       city = location.addressComponents[i].name;
+    //       console.log('1')
+    //     }
+    //     else if (location.addressComponents[i].types[0] === 'administrative_area_level_1') {
+    //       city = location.addressComponents[i].name;
+    //       console.log('2')
+    //     }
+        
+    //     if (
+    //       location.addressComponents[i].types[0] === 'sublocality_level_1'
+    //     ) {
+    //       district1 = location.addressComponents[i].name;
+    //     }
+    //     if (district1 == null && location.addressComponents[i].types[0] === 'administrative_area_level_2') {
+    //       district = location.addressComponents[i].name;
+    //     }
+    //     else if (district1 != null){
+    //       district = district1
+    //     }
+    //   } else {
+    //     let bosnia = true;
+    //     if (location.addressComponents[i].types[0] === 'administrative_area_level_4') {
+    //       bosnia = false;
+    //       console.log('3')
+    //     }
+    //     else if (bosnia && location.addressComponents[i].types[0] === 'locality') {
+    //       city = location.addressComponents[i].name;
+    //       console.log('4')
+    //     }
+    //     else if (
+    //       location.addressComponents[i].types[0] === 'administrative_area_level_1'
+    //     ) {
+    //       console.log('5')
+    //       city = location.addressComponents[i].name;
+    //     } else if (
+    //       location.addressComponents[i].types[0] === 'administrative_area_level_2'
+    //     ) {
+    //       console.log('6')
+    //       district = location.addressComponents[i].name;
+    //     }
+    //   }
+    // }
     let country = null;
     let city = null;
     let district = null;
-    let district1 = null;
+    let indexAddress = location.addressComponents.length - 1;
+    let findCOuntry = false;
 
-    for (let i = location.addressComponents.length - 1; 0 <= i; i--) {
-      if (location.addressComponents[i].types[0] === 'country') {
-        country = location.addressComponents[i].name;
+    // Ulkeye gore filtrelemek icin once ulke bulunur
+    while (0 <= indexAddress && !findCOuntry) {
+      if (location.addressComponents[indexAddress].types[0] === 'country') {
+        findCOuntry = true;
+        country = location.addressComponents[indexAddress].name;
       }
-      // Eyalet sistemi var mı bilgisi icin
-      else if (location.addressComponents[i].types[0] === 'sublocality_level_1') {
-        isState = true;
-      }
+      indexAddress--;
+    };
+
+    indexAddress = location.addressComponents.length - 1;
+
+    switch (country) {
+      case 'Turkey':
+        for (let i = 0; i <= indexAddress; i++) {
+          if (location.addressComponents[i].types[0] === 'administrative_area_level_1') {
+            city = location.addressComponents[i].name;
+          }
+          else if (location.addressComponents[i].types[0] === 'administrative_area_level_2') {
+            district = location.addressComponents[i].name;
+          }
+        }
+        break;
+    
+      default:
+        for (let i = 0; i <= indexAddress; i++) {
+          if (location.addressComponents[i].types[0] === 'administrative_area_level_1') {
+            city = location.addressComponents[i].name;
+          }
+          else if (location.addressComponents[i].types[0] === 'administrative_area_level_2') {
+            district = location.addressComponents[i].name;
+          }
+        }
+        break;
     }
 
-    for (let i = location.addressComponents.length - 1; i >= 0 ; i--) {
-      // Eyalet sistemi varsa sehir bilgisi
 
-
-      if (isState) {
-        console.log('0')
-        if (location.addressComponents[i].types[0] === 'locality') {
-          city = location.addressComponents[i].name;
-          console.log('1')
-        }
-        else if (location.addressComponents[i].types[0] === 'administrative_area_level_1') {
-          city = location.addressComponents[i].name;
-          console.log('2')
-        }
-        
-        if (
-          location.addressComponents[i].types[0] === 'sublocality_level_1'
-        ) {
-          district1 = location.addressComponents[i].name;
-        }
-        if (district1 == null && location.addressComponents[i].types[0] === 'administrative_area_level_2') {
-          district = location.addressComponents[i].name;
-        }
-        else if (district1 != null){
-          district = district1
-        }
-      } else {
-        let bosnia = true;
-        if (location.addressComponents[i].types[0] === 'administrative_area_level_4') {
-          bosnia = false;
-          console.log('3')
-        }
-        else if (bosnia && location.addressComponents[i].types[0] === 'locality') {
-          city = location.addressComponents[i].name;
-          console.log('4')
-        }
-        else if (
-          location.addressComponents[i].types[0] === 'administrative_area_level_1'
-        ) {
-          console.log('5')
-          city = location.addressComponents[i].name;
-        } else if (
-          location.addressComponents[i].types[0] === 'administrative_area_level_2'
-        ) {
-          console.log('6')
-          district = location.addressComponents[i].name;
-        }
-      }
-    }
-
-    console.log('city', city)
-    console.log('district', district)
+    // console.log('city', city)
+    // console.log('district', district)
     const activityAddress = {
       id: uuidv4(),
       activityId: activity.id,
@@ -740,6 +778,53 @@ const CreateActivityScreen2 = () => {
         } else if (itemNo === 4) {
           setLocation4(place);
         }
+
+        // TEST ICIN
+        let country = null;
+        let city = null;
+        let district = null;
+        let indexAddress = place.addressComponents.length - 1;
+        let findCOuntry = false;
+
+        while (0 <= indexAddress && !findCOuntry) {
+          if (place.addressComponents[indexAddress].types[0] === 'country') {
+            findCOuntry = true;
+            country = place.addressComponents[indexAddress].name;
+          }
+          indexAddress--;
+        };
+    
+        indexAddress = place.addressComponents.length - 1;
+    
+        switch (country) {
+          case 'Turkey':
+            for (let i = 0; i <= indexAddress; i++) {
+              if (place.addressComponents[i].types[0] === 'administrative_area_level_1') {
+                city = place.addressComponents[i].name;
+                console.log('1city', city)
+              }
+              else if (place.addressComponents[i].types[0] === 'administrative_area_level_2') {
+                district = place.addressComponents[i].name;
+              }
+            }
+            break;
+        
+          default:
+            for (let i = 0; i <= indexAddress; i++) {
+              if (place.addressComponents[i].types[0] === 'administrative_area_level_1') {
+                city = place.addressComponents[i].name;
+                console.log('1city', city)
+              }
+              else if (place.addressComponents[i].types[0] === 'administrative_area_level_2') {
+                district = place.addressComponents[i].name;
+              }
+            }
+            break;
+        }
+    
+        console.log('country', country)
+        console.log('city', city)
+        console.log('district', district)
       })
       .catch((error) => console.log(error.message)); // error is a Javascript Error object
   };
