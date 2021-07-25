@@ -20,6 +20,7 @@ import { OpenMapDirections } from 'react-native-navigation-directions';
 import firestore from '@react-native-firebase/firestore';
 import ContextApi from 'context/ContextApi';
 import messaging from '@react-native-firebase/messaging';
+import { Alert } from 'react-native';
 
 const IconStart = locationTag['start'];
 const IconJoin = locationTag['join'];
@@ -73,7 +74,7 @@ class ActivityInfoScreen extends Component {
     console.log('te', result.docs);
     if (result.docs.length > 0) {
       console.log(result.docs[0].data().cancel);
-      this.setState({ isJoin: !result.docs[0].data().cancel });
+      this.setState({ isJoin: result.docs[0].data().cancel });
     }
   };
 
@@ -157,7 +158,7 @@ class ActivityInfoScreen extends Component {
       console.log('ilk kayıt', request);
       this.fireStoreInsertFunction('Members', request.id, request);
     } else if (request.cancel === true) {
-      this.setState({ isJoin: true });
+      this.setState({ isJoin: false });
       request.cancel = false;
       console.log('ilk güncelleme', request);
       this.fireStoreUpdateFunction(
@@ -166,7 +167,7 @@ class ActivityInfoScreen extends Component {
         request
       );
     } else if (request.cancel === false) {
-      this.setState({ isJoin: false });
+      this.setState({ isJoin: true });
       console.log('ikinci güncelleme', request);
       request.cancel = true;
       this.fireStoreUpdateFunction(
@@ -176,6 +177,10 @@ class ActivityInfoScreen extends Component {
       );
     }
   };
+
+  cancelRequest = () => {
+      Alert.alert('TEST')
+  }
 
   fireStoreInsertFunction = (title: string, id: string, data: Object) => {
     firestore()
@@ -221,6 +226,17 @@ class ActivityInfoScreen extends Component {
         <Text style={styles.textButtonAction}>Leave</Text>
       </View>
     );
+
+    const deleteView = (
+        <View style={[styles.viewbuttonAction, styles.viewButtonActionDelete]}>
+          <Ionicons
+            size={20}
+            name="trash-outline"
+            style={{ color: 'white' }}
+          />
+          <Text style={styles.textButtonAction}>Delete</Text>
+        </View>
+      );
 
     const popUp = (
       <Popup
@@ -302,8 +318,9 @@ class ActivityInfoScreen extends Component {
             </TouchableNativeFeedback>
           </View>
           <View style={styles.viewAction}>
-            <TouchableOpacity onPress={() => this.sendRequest()}>
-              {this.state.isJoin ? join : leave}
+            <TouchableOpacity onPress={() => this.props.route.params.activity.owner.email !== this.context.user.email ? this.sendRequest() : this.cancelRequest()}>
+              {this.props.route.params.activity.owner.email !== this.context.user.email && this.state.isJoin ? join : 
+               this.props.route.params.activity.owner.email !== this.context.user.email ? leave : deleteView}
             </TouchableOpacity>
           </View>
         </View>
@@ -543,6 +560,9 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   viewButtonActionLeave: {
+    backgroundColor: 'red',
+  },
+  viewButtonActionDelete: {
     backgroundColor: 'red',
   },
   textButtonAction: {
