@@ -284,7 +284,7 @@ class ActivityInfoScreen extends Component {
             >
               <Image
                 source={{
-                  uri: this.props.route.params.activity.owner.ownerPicture,
+                  uri: this.props.route.params.activity.owner.photo,
                 }}
                 style={styles.imgIconPic}
               />

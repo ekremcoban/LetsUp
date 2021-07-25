@@ -110,6 +110,10 @@ export const ActivityListScreen = () => {
           let index = 0;
           const partion = Math.ceil(activityId.length / 10);
 
+          if (partion === 0) {
+            setSpinner(false);
+          }
+
           for (let i = 0; i < partion; i++) {
             let stackTen = [];
             while (index < activityId.length) {
