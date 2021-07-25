@@ -125,11 +125,14 @@ const CreateActivityScreen2 = () => {
 
 
       if (isState) {
+        console.log('0')
         if (location.addressComponents[i].types[0] === 'locality') {
           city = location.addressComponents[i].name;
+          console.log('1')
         }
         else if (location.addressComponents[i].types[0] === 'administrative_area_level_1') {
           city = location.addressComponents[i].name;
+          console.log('2')
         }
         
         if (
@@ -147,17 +150,21 @@ const CreateActivityScreen2 = () => {
         let bosnia = true;
         if (location.addressComponents[i].types[0] === 'administrative_area_level_4') {
           bosnia = false;
+          console.log('3')
         }
         else if (bosnia && location.addressComponents[i].types[0] === 'locality') {
           city = location.addressComponents[i].name;
+          console.log('4')
         }
         else if (
           location.addressComponents[i].types[0] === 'administrative_area_level_1'
         ) {
+          console.log('5')
           city = location.addressComponents[i].name;
         } else if (
           location.addressComponents[i].types[0] === 'administrative_area_level_2'
         ) {
+          console.log('6')
           district = location.addressComponents[i].name;
         }
       }

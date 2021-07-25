@@ -46,21 +46,23 @@ const db = admin.firestore();
 // })
 
 exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite(async event => {
-    const id = event.after.get('id')
     const ownerName = event.after.get('ownerName');
     const memberName = event.after.get('memberName');
+    const ownerToken = event.after.get('ownerToken');
 
     const message = {
         notification: {
             title: 'New Request',
             body: `${memberName} sent a request`
-        }
-    }
+        },
+   }
+
+   const token = 'ffG1NrKSRhCiFKCBh4mtOu:APA91bEdg3WE52gv5pcePSSUChrznt0ohAj5aTGSqIfWtjQukRknypiCDsgFVvTq9PVI7_vG_ca9kyoTWaBXwCAnh4RG2EPplIf2_LMI8_uvqF-sFXV98Ht7jWvKKX21JDAiE7_AOLcG';
+ 
 
     const topic = 'memberNotifications';
-    console.log('id', id)
 
-    return admin.messaging().sendToTopic(topic, message).then(res => {
+    return admin.messaging().sendToDevice(ownerToken, message).then(res => {
         console.log('memberNotifications is succeess', ownerName, memberName)
     }).catch(e => {
         console.log('memberNotifications is error')

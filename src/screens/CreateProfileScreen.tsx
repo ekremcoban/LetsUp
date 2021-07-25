@@ -103,6 +103,7 @@ const CreateProfilScreen = () => {
 
   const create = async () => {
     const token = await messaging().getToken();
+
     let data = {
       id: user.id,
       token: token,

@@ -33,7 +33,7 @@ class ActivityInfoScreen extends Component {
   static contextType = ContextApi;
   state = {
     title: '',
-    isJoin: false,
+    isJoin: true,
     isStar: false,
     clickChooseMap: false,
     location: null,
@@ -73,7 +73,7 @@ class ActivityInfoScreen extends Component {
     console.log('te', result.docs);
     if (result.docs.length > 0) {
       console.log(result.docs[0].data().cancel);
-      this.setState({ isJoin: result.docs[0].data().cancel });
+      this.setState({ isJoin: !result.docs[0].data().cancel });
     }
   };
 
@@ -120,6 +120,7 @@ class ActivityInfoScreen extends Component {
 
   sendRequest = async () => {
     const token = await messaging().getToken();
+    console.log('token', token)
     let context = this.context;
     let memberCollection;
 
@@ -132,20 +133,20 @@ class ActivityInfoScreen extends Component {
 
     if (memberCollection.docs.length > 0) {
       request = memberCollection.docs[0].data();
-      console.log('memberCollection 1', request);
+    //   console.log('memberCollection 1', request);
     }
 
-    console.log('memberCollection 2', memberCollection.docs.length);
+    // console.log('memberCollection 2', memberCollection.docs.length);
 
     if (memberCollection.docs.length == 0) {
-      this.setState((prev) => ({ isJoin: true }));
+    this.setState({ isJoin: false });
       request = {
         id: uuidv4(),
-        ownerToken: this.props.route.params.activity.owner.token,
         ownerMail: this.props.route.params.activity.owner.email,
+        ownerToken: this.props.route.params.activity.owner.token,
         ownerName: this.props.route.params.activity.owner.name,
-        memberToken: context.user.token,
         memberMail: context.user.email,
+        memberToken: context.user.token,
         memberName: context.user.name,
         activityId: this.props.route.params.activity.id,
         state: false,
@@ -156,7 +157,7 @@ class ActivityInfoScreen extends Component {
       console.log('ilk kayıt', request);
       this.fireStoreInsertFunction('Members', request.id, request);
     } else if (request.cancel === true) {
-      this.setState((prev) => ({ isJoin: false }));
+      this.setState({ isJoin: true });
       request.cancel = false;
       console.log('ilk güncelleme', request);
       this.fireStoreUpdateFunction(
@@ -165,7 +166,7 @@ class ActivityInfoScreen extends Component {
         request
       );
     } else if (request.cancel === false) {
-      this.setState((prev) => ({ isJoin: true }));
+      this.setState({ isJoin: false });
       console.log('ikinci güncelleme', request);
       request.cancel = true;
       this.fireStoreUpdateFunction(
@@ -302,7 +303,7 @@ class ActivityInfoScreen extends Component {
           </View>
           <View style={styles.viewAction}>
             <TouchableOpacity onPress={() => this.sendRequest()}>
-              {!this.state.isJoin ? join : leave}
+              {this.state.isJoin ? join : leave}
             </TouchableOpacity>
           </View>
         </View>

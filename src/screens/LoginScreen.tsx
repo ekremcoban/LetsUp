@@ -8,6 +8,7 @@ import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import { useState } from 'react';
 import { firebase } from '@react-native-firebase/auth';
+import messaging from '@react-native-firebase/messaging';
 
 const LoginScreen = ({ navigation }: any) => {
   const { user, setUser, setUserPhoto } = useContext(ContextApi);
@@ -75,11 +76,14 @@ const LoginScreen = ({ navigation }: any) => {
   // Kayitli ise vt den, kayit yoksa google dan bilgileri alir.
   const retrieveData = async (user: Object, usersCollection: any, data: any, userInfo: any) => {
     let userTemp;
+    const token = await messaging().getToken();
+
     try {
       const { _data, exists } = usersCollection;
       if (exists) {
         userTemp = {
           id: _data.id,
+          token: token,
           email: _data.email,
           nick: _data.nick,
           name: _data.name,
@@ -98,6 +102,7 @@ const LoginScreen = ({ navigation }: any) => {
       } else {
         userTemp = {
           id: userInfo.user.id,
+          token: token,
           email: userInfo.user.email,
           nick: null,
           name: userInfo.user.givenName,
