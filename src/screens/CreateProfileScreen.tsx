@@ -81,7 +81,7 @@ const CreateProfilScreen = () => {
         );
       user.height != null && setSelectedHeight(user.height);
       user.weight != null && setSelectedWeight(user.weight);
-      if (user.photo == null && imageName == null) {
+      if (user.photo == null) {
         // Kullanici resim eklediyse
         getData('Photo').then((res) => {
           if (res == null) {
@@ -121,7 +121,7 @@ const CreateProfilScreen = () => {
       height: selectedHeight,
       weight: selectedWeight,
       interestedIn: user.interestedIn,
-      photo: imageName != null ? null : photo,
+      photo: photo,
       geoCode: {
         latitude: location.latitude,
         longitude: location.longitude,
