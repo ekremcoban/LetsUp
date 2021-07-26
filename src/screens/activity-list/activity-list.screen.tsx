@@ -292,7 +292,7 @@ export const ActivityListScreen = () => {
             <ActivitySelector>
               {activityList != null &&
                 activityList != undefined &&
-                activityList
+                activityList.filter(x => x.state === true)
                   .sort((a, b) => {
                     return a.startTime - b.startTime;
                   })

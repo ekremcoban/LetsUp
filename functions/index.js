@@ -57,11 +57,6 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
         },
    }
 
-   const token = 'ffG1NrKSRhCiFKCBh4mtOu:APA91bEdg3WE52gv5pcePSSUChrznt0ohAj5aTGSqIfWtjQukRknypiCDsgFVvTq9PVI7_vG_ca9kyoTWaBXwCAnh4RG2EPplIf2_LMI8_uvqF-sFXV98Ht7jWvKKX21JDAiE7_AOLcG';
- 
-
-    const topic = 'memberNotifications';
-
     return admin.messaging().sendToDevice(ownerToken, message).then(res => {
         console.log('memberNotifications is succeess', ownerName, memberName)
     }).catch(e => {
@@ -69,6 +64,40 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
     })
 });
 
+exports.activityNotifications=functions.firestore.document('Activities/{id}').onUpdate(async event => {
+    const id = event.after.get('id');
+    const name = event.after.get('name');
+    const state = event.after.get('state');
+
+    const message = {
+        notification: {
+            title: 'Info',
+            body: `${name} was canceled`
+        },
+   }
+
+   const a = 'e7nl6QIJS0oMvSPuK7VIDM:APA91bG-QdG2M_7ROseAlEP2ZRAYWuE45Vi-7tRG7Js_HnDHwB16rRX5mfMm6HQM9alSkauyLStg1TBC_guYW44wXfY-YfUjK1EhbYt9wExbXJD_PDcNT6OHpvP3Z0woW2nETZnFwmr_';
+            
+    if (state == false) {
+        const members = await db.collection('Members').where('activityId', '==', id).get();
+
+        // await admin.messaging().sendToDevice(members.docs[0].data().memberToken, message).then(res => {
+        //     console.log('activitiesNotifications is succeess 1', name)
+        // }).catch(e => {
+        //     console.log('activitiesNotifications is error 1', e)
+        // })
+
+        members.docs.map(async member => {
+            console.log('member', member.data())
+
+            await admin.messaging().sendToDevice(member.data().memberToken, message).then(res => {
+                console.log('activitiesNotifications is succeess 1', name)
+            }).catch(e => {
+                console.log('activitiesNotifications is error 1', e)
+            })
+        })
+    }
+});
 
 
 

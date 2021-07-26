@@ -404,6 +404,7 @@ const CreateActivityScreen2 = () => {
               )[0].text
             ),
             owner: user,
+            state: true,
             date: activityDate.getTime(),
             startTime: activityStartTime != null && startActivityTime.getTime(),
             finishTime:

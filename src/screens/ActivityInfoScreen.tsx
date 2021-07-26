@@ -73,8 +73,8 @@ class ActivityInfoScreen extends Component {
 
     console.log('te', result.docs);
     if (result.docs.length > 0) {
-      console.log(result.docs[0].data().cancel);
-      this.setState({ isJoin: result.docs[0].data().cancel });
+      console.log(result.docs[0].data().memberState);
+      this.setState({ isJoin: result.docs[0].data().memberState });
     }
   };
 
@@ -121,7 +121,7 @@ class ActivityInfoScreen extends Component {
 
   sendRequest = async () => {
     const token = await messaging().getToken();
-    console.log('token', token)
+    console.log('token', token);
     let context = this.context;
     let memberCollection;
 
@@ -134,13 +134,13 @@ class ActivityInfoScreen extends Component {
 
     if (memberCollection.docs.length > 0) {
       request = memberCollection.docs[0].data();
-    //   console.log('memberCollection 1', request);
+      //   console.log('memberCollection 1', request);
     }
 
     // console.log('memberCollection 2', memberCollection.docs.length);
 
     if (memberCollection.docs.length == 0) {
-    this.setState({ isJoin: false });
+      this.setState({ isJoin: false });
       request = {
         id: uuidv4(),
         ownerMail: this.props.route.params.activity.owner.email,
@@ -150,26 +150,26 @@ class ActivityInfoScreen extends Component {
         memberToken: context.user.token,
         memberName: context.user.name,
         activityId: this.props.route.params.activity.id,
-        state: false,
-        cancel: false,
+        ownerState: false,
+        memberState: true,
         startTime: this.props.route.params.activity.startTime,
         createdTime: new Date().getTime(),
       };
       console.log('ilk kayıt', request);
       this.fireStoreInsertFunction('Members', request.id, request);
-    } else if (request.cancel === true) {
+    } else if (request.memberState === false) {
       this.setState({ isJoin: false });
-      request.cancel = false;
+      request.memberState = true;
       console.log('ilk güncelleme', request);
       this.fireStoreUpdateFunction(
         'Members',
         memberCollection?.docs[0].data().id,
         request
       );
-    } else if (request.cancel === false) {
+    } else if (request.memberState === true) {
       this.setState({ isJoin: true });
       console.log('ikinci güncelleme', request);
-      request.cancel = true;
+      request.memberState = false;
       this.fireStoreUpdateFunction(
         'Members',
         memberCollection?.docs[0].data().id,
@@ -178,9 +178,36 @@ class ActivityInfoScreen extends Component {
     }
   };
 
-  cancelRequest = () => {
-      Alert.alert('TEST')
-  }
+  deleteActivity = async () => {
+    Alert.alert('Delete Activity', 'Are you sure?', [
+      {
+        text: 'No',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'Yes',
+        onPress: async () => {
+          const { setIsCreateActivity } = this.context;
+          setIsCreateActivity(true);
+          // Istek kayitli mi bilgisi
+          const memberCollection = await firestore()
+            .collection('Activities')
+            .where('id', '==', this.props.route.params.activity.id)
+            .get();
+
+          let request = memberCollection?.docs[0].data();
+          request.state = false;
+          this.fireStoreUpdateFunction(
+            'Activities',
+            memberCollection?.docs[0].data().id,
+            request
+          );
+          this.props.navigation.goBack();
+        },
+      },
+    ]);
+  };
 
   fireStoreInsertFunction = (title: string, id: string, data: Object) => {
     firestore()
@@ -228,15 +255,11 @@ class ActivityInfoScreen extends Component {
     );
 
     const deleteView = (
-        <View style={[styles.viewbuttonAction, styles.viewButtonActionDelete]}>
-          <Ionicons
-            size={20}
-            name="trash-outline"
-            style={{ color: 'white' }}
-          />
-          <Text style={styles.textButtonAction}>Delete</Text>
-        </View>
-      );
+      <View style={[styles.viewbuttonAction, styles.viewButtonActionDelete]}>
+        <Ionicons size={20} name="trash-outline" style={{ color: 'white' }} />
+        <Text style={styles.textButtonAction}>Delete</Text>
+      </View>
+    );
 
     const popUp = (
       <Popup
@@ -318,9 +341,21 @@ class ActivityInfoScreen extends Component {
             </TouchableNativeFeedback>
           </View>
           <View style={styles.viewAction}>
-            <TouchableOpacity onPress={() => this.props.route.params.activity.owner.email !== this.context.user.email ? this.sendRequest() : this.cancelRequest()}>
-              {this.props.route.params.activity.owner.email !== this.context.user.email && this.state.isJoin ? join : 
-               this.props.route.params.activity.owner.email !== this.context.user.email ? leave : deleteView}
+            <TouchableOpacity
+              onPress={() =>
+                this.props.route.params.activity.owner.email !==
+                this.context.user.email
+                  ? this.sendRequest()
+                  : this.deleteActivity()
+              }
+            >
+              {this.props.route.params.activity.owner.email !==
+                this.context.user.email && this.state.isJoin
+                ? join
+                : this.props.route.params.activity.owner.email !==
+                  this.context.user.email
+                ? leave
+                : deleteView}
             </TouchableOpacity>
           </View>
         </View>
