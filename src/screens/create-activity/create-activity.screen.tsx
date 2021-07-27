@@ -422,10 +422,10 @@ const CreateActivityScreen2 = () => {
             createdTime: new Date().getTime(),
           };
           console.log('activity', activity);
-          if (activity.owner.ownerPicture == null) {
+          if (activity.owner.photo == null) {
             getData('Photo').then(p => {
               if (p != null) {
-                activity.owner.ownerPicture = p;
+                activity.owner.photo = p;
               }
             })
           }

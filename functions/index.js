@@ -45,6 +45,7 @@ const db = admin.firestore();
 //     })
 // })
 
+// Aktiviteye uye oldugunda
 exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite(async event => {
     const ownerName = event.after.get('ownerName');
     const memberName = event.after.get('memberName');
@@ -58,12 +59,13 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
    }
 
     return admin.messaging().sendToDevice(ownerToken, message).then(res => {
-        console.log('memberNotifications is succeess', ownerName, memberName)
+        console.log('memberNotifications is succeess --> ', ownerName, memberName)
     }).catch(e => {
-        console.log('memberNotifications is error')
+        console.log('memberNotifications is error --> ')
     })
 });
 
+// Aktivite silindiginde
 exports.activityNotifications=functions.firestore.document('Activities/{id}').onUpdate(async event => {
     const id = event.after.get('id');
     const name = event.after.get('name');
@@ -75,11 +77,12 @@ exports.activityNotifications=functions.firestore.document('Activities/{id}').on
             body: `${name} was canceled`
         },
    }
-
-   const a = 'e7nl6QIJS0oMvSPuK7VIDM:APA91bG-QdG2M_7ROseAlEP2ZRAYWuE45Vi-7tRG7Js_HnDHwB16rRX5mfMm6HQM9alSkauyLStg1TBC_guYW44wXfY-YfUjK1EhbYt9wExbXJD_PDcNT6OHpvP3Z0woW2nETZnFwmr_';
-            
+        
     if (state == false) {
-        const members = await db.collection('Members').where('activityId', '==', id).get();
+        const members = await db.collection('Members')
+        .where('activityId', '==', id)
+        .where('memberState', '==', true)
+        .get();
 
         // await admin.messaging().sendToDevice(members.docs[0].data().memberToken, message).then(res => {
         //     console.log('activitiesNotifications is succeess 1', name)
@@ -88,12 +91,10 @@ exports.activityNotifications=functions.firestore.document('Activities/{id}').on
         // })
 
         members.docs.map(async member => {
-            console.log('member', member.data())
-
             await admin.messaging().sendToDevice(member.data().memberToken, message).then(res => {
-                console.log('activitiesNotifications is succeess 1', name)
+                console.log('activitiesNotifications is succeess --> ', name)
             }).catch(e => {
-                console.log('activitiesNotifications is error 1', e)
+                console.log('activitiesNotifications is error --> ', e)
             })
         })
     }

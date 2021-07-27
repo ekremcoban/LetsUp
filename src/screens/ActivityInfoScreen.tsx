@@ -8,6 +8,7 @@ import {
   TouchableNativeFeedback,
   Linking,
   Platform,
+  PixelRatio,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -24,6 +25,22 @@ import { Alert } from 'react-native';
 
 const IconStart = locationTag['start'];
 const IconJoin = locationTag['join'];
+
+const heightView =
+  PixelRatio.get() === 1
+    ? 150
+    : PixelRatio.get() === 1.5
+    ? 150
+    : PixelRatio.get() === 2
+    ? 150
+    : PixelRatio.get() === 2.5
+    ? 150
+    : PixelRatio.get() === 3
+    ? 150
+    : PixelRatio.get() === 3.5
+    ? 150
+    : 150;
+
 let request = [];
 const targetPort = {
   name: 'Eskihisar',
@@ -38,29 +55,34 @@ class ActivityInfoScreen extends Component {
     isStar: false,
     clickChooseMap: false,
     location: null,
+    selectedAddress: null,
   };
 
   componentDidMount() {
     this.isMember();
 
-    // setTimeout(() => {
-    //     console.log('timer')
-    //     this.refs['mapRef'].injectJavaScript(`
-    // L.Routing.control({
-    //   show: false,
-    //   waypoints: [
-    //     L.latLng(41.01809926611338, 29.00856835843875),
-    //     L.latLng(40.88688641127476, 29.186640955537502),
-    //     L.latLng(40.81831905125059, 29.285431003343092),
-    //     L.latLng(40.81191220859712, 29.365444423703714)
-    //   ]
-    // }).addTo(mymap);
+    const selectedAddress = this.props.route.params.addressList
+    .filter(x => x.activityId === this.props.route.params.activity.id)
+    this.setState({ selectedAddress })
 
-    // L.marker([41.01809926611338, 29.00856835843875]).addTo(mymap)
-    // .bindPopup('Start Point')
-    // .openPopup();
-    // `)
-    // }, 1200);
+    setTimeout(() => {
+      console.log('timer');
+      this.refs['mapRef'].injectJavaScript(`
+    L.Routing.control({
+      show: false,
+      waypoints: [
+        L.latLng(41.01809926611338, 29.00856835843875),
+        L.latLng(40.88688641127476, 29.186640955537502),
+        L.latLng(40.81831905125059, 29.285431003343092),
+        L.latLng(40.81191220859712, 29.365444423703714)
+      ]
+    }).addTo(mymap);
+
+    L.marker([41.01809926611338, 29.00856835843875]).addTo(mymap)
+    .bindPopup('Start Point')
+    .openPopup();
+    `);
+    }, 1500);
   }
 
   isMember = async () => {
@@ -74,7 +96,7 @@ class ActivityInfoScreen extends Component {
     console.log('te', result.docs);
     if (result.docs.length > 0) {
       console.log(result.docs[0].data().memberState);
-      this.setState({ isJoin: result.docs[0].data().memberState });
+      this.setState({ isJoin: !result.docs[0].data().memberState });
     }
   };
 
@@ -158,7 +180,7 @@ class ActivityInfoScreen extends Component {
       console.log('ilk kayıt', request);
       this.fireStoreInsertFunction('Members', request.id, request);
     } else if (request.memberState === false) {
-      this.setState({ isJoin: true });
+      this.setState((prev) => ({ isJoin: !prev.isJoin }));
       request.memberState = true;
       console.log('ilk güncelleme', request);
       this.fireStoreUpdateFunction(
@@ -167,7 +189,7 @@ class ActivityInfoScreen extends Component {
         request
       );
     } else if (request.memberState === true) {
-      this.setState({ isJoin: false });
+      this.setState((prev) => ({ isJoin: !prev.isJoin }));
       console.log('ikinci güncelleme', request);
       request.memberState = false;
       this.fireStoreUpdateFunction(
@@ -279,8 +301,63 @@ class ActivityInfoScreen extends Component {
       />
     );
 
+    const showDetail = (
+      <View style={styles.viewDetail}>
+        <View style={styles.viewMap}>
+          <WebView
+            ref={'mapRef'}
+            source={{ html: html_script }}
+            style={styles.mapRef}
+          />
+        </View>
+        {this.state.selectedAddress != null && this.state.selectedAddress
+        .map((address, index) => (
+          <View style={styles.viewLocation}>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                height: heightView * 0.25,
+                // backgroundColor: 'red',
+              }}
+            >
+              <Text>
+                {index === 0 && this.state.selectedAddress.length - 1 !== index
+                  ? 'Start'
+                  : index === this.state.selectedAddress.length - 1 && index > 1
+                  ? 'Finish'
+                  : this.state.selectedAddress.length > 2 ? 'Dest'
+                : ''}
+              </Text>
+            </View>
+            <View
+              style={{
+                flex: 5,
+                justifyContent: 'center',
+                height: heightView * 0.25,
+                // backgroundColor: 'yellow',
+              }}
+            >
+              <Text>{address.fullAddress}</Text>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                height: heightView * 0.25,
+                // backgroundColor: 'red',
+              }}
+            >
+              <Ionicons name={'navigate-outline'} size={25} />
+            </View>
+          </View>
+        ))}
+        <Text>TEST</Text>
+      </View>
+    );
+
     return (
-      <>
+      <View style={{height: 1000}}>
         {this.state.clickChooseMap && popUp}
         <View style={styles.viewTitle}>
           <Image
@@ -323,7 +400,7 @@ class ActivityInfoScreen extends Component {
             >
               <Image
                 source={{
-                  uri: this.props.route.params.activity.owner.ownerPicture,
+                  uri: this.props.route.params.activity.owner.photo,
                 }}
                 style={styles.imgIconPic}
               />
@@ -360,7 +437,11 @@ class ActivityInfoScreen extends Component {
           </View>
         </View>
 
-        <View style={styles.viewDate}>
+        <View style={styles.viewPlaceAndDate}>
+          <Text>
+            {this.props.route.params.getPlace(this.props.route.params.activity)}{' '}
+            -{' '}
+          </Text>
           <Text style={styles.textDate}>
             {new Date(this.props.route.params.activity.startTime)
               .toString()
@@ -386,101 +467,9 @@ class ActivityInfoScreen extends Component {
                   ).getMinutes())}
           </Text>
         </View>
-
-        {/* <View style={styles.viewLocation}>
-                    <Text style={styles.textLocationTitle}>Location</Text>
-                    <View style={styles.scrollview}>
-                        <ScrollView horizontal={true}>
-                            <TouchableOpacity style={styles.viewNode} onPress={() => this.setState({clickChooseMap: true}) }>
-                                <View style={{ flexDirection: 'row', flex: 2 }}>
-                                    <View style={{ flex: 1, }} />
-                                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} >
-                                        <View style={{
-                                            height: 20,
-                                            width: '100%',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                        }}>
-                                            <Text style={{ color: '#37CC4A', fontWeight: '600' }}>Start</Text>
-                                        </View>
-                                    </View>
-                                    <View style={{ flex: 1, alignItems: 'flex-end', paddingEnd: 5, }} >
-                                        <Ionicons
-                                            size={20}
-                                            name={"navigate"}
-                                        />
-                                    </View>
-                                </View>
-                                <View style={{
-                                    flex: 4,
-                                    marginStart: 5,
-                                    marginEnd: 5,
-                                    borderTopWidth: 1,
-                                    borderColor: '#37CC4A',
-                                }}>
-                                    <Text>Organize Sanayi Bölgesi Ataşehir, 2. Cadde</Text>
-                                </View>
-                            </TouchableOpacity>
-                            <View style={styles.viewNode}>
-                                <View style={{ flexDirection: 'row', flex: 2 }}>
-                                    <View style={{ flex: 1, }} />
-                                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} >
-                                        <View style={{
-                                            height: 20,
-                                            width: '100%',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                        }}>
-                                            <Text style={{ color: 'red', fontWeight: '600'  }}>Finish</Text>
-                                        </View>
-                                    </View>
-                                    <View style={{ flex: 1, alignItems: 'flex-end', paddingEnd: 5, }} >
-                                        <Ionicons
-                                            size={20}
-                                            name={"navigate"}
-                                        />
-                                    </View>
-                                </View>
-                                <View style={{ 
-                                    flex: 4,
-                                    marginStart: 5,
-                                    marginEnd: 5,
-                                    borderTopWidth: 1,
-                                    borderColor: 'red',
-                                    }}>
-                                    <Text>Organize Sanayi Bölgesi Ataşehir, 2. Cadde</Text>
-                                </View>
-                            </View>
-                            <View style={styles.viewNode}>
-                                <View style={{ flexDirection: 'row', flex: 2 }}>
-                                    <View style={{ flex: 1, }} />
-                                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} >
-                                        <View style={{
-                                            height: 20,
-                                            width: '100%',
-                                            flexDirection: 'row',
-                                            backgroundColor: 'purple',
-                                            borderRadius: 20,
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                        }}>
-                                            <Text style={{ color: 'white' }}>1</Text>
-                                        </View>
-                                    </View>
-                                    <View style={{ flex: 1, alignItems: 'flex-end', paddingEnd: 5, }} >
-                                        <Ionicons
-                                            size={20}
-                                            name={"navigate"}
-                                        />
-                                    </View>
-                                </View>
-                                <View style={{ flex: 3, paddingLeft: 5, paddingEnd: 5, }}>
-                                    <Text>Organize Sanayi Bölgesi Ataşehir, 2. Cadde</Text>
-                                </View>
-                            </View>
-                        </ScrollView>
-                    </View>
-                </View> */}
+        <View style={{ height: heightView * 5, width: '100%' }}>
+          <ScrollView>{showDetail}</ScrollView>
+        </View>
 
         <View style={styles.viewFeatures}>
           <View style={styles.featureLeft}>
@@ -512,18 +501,14 @@ class ActivityInfoScreen extends Component {
             </Text>
           </View>
         </View>
-
-        <View style={styles.viewMap}>
-          {/* <WebView ref={'mapRef'} source={{ html: html_script }} style={styles.mapRef} /> */}
-        </View>
-      </>
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
   viewTitle: {
-    flex: 4,
+    height: heightView,
     flexDirection: 'row',
     marginLeft: 20,
   },
@@ -550,7 +535,7 @@ const styles = StyleSheet.create({
   },
 
   viewOwner: {
-    flex: 1,
+    height: heightView * 0.3,
     marginStart: 20,
     marginEnd: 20,
     flexDirection: 'row',
@@ -606,18 +591,17 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 
-  viewLocation: {
-    flex: 3,
-    marginTop: 10,
-    marginStart: 20,
-    marginEnd: 20,
+  viewDetail: {
+    height: heightView * 2.5,
+    width: '90%',
+    marginStart: '5%',
+    marginEnd: '5%',
     // backgroundColor: 'purple',
   },
-  textLocationTitle: {
-    paddingTop: 10,
-    fontWeight: '700',
-    color: '#515151',
-    fontSize: 18,
+  viewLocation: {
+    flexDirection: 'row',
+    // height: heightView,
+    // backgroundColor: 'orange',
   },
   scrollview: {
     marginTop: 5,
@@ -642,84 +626,19 @@ const styles = StyleSheet.create({
     // shadowRadius: 3.84,
     //  elevation: 5,
   },
-  containerLocation: {
-    flexDirection: 'row',
-    paddingTop: 10,
-  },
-  containerLeft: {
-    flex: 1,
-  },
-  containerRight: {
-    paddingRight: 5,
-    justifyContent: 'center',
-  },
-  viewLocationLeft: {
-    width: 40,
-    alignItems: 'flex-end',
-    // backgroundColor: 'red',
-  },
-  image: {
-    width: 50,
-    height: 30,
-    borderRadius: 75,
-  },
-  viewStartLabel: {
-    width: 40,
-    backgroundColor: '#37CC4A',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-  },
-  textStartLabel: {
-    color: 'white',
-    fontSize: 14,
-  },
-  textLocationStart: {
-    fontSize: 14,
-    paddingLeft: 5,
-    color: '#515151',
-  },
-  viewNodeLabel: {
-    width: 20,
-    backgroundColor: 'black',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-  },
-  textNodeLabel: {
-    color: 'white',
-    fontSize: 14,
-  },
-  textLocationNode: {
-    fontSize: 12,
-    paddingLeft: 5,
-    color: '#515151',
-  },
-  viewFinishLabel: {
-    width: 40,
-    backgroundColor: 'red',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-  },
-  textFinishLabel: {
-    color: 'white',
-    fontSize: 14, //width * 0.03,
-  },
 
-  viewDate: {
-    flex: 1,
+  viewPlaceAndDate: {
+    height: heightView * 0.3,
     marginTop: 5,
     flexDirection: 'row',
     alignItems: 'center',
-    marginStart: 20,
-    marginEnd: 20,
+    justifyContent: 'center',
     borderTopWidth: 1,
     borderColor: '#C4C4C4',
     // backgroundColor: 'blue',
   },
   textDate: {
-    flex: 6,
+    // flex: 6,
     color: '#515151',
     textAlign: 'center',
     fontSize: 16, //width * 0.04,
@@ -758,8 +677,8 @@ const styles = StyleSheet.create({
   },
 
   viewMap: {
-    flex: 6,
-    margin: 10,
+    height: heightView * 1.5,
+    // margin: 10,
     // backgroundColor: 'green',
   },
   mapRef: {

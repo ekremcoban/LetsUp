@@ -317,7 +317,8 @@ export const ActivityListScreen = () => {
                       onPress={() =>
                         navigation.navigate('Activity Info', {
                           activity: activity,
-                          activityList: activityList,
+                          getPlace: getPlace,
+                          addressList: addressList
                         })
                       }
                     />
