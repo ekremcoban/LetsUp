@@ -158,7 +158,7 @@ class ActivityInfoScreen extends Component {
       console.log('ilk kayıt', request);
       this.fireStoreInsertFunction('Members', request.id, request);
     } else if (request.memberState === false) {
-      this.setState({ isJoin: false });
+      this.setState({ isJoin: true });
       request.memberState = true;
       console.log('ilk güncelleme', request);
       this.fireStoreUpdateFunction(
@@ -167,7 +167,7 @@ class ActivityInfoScreen extends Component {
         request
       );
     } else if (request.memberState === true) {
-      this.setState({ isJoin: true });
+      this.setState({ isJoin: false });
       console.log('ikinci güncelleme', request);
       request.memberState = false;
       this.fireStoreUpdateFunction(
