@@ -3,12 +3,14 @@ import {
   StyleSheet,
   View,
   Text,
+  Button,
   Image,
   ScrollView,
   TouchableNativeFeedback,
   Linking,
   Platform,
   PixelRatio,
+  LogBox,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -56,14 +58,19 @@ class ActivityInfoScreen extends Component {
     clickChooseMap: false,
     location: null,
     selectedAddress: null,
+    members: null,
   };
 
   componentDidMount() {
     this.isMember();
+    LogBox.ignoreAllLogs();
 
-    const selectedAddress = this.props.route.params.addressList
-    .filter(x => x.activityId === this.props.route.params.activity.id)
-    this.setState({ selectedAddress })
+    this.getMembers();
+
+    const selectedAddress = this.props.route.params.addressList.filter(
+      (x) => x.activityId === this.props.route.params.activity.id
+    );
+    this.setState({ selectedAddress });
 
     setTimeout(() => {
       console.log('timer');
@@ -84,6 +91,15 @@ class ActivityInfoScreen extends Component {
     `);
     }, 1500);
   }
+
+  getMembers = async () => {
+    const members = await firestore()
+      .collection('Members')
+      .where('activityId', '==', this.props.route.params.activity.id)
+      .get();
+    console.log('Members', members.docs);
+    this.setState({ members: members.docs });
+  };
 
   isMember = async () => {
     // Istek kayitli mi bilgisi
@@ -171,6 +187,7 @@ class ActivityInfoScreen extends Component {
         memberMail: context.user.email,
         memberToken: context.user.token,
         memberName: context.user.name,
+        memberPhoto: context.user.photo,
         activityId: this.props.route.params.activity.id,
         ownerState: false,
         memberState: true,
@@ -302,62 +319,100 @@ class ActivityInfoScreen extends Component {
     );
 
     const showDetail = (
-      <View style={styles.viewDetail}>
-        <View style={styles.viewMap}>
-          <WebView
-            ref={'mapRef'}
-            source={{ html: html_script }}
-            style={styles.mapRef}
-          />
-        </View>
-        {this.state.selectedAddress != null && this.state.selectedAddress
-        .map((address, index) => (
-          <View style={styles.viewLocation}>
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                height: heightView * 0.25,
-                // backgroundColor: 'red',
-              }}
-            >
-              <Text>
-                {index === 0 && this.state.selectedAddress.length - 1 !== index
-                  ? 'Start'
-                  : index === this.state.selectedAddress.length - 1 && index > 1
-                  ? 'Finish'
-                  : this.state.selectedAddress.length > 2 ? 'Dest'
-                : ''}
-              </Text>
-            </View>
-            <View
-              style={{
-                flex: 5,
-                justifyContent: 'center',
-                height: heightView * 0.25,
-                // backgroundColor: 'yellow',
-              }}
-            >
-              <Text>{address.fullAddress}</Text>
-            </View>
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                height: heightView * 0.25,
-                // backgroundColor: 'red',
-              }}
-            >
-              <Ionicons name={'navigate-outline'} size={25} />
-            </View>
+      <View style={{ width: '100%' }}>
+        <View style={styles.viewDetail}>
+          <View style={styles.viewMap}>
+            <WebView
+              ref={'mapRef'}
+              source={{ html: html_script }}
+              style={styles.mapRef}
+            />
           </View>
-        ))}
-        <Text>TEST</Text>
+          <Text style={styles.navigationTitle}>Navigation</Text>
+          {this.state.selectedAddress != null &&
+            this.state.selectedAddress.map((address, index) => (
+              <View style={styles.viewLocation}>
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    // height: heightView * 0.25,
+                    // backgroundColor: 'red',
+                  }}
+                >
+                  <Text>
+                    {index === 0 &&
+                    this.state.selectedAddress.length - 1 !== index
+                      ? 'Start'
+                      : index === this.state.selectedAddress.length - 1 &&
+                        index > 1
+                      ? 'Finish'
+                      : this.state.selectedAddress.length > 2
+                      ? 'Dest'
+                      : ''}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flex: 5,
+                    justifyContent: 'center',
+                    height: heightView * 0.25,
+                    // backgroundColor: 'yellow',
+                  }}
+                >
+                  <Text>{address.fullAddress}</Text>
+                </View>
+                <View
+                  style={{
+                    flex: 0.5,
+                    justifyContent: 'center',
+                    height: heightView * 0.25,
+                    // backgroundColor: 'red',
+                  }}
+                >
+                  <Ionicons name={'navigate-outline'} size={20} />
+                </View>
+              </View>
+            ))}
+        </View>
+      </View>
+    );
+
+    const showAgeGender = (
+      <View style={styles.viewFeatures}>
+        <View style={styles.featureLeft}>
+          <Text style={styles.featureTitle}>Age</Text>
+          <Text style={styles.featureText}>
+            {this.props.route.params.activity.minAge != null
+              ? this.props.route.params.activity.minAge +
+                ' - ' +
+                this.props.route.params.activity.maxAge
+              : '---'}
+          </Text>
+        </View>
+        <View style={styles.featureMiddle}>
+          <Text style={styles.featureTitle}>Gender</Text>
+          <Text style={styles.featureText}>
+            {this.props.route.params.activity.gender != null
+              ? this.props.route.params.activity.gender
+              : '---'}
+          </Text>
+        </View>
+        {/* <View style={styles.featureRight}>
+        <Text style={styles.featureTitle}>Quota</Text>
+        <Text style={styles.featureText}>
+          {this.props.route.params.activity.minQuota != null
+            ? this.props.route.params.activity.minQuota +
+              ' - ' +
+              this.props.route.params.activity.maxQuota
+            : '---'}
+        </Text>
+      </View> */}
       </View>
     );
 
     return (
-      <View style={{height: 1000}}>
+      <ScrollView style={{ height: 1000 }}>
         {this.state.clickChooseMap && popUp}
         <View style={styles.viewTitle}>
           <Image
@@ -467,41 +522,92 @@ class ActivityInfoScreen extends Component {
                   ).getMinutes())}
           </Text>
         </View>
-        <View style={{ height: heightView * 5, width: '100%' }}>
-          <ScrollView>{showDetail}</ScrollView>
+        {showDetail}
+        {showAgeGender}
+        <View>
+          <View
+            style={{
+              marginStart: '5%',
+              marginEnd: '5%',
+              paddingTop: 10,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              // backgroundColor: 'orange',
+            }}
+          >
+            <Text style={{ fontWeight: '700', color: '#515151', fontSize: 18 }}>
+              Members
+            </Text>
+            <Text style={{ color: '#515151', fontSize: 18 }}>
+              {this.state.members != null && this.state.members.length}/13
+            </Text>
+          </View>
+          {this.state.members != null &&
+            this.state.members.map((member) => (
+              <View
+                key={member.id}
+                style={{
+                  flex: 1,
+                  marginStart: '5%',
+                  marginTop: 10,
+                  flexDirection: 'row',
+                }}
+              >
+                <View
+                  style={{
+                    flex: 3,
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Image
+                    source={{
+                      uri: member._data.memberPhoto,
+                    }}
+                    style={styles.imgMemberPic}
+                  />
+                  <Text style={{fontSize: 15, paddingStart: 5,}}>{member._data.memberName}</Text>
+                </View>
+                <View
+                  style={{
+                    flex: 0.5,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Ionicons size={20} name="mail" style={{ color: 'gray' }} />
+                </View>
+                <View
+                  style={{
+                    flex: 3,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-around',
+                    marginEnd: '5%',
+                  }}
+                >
+                  <Text style={{fontSize: 15}}>Joined: </Text>
+                  <Button
+                    title="No"
+                    color={'red'}
+                    onPress={() =>
+                      Alert.alert('Button with adjusted color pressed')
+                    }
+                  />
+                  <Button
+                    title="Yes"
+                    color={'#37CC4A'}
+                    onPress={() =>
+                      Alert.alert('Button with adjusted color pressed')
+                    }
+                  />
+                </View>
+              </View>
+            ))}
         </View>
-
-        <View style={styles.viewFeatures}>
-          <View style={styles.featureLeft}>
-            <Text style={styles.featureTitle}>Age</Text>
-            <Text style={styles.featureText}>
-              {this.props.route.params.activity.minAge != null
-                ? this.props.route.params.activity.minAge +
-                  ' - ' +
-                  this.props.route.params.activity.maxAge
-                : '---'}
-            </Text>
-          </View>
-          <View style={styles.featureMiddle}>
-            <Text style={styles.featureTitle}>Gender</Text>
-            <Text style={styles.featureText}>
-              {this.props.route.params.activity.gender != null
-                ? this.props.route.params.activity.gender
-                : '---'}
-            </Text>
-          </View>
-          <View style={styles.featureRight}>
-            <Text style={styles.featureTitle}>Quota</Text>
-            <Text style={styles.featureText}>
-              {this.props.route.params.activity.minQuota != null
-                ? this.props.route.params.activity.minQuota +
-                  ' - ' +
-                  this.props.route.params.activity.maxQuota
-                : '---'}
-            </Text>
-          </View>
-        </View>
-      </View>
+        <View style={{ height: 50 }} />
+      </ScrollView>
     );
   }
 }
@@ -592,7 +698,9 @@ const styles = StyleSheet.create({
   },
 
   viewDetail: {
-    height: heightView * 2.5,
+    // height: heightView * 2.5,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
     width: '90%',
     marginStart: '5%',
     marginEnd: '5%',
@@ -600,6 +708,7 @@ const styles = StyleSheet.create({
   },
   viewLocation: {
     flexDirection: 'row',
+    marginTop: 10,
     // height: heightView,
     // backgroundColor: 'orange',
   },
@@ -648,6 +757,11 @@ const styles = StyleSheet.create({
     flex: 1,
     // marginStart: 40,
     // marginEnd: 40,
+    marginStart: '5%',
+    marginEnd: '5%',
+    marginTop: 10,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
     flexDirection: 'row',
     alignSelf: 'stretch',
     // backgroundColor: 'yellow',
@@ -686,6 +800,18 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: '#C4C4C4',
+  },
+  navigationTitle: {
+    marginTop: 10,
+    fontWeight: '700',
+    color: '#515151',
+    fontSize: 18,
+  },
+  imgMemberPic: {
+    width: 30,
+    height: 30,
+    // backgroundColor: 'red',
+    borderRadius: 75,
   },
 });
 
