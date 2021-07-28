@@ -576,7 +576,7 @@ class ActivityInfoScreen extends Component {
                     justifyContent: 'center',
                   }}
                 >
-                  <Ionicons size={20} name="mail" style={{ color: 'gray' }} />
+                  <Ionicons size={20} name="mail" style={{ color: 'gray' }} onPress={() => this.setState({ clickChooseMap: true })} />
                 </View>
                 <View
                   style={{
