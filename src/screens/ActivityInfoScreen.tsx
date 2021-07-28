@@ -331,7 +331,13 @@ class ActivityInfoScreen extends Component {
           <Text style={styles.navigationTitle}>Navigation</Text>
           {this.state.selectedAddress != null &&
             this.state.selectedAddress.map((address, index) => (
-              <View style={styles.viewLocation}>
+              <TouchableOpacity 
+              style={styles.viewLocation}
+              onPress={() => this.setState({ 
+                clickChooseMap: true,
+                location: {latitude: address.geoCode.latitude, longitude: address.geoCode.longitude}
+              })}
+              >
                 <View
                   style={{
                     flex: 1,
@@ -372,7 +378,7 @@ class ActivityInfoScreen extends Component {
                 >
                   <Ionicons name={'navigate-outline'} size={20} />
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
         </View>
       </View>
@@ -576,7 +582,7 @@ class ActivityInfoScreen extends Component {
                     justifyContent: 'center',
                   }}
                 >
-                  <Ionicons size={20} name="mail" style={{ color: 'gray' }} onPress={() => this.setState({ clickChooseMap: true })} />
+                  <Ionicons size={20} name="mail" style={{ color: 'gray' }} />
                 </View>
                 <View
                   style={{
