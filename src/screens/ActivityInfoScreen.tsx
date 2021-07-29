@@ -836,12 +836,12 @@ class ActivityInfoScreen extends Component {
                   <Text style={{ fontSize: 15 }}>Joined: </Text>
                   <Button
                     title="No"
-                    color={!member._data.memberJoin === false || member._data.memberJoin == null ? '#DDD' : 'red'}
+                    color={member._data.memberJoin === true || member._data.memberJoin == null ? 'red' : '#DDD'}
                     onPress={() => this.joinNo(member)}
                   />
                   <Button
                     title="Yes"
-                    color={!member._data.memberJoin === true || member._data.memberJoin == null ? '#DDD' : '#37CC4A'}
+                    color={member._data.memberJoin === false || member._data.memberJoin == null ? '#37CC4A' : '#DDD'}
                     onPress={() => this.setState({selectedMember: member, modalVisible: true})}
                   />
                 </View>
