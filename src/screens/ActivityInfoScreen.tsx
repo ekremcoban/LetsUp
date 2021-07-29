@@ -235,6 +235,7 @@ class ActivityInfoScreen extends Component {
     const members = await firestore()
       .collection('Members')
       .where('activityId', '==', this.props.route.params.activity.id)
+      .where('memberState', '==', true)
       .get();
     console.log('Members', members.docs);
     this.setState({ members: members.docs });
