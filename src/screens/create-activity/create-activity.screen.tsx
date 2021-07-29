@@ -120,7 +120,6 @@ const CreateActivityScreen2 = () => {
     // for (let i = location.addressComponents.length - 1; i >= 0 ; i--) {
     //   // Eyalet sistemi varsa sehir bilgisi
 
-
     //   if (isState) {
     //     console.log('0')
     //     if (location.addressComponents[i].types[0] === 'locality') {
@@ -131,7 +130,7 @@ const CreateActivityScreen2 = () => {
     //       city = location.addressComponents[i].name;
     //       console.log('2')
     //     }
-        
+
     //     if (
     //       location.addressComponents[i].types[0] === 'sublocality_level_1'
     //     ) {
@@ -179,34 +178,43 @@ const CreateActivityScreen2 = () => {
         country = location.addressComponents[indexAddress].name;
       }
       indexAddress--;
-    };
+    }
 
     indexAddress = location.addressComponents.length - 1;
 
     switch (country) {
       case 'Turkey':
         for (let i = 0; i <= indexAddress; i++) {
-          if (location.addressComponents[i].types[0] === 'administrative_area_level_1') {
+          if (
+            location.addressComponents[i].types[0] ===
+            'administrative_area_level_1'
+          ) {
             city = location.addressComponents[i].name;
-          }
-          else if (location.addressComponents[i].types[0] === 'administrative_area_level_2') {
+          } else if (
+            location.addressComponents[i].types[0] ===
+            'administrative_area_level_2'
+          ) {
             district = location.addressComponents[i].name;
           }
         }
         break;
-    
+
       default:
         for (let i = 0; i <= indexAddress; i++) {
-          if (location.addressComponents[i].types[0] === 'administrative_area_level_1') {
+          if (
+            location.addressComponents[i].types[0] ===
+            'administrative_area_level_1'
+          ) {
             city = location.addressComponents[i].name;
-          }
-          else if (location.addressComponents[i].types[0] === 'administrative_area_level_2') {
+          } else if (
+            location.addressComponents[i].types[0] ===
+            'administrative_area_level_2'
+          ) {
             district = location.addressComponents[i].name;
           }
         }
         break;
     }
-
 
     // console.log('city', city)
     // console.log('district', district)
@@ -359,12 +367,11 @@ const CreateActivityScreen2 = () => {
         {
           text: 'Yes',
           onPress: () => {
-            navigation.navigate('Login')
+            navigation.navigate('Login');
           },
         },
       ]);
-    }
-    else if (user.age == null || user.gender == null) {
+    } else if (user.age == null || user.gender == null) {
       Alert.alert('Warning', 'You have to enter your age and gender', [
         {
           text: 'No',
@@ -374,12 +381,11 @@ const CreateActivityScreen2 = () => {
         {
           text: 'Yes',
           onPress: () => {
-            navigation.navigate('Create Profile', {from: 'Create Activity'})
+            navigation.navigate('Create Profile', { from: 'Create Activity' });
           },
         },
       ]);
-    }
-    else if (
+    } else if (
       !warningTemp.activityName &&
       !warningTemp.location0 &&
       !warningTemp.location1 &&
@@ -423,13 +429,12 @@ const CreateActivityScreen2 = () => {
           };
           console.log('activity', activity);
           if (activity.owner.photo == null) {
-            getData('Photo').then(p => {
+            getData('Photo').then((p) => {
               if (p != null) {
                 activity.owner.photo = p;
               }
-            })
+            });
           }
-
 
           Alert.alert('Info', 'Do you confirm to create a new activity?', [
             {
@@ -549,7 +554,13 @@ const CreateActivityScreen2 = () => {
       activityDate.getMonth() === new Date().getMonth() &&
       activityDate.getDate() > new Date().getDate()
     ) {
-      const startDate = new Date(activityDate.getFullYear(), activityDate.getMonth(), activityDate.getDate(), date.getHours(), date.getMinutes());
+      const startDate = new Date(
+        activityDate.getFullYear(),
+        activityDate.getMonth(),
+        activityDate.getDate(),
+        date.getHours(),
+        date.getMinutes()
+      );
       setActivityStartTime(startDate);
       let warningTemp = warning;
       warningTemp.startTime = false;
@@ -560,7 +571,13 @@ const CreateActivityScreen2 = () => {
       activityDate.getFullYear() === new Date().getFullYear() &&
       activityDate.getMonth() > new Date().getMonth()
     ) {
-      const startDate = new Date(activityDate.getFullYear(), activityDate.getMonth(), activityDate.getDate(), date.getHours(), date.getMinutes());
+      const startDate = new Date(
+        activityDate.getFullYear(),
+        activityDate.getMonth(),
+        activityDate.getDate(),
+        date.getHours(),
+        date.getMinutes()
+      );
       console.log('BURDA 3', startDate);
       setActivityStartTime(startDate);
       let warningTemp = warning;
@@ -582,9 +599,9 @@ const CreateActivityScreen2 = () => {
       const selectedMinute =
         date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
       const minHour =
-        (new Date().getHours() + 2 < 10 || new Date().getHours() + 2 == 24
+        new Date().getHours() + 2 < 10 || new Date().getHours() + 2 == 24
           ? '0' + ((new Date().getHours() + 2) % 24)
-          : (new Date().getHours() + 2) % 24) ;
+          : (new Date().getHours() + 2) % 24;
       const minMinute =
         new Date().getMinutes() < 10
           ? '0' + new Date().getMinutes()
@@ -626,7 +643,13 @@ const CreateActivityScreen2 = () => {
       date.getHours() * 60 + date.getMinutes() >=
         (activityStartTime.getHours() + 1) * 60 + activityStartTime.getMinutes()
     ) {
-      const finishDate = new Date(activityDate.getFullYear(), activityDate.getMonth(), activityDate.getDate(), date.getHours(), date.getMinutes());
+      const finishDate = new Date(
+        activityDate.getFullYear(),
+        activityDate.getMonth(),
+        activityDate.getDate(),
+        date.getHours(),
+        date.getMinutes()
+      );
       setActivityFinishTime(finishDate);
       let warningTemp = warning;
       warningTemp.finishTime = false;
@@ -664,7 +687,8 @@ const CreateActivityScreen2 = () => {
       const selectedMinute =
         date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
       const minHour =
-        (activityStartTime.getHours() + 1) % 24 < 10 || activityStartTime.getHours() + 1 == 24
+        (activityStartTime.getHours() + 1) % 24 < 10 ||
+        activityStartTime.getHours() + 1 == 24
           ? '0' + ((activityStartTime.getHours() + 1) % 24)
           : (activityStartTime.getHours() + 1) % 24;
       const minMinute =
@@ -793,39 +817,49 @@ const CreateActivityScreen2 = () => {
             country = place.addressComponents[indexAddress].name;
           }
           indexAddress--;
-        };
-    
+        }
+
         indexAddress = place.addressComponents.length - 1;
-    
+
         switch (country) {
           case 'Turkey':
             for (let i = 0; i <= indexAddress; i++) {
-              if (place.addressComponents[i].types[0] === 'administrative_area_level_1') {
+              if (
+                place.addressComponents[i].types[0] ===
+                'administrative_area_level_1'
+              ) {
                 city = place.addressComponents[i].name;
-                console.log('1city', city)
-              }
-              else if (place.addressComponents[i].types[0] === 'administrative_area_level_2') {
+                console.log('1city', city);
+              } else if (
+                place.addressComponents[i].types[0] ===
+                'administrative_area_level_2'
+              ) {
                 district = place.addressComponents[i].name;
               }
             }
             break;
-        
+
           default:
             for (let i = 0; i <= indexAddress; i++) {
-              if (place.addressComponents[i].types[0] === 'administrative_area_level_1') {
+              if (
+                place.addressComponents[i].types[0] ===
+                'administrative_area_level_1'
+              ) {
                 city = place.addressComponents[i].name;
-                console.log('1city', city)
-              }
-              else if (place.addressComponents[i].types[0] === 'administrative_area_level_2') {
+                console.log('1city', city);
+              } else if (
+                place.addressComponents[i].types[0] ===
+                'administrative_area_level_2'
+              ) {
                 district = place.addressComponents[i].name;
               }
             }
             break;
         }
-    
-        console.log('country', country)
-        console.log('city', city)
-        console.log('district', district)
+
+        console.log('country', country);
+        console.log('city', city);
+        console.log('district', district);
       })
       .catch((error) => console.log(error.message)); // error is a Javascript Error object
   };
@@ -974,16 +1008,14 @@ const CreateActivityScreen2 = () => {
   );
 
   const addMoreButton = (
-    <View style={styles.locationAddMore}>
+    <TouchableOpacity style={styles.locationAddMore} onPress={addLocation}>
       <Text style={styles.locationAddMoreLabel}>
         {polyglot.t('screens.create_activity.inputs.location.add_more')}
       </Text>
-      <TouchableOpacity onPress={addLocation}>
-        <View style={styles.locationIconWrapper}>
-          <Ionicons size={15} name="add-outline" color={colors.white} />
-        </View>
-      </TouchableOpacity>
-    </View>
+      <View style={styles.locationIconWrapper}>
+        <Ionicons size={15} name="add-outline" color={colors.white} />
+      </View>
+    </TouchableOpacity>
   );
 
   return (

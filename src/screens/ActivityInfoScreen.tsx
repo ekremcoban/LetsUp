@@ -361,7 +361,7 @@ class ActivityInfoScreen extends Component {
                     this.state.selectedAddress.length - 1 !== index
                       ? 'Start'
                       : index === this.state.selectedAddress.length - 1 &&
-                        index > 1
+                        index > 0
                       ? 'Finish'
                       : this.state.selectedAddress.length > 2
                       ? 'Dest'
