@@ -11,6 +11,8 @@ import {
   Platform,
   PixelRatio,
   LogBox,
+  Modal,
+  Pressable
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -56,6 +58,7 @@ class ActivityInfoScreen extends Component {
     location: null,
     selectedAddress: null,
     members: null,
+    modalVisible: false,
   };
 
   componentDidMount() {
@@ -424,21 +427,23 @@ class ActivityInfoScreen extends Component {
   };
 
   joined = async (value: Boolean, member: Object) => {
-    // Istek kayitli mi bilgisi
-    const memberCollection = await firestore()
-      .collection('Members')
-      .where('activityId', '==', this.props.route.params.activity.id)
-      .where('memberMail', '==', member._data.memberMail)
-      .get();
+    this.setState({modalVisible: true});
 
-    memberCollection.docs[0].data().memberJoin = value;
+  //   // Istek kayitli mi bilgisi
+  //   const memberCollection = await firestore()
+  //     .collection('Members')
+  //     .where('activityId', '==', this.props.route.params.activity.id)
+  //     .where('memberMail', '==', member._data.memberMail)
+  //     .get();
 
-    this.fireStoreUpdateFunction(
-      'Members',
-      memberCollection?.docs[0].data().id,
-      memberCollection.docs[0].data()
-    );
-  };
+  //   memberCollection.docs[0].data().memberJoin = value;
+
+  //   this.fireStoreUpdateFunction(
+  //     'Members',
+  //     memberCollection?.docs[0].data().id,
+  //     memberCollection.docs[0].data()
+  //   );
+   };
 
   render() {
     const join = (
@@ -498,7 +503,7 @@ class ActivityInfoScreen extends Component {
           {this.state.selectedAddress != null &&
             this.state.selectedAddress.map((address, index) => (
               <TouchableOpacity
-              key={index}
+                key={index}
                 style={styles.viewLocation}
                 onPress={() => {
                   this.setState({
@@ -589,8 +594,35 @@ class ActivityInfoScreen extends Component {
       </View>
     );
 
+    const modal = (
+      <View style={styles.centeredView}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={this.state.modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          this.setState({modalVisible: false});
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Hello World!</Text>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => this.setState({modalVisible: false})}
+            >
+              <Text style={styles.textStyle}>Hide Modal</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+    </View>
+    )
+
     return (
       <ScrollView style={{ height: 1000 }}>
+        {modal}
         {this.state.clickChooseMap && popUp}
         <View style={styles.viewTitle}>
           <Image
@@ -789,6 +821,47 @@ class ActivityInfoScreen extends Component {
 }
 
 const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    // paddingTop: '40%'
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  },
   viewTitle: {
     height: heightView,
     flexDirection: 'row',
