@@ -24,6 +24,7 @@ import firestore from '@react-native-firebase/firestore';
 import ContextApi from 'context/ContextApi';
 import messaging from '@react-native-firebase/messaging';
 import { Alert } from 'react-native';
+import Geolocation from '@react-native-community/geolocation';
 
 const IconStart = locationTag['start'];
 const IconJoin = locationTag['join'];
@@ -44,10 +45,6 @@ const heightView =
     : 150;
 
 let request = [];
-const targetPort = {
-  name: 'Eskihisar',
-  latlng: { latitude: 40.768107, longitude: 29.424038 },
-}.latlng;
 
 class ActivityInfoScreen extends Component {
   static contextType = ContextApi;
@@ -117,32 +114,40 @@ class ActivityInfoScreen extends Component {
   };
 
   chooseMap = (value: string) => {
+    Geolocation.getCurrentPosition((info) => this._callShowDirections(value, info.coords));
     this.setState({
       clickChooseMap: false,
     });
-    this._callShowDirections(value);
   };
 
   // Navigasyona baglanir
-  _callShowDirections = (mapType: string) => {
+  _callShowDirections = (mapType: string, myLocation: Object) => {
     const startPoint = {
-      longitude: this.state.location.longitude,
-      latitude: this.state.location.latitude,
+      longitude: myLocation.longitude,
+      latitude: myLocation.latitude,
     };
+    
+    const targetPort = {
+      name: 'Activity',
+      latlng: { latitude: this.state.location.latitude, longitude: this.state.location.longitude },
+    }.latlng;
+
+
     // Alert.alert(mapType)
     if (mapType === 'google-maps' || mapType === 'yandex') {
       const googleMapOpenUrl = ({ latitude, longitude }) => {
-        const latLng = `${latitude},${longitude}`;
-        const source = `${this.state.location.latitude},${this.state.location.longitude}`;
+        const start = `${myLocation.latitude},${myLocation.longitude}`;
+        const finish = `${latitude},${longitude}`;
+        
 
         if (Platform.OS === 'android' && mapType === 'google-maps') {
-          return `google.navigation:q=${latLng}&mode=d`;
+          return `google.navigation:q=${finish}&mode=d`;
         } else if (mapType === 'google-maps') {
-          return `googleMaps://app?saddr=${source}&daddr=${latLng}&mode=d`;
+          return `googleMaps://app?saddr=${start}&daddr=${finish}&mode=d`;
         } else if (Platform.OS === 'android' && mapType === 'yandex') {
-          return `yandexnavi://build_route_on_map?lat_from=${this.state.location.latitude}&lat_to=${latitude}&lon_from=${this.state.location.longitude}&lon_to=${longitude}`;
+          return `yandexnavi://build_route_on_map?lat_from=${myLocation.latitude}&lat_to=${latitude}&lon_from=${myLocation.longitude}&lon_to=${longitude}`;
         } else if (mapType === 'yandex') {
-          return `yandexnavi://build_route_on_map?lat_from=${this.state.location.latitude}&lat_to=${latitude}&lon_from=${this.state.location.longitude}&lon_to=${longitude}`;
+          return `yandexnavi://build_route_on_map?lat_from=${myLocation.latitude}&lat_to=${latitude}&lon_from=${myLocation.longitude}&lon_to=${longitude}`;
         }
       };
 
@@ -331,12 +336,17 @@ class ActivityInfoScreen extends Component {
           <Text style={styles.navigationTitle}>Navigation</Text>
           {this.state.selectedAddress != null &&
             this.state.selectedAddress.map((address, index) => (
-              <TouchableOpacity 
-              style={styles.viewLocation}
-              onPress={() => this.setState({ 
-                clickChooseMap: true,
-                location: {latitude: address.geoCode.latitude, longitude: address.geoCode.longitude}
-              })}
+              <TouchableOpacity
+                style={styles.viewLocation}
+                onPress={() => {
+                  this.setState({
+                    clickChooseMap: true,
+                    location: {
+                      latitude: address.geoCode.latitude,
+                      longitude: address.geoCode.longitude,
+                    },
+                  })}
+                }
               >
                 <View
                   style={{
@@ -573,7 +583,9 @@ class ActivityInfoScreen extends Component {
                     }}
                     style={styles.imgMemberPic}
                   />
-                  <Text style={{fontSize: 15, paddingStart: 5,}}>{member._data.memberName}</Text>
+                  <Text style={{ fontSize: 15, paddingStart: 5 }}>
+                    {member._data.memberName}
+                  </Text>
                 </View>
                 <View
                   style={{
@@ -593,7 +605,7 @@ class ActivityInfoScreen extends Component {
                     marginEnd: '5%',
                   }}
                 >
-                  <Text style={{fontSize: 15}}>Joined: </Text>
+                  <Text style={{ fontSize: 15 }}>Joined: </Text>
                   <Button
                     title="No"
                     color={'red'}

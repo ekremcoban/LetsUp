@@ -1,6 +1,6 @@
 {
   "name": "LetsUp",
-  "version": "0.18.5",
+  "version": "0.18.15",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -13,6 +13,7 @@
     "@gregfrench/react-native-wheel-picker": "^1.2.12",
     "@react-native-async-storage/async-storage": "^1.15.5",
     "@react-native-community/datetimepicker": "^3.0.9",
+    "@react-native-community/geolocation": "^2.0.2",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-community/picker": "^1.8.1",
     "@react-native-firebase/analytics": "^12.3.0",
