@@ -69,11 +69,7 @@ class ActivityInfoScreen extends Component {
     );
     this.setState({ selectedAddress });
 
-    console.log('selectedAddress', selectedAddress)
-
     setTimeout(() => {
-      console.log('timer');
-
       if (selectedAddress.length === 1) {
         this.refs['mapRef'].injectJavaScript(`
         L.Routing.control({
@@ -88,76 +84,140 @@ class ActivityInfoScreen extends Component {
         
         .openPopup();
         `);
-      }
-      else if (selectedAddress.length === 2) {
+      } else if (selectedAddress.length === 2) {
         this.refs['mapRef'].injectJavaScript(`
         L.Routing.control({
           show: false,
           waypoints: [
-            L.latLng(${selectedAddress[0].geoCode.latitude}, ${selectedAddress[0].geoCode.longitude}),
-            L.latLng(${selectedAddress[1].geoCode.latitude}, ${selectedAddress[1].geoCode.longitude})
+            L.latLng(${selectedAddress[0].geoCode.latitude}, ${
+          selectedAddress[0].geoCode.longitude
+        }),
+            L.latLng(${selectedAddress[1].geoCode.latitude}, ${
+          selectedAddress[1].geoCode.longitude
+        })
           ]
-        }).addTo(mymap.setView([${(selectedAddress[0].geoCode.latitude + selectedAddress[1].geoCode.latitude) / 2}, 
-        ${(selectedAddress[0].geoCode.longitude + selectedAddress[1].geoCode.longitude) / 2}], 9));
+        }).addTo(mymap.setView([${
+          (selectedAddress[0].geoCode.latitude +
+            selectedAddress[1].geoCode.latitude) /
+          2
+        }, 
+        ${
+          (selectedAddress[0].geoCode.longitude +
+            selectedAddress[1].geoCode.longitude) /
+          2
+        }], 9));
     
-        L.marker([${selectedAddress[0].geoCode.latitude}, ${selectedAddress[0].geoCode.longitude}]).addTo(mymap)
+        L.marker([${selectedAddress[0].geoCode.latitude}, ${
+          selectedAddress[0].geoCode.longitude
+        }]).addTo(mymap)
         .bindPopup('Start Point')
         
         .openPopup();
         `);
-      }
-      else if (selectedAddress.length === 3) {
+      } else if (selectedAddress.length === 3) {
         this.refs['mapRef'].injectJavaScript(`
         L.Routing.control({
           show: false,
           waypoints: [
-            L.latLng(${selectedAddress[0].geoCode.latitude}, ${selectedAddress[0].geoCode.longitude}),
-            L.latLng(${selectedAddress[1].geoCode.latitude}, ${selectedAddress[1].geoCode.longitude}),
-            L.latLng(${selectedAddress[2].geoCode.latitude}, ${selectedAddress[2].geoCode.longitude})
+            L.latLng(${selectedAddress[0].geoCode.latitude}, ${
+          selectedAddress[0].geoCode.longitude
+        }),
+            L.latLng(${selectedAddress[1].geoCode.latitude}, ${
+          selectedAddress[1].geoCode.longitude
+        }),
+            L.latLng(${selectedAddress[2].geoCode.latitude}, ${
+          selectedAddress[2].geoCode.longitude
+        })
           ]
-        }).addTo(mymap.setView([${(selectedAddress[0].geoCode.latitude + selectedAddress[2].geoCode.latitude) / 2},
-         ${(selectedAddress[0].geoCode.longitude + selectedAddress[2].geoCode.longitude) / 2}], 8));
+        }).addTo(mymap.setView([${
+          (selectedAddress[0].geoCode.latitude +
+            selectedAddress[2].geoCode.latitude) /
+          2
+        },
+         ${
+           (selectedAddress[0].geoCode.longitude +
+             selectedAddress[2].geoCode.longitude) /
+           2
+         }], 8));
     
-        L.marker([${selectedAddress[0].geoCode.latitude}, ${selectedAddress[0].geoCode.longitude}]).addTo(mymap)
+        L.marker([${selectedAddress[0].geoCode.latitude}, ${
+          selectedAddress[0].geoCode.longitude
+        }]).addTo(mymap)
         .bindPopup('Start Point')
         
         .openPopup();
         `);
-      }
-      else if (selectedAddress.length === 4) {
+      } else if (selectedAddress.length === 4) {
         this.refs['mapRef'].injectJavaScript(`
         L.Routing.control({
           show: false,
           waypoints: [
-            L.latLng(${selectedAddress[0].geoCode.latitude}, ${selectedAddress[0].geoCode.longitude}),
-            L.latLng(${selectedAddress[1].geoCode.latitude}, ${selectedAddress[1].geoCode.longitude}),
-            L.latLng(${selectedAddress[2].geoCode.latitude}, ${selectedAddress[2].geoCode.longitude}),
-            L.latLng(${selectedAddress[3].geoCode.latitude}, ${selectedAddress[3].geoCode.longitude})
+            L.latLng(${selectedAddress[0].geoCode.latitude}, ${
+          selectedAddress[0].geoCode.longitude
+        }),
+            L.latLng(${selectedAddress[1].geoCode.latitude}, ${
+          selectedAddress[1].geoCode.longitude
+        }),
+            L.latLng(${selectedAddress[2].geoCode.latitude}, ${
+          selectedAddress[2].geoCode.longitude
+        }),
+            L.latLng(${selectedAddress[3].geoCode.latitude}, ${
+          selectedAddress[3].geoCode.longitude
+        })
           ]
-        }).addTo(mymap.setView([${(selectedAddress[0].geoCode.latitude + selectedAddress[3].geoCode.latitude) / 2},
-         ${(selectedAddress[0].geoCode.longitude + selectedAddress[3].geoCode.longitude) / 2}], 5));
+        }).addTo(mymap.setView([${
+          (selectedAddress[0].geoCode.latitude +
+            selectedAddress[3].geoCode.latitude) /
+          2
+        },
+         ${
+           (selectedAddress[0].geoCode.longitude +
+             selectedAddress[3].geoCode.longitude) /
+           2
+         }], 5));
     
-        L.marker([${selectedAddress[0].geoCode.latitude}, ${selectedAddress[0].geoCode.longitude}]).addTo(mymap)
+        L.marker([${selectedAddress[0].geoCode.latitude}, ${
+          selectedAddress[0].geoCode.longitude
+        }]).addTo(mymap)
         .bindPopup('Start Point')
         
         .openPopup();
         `);
-      }
-      else {
+      } else {
         this.refs['mapRef'].injectJavaScript(`
         L.Routing.control({
           show: false,
           waypoints: [
-            L.latLng(${selectedAddress[0].geoCode.latitude}, ${selectedAddress[0].geoCode.longitude}),
-            L.latLng(${selectedAddress[1].geoCode.latitude}, ${selectedAddress[1].geoCode.longitude}),
-            L.latLng(${selectedAddress[2].geoCode.latitude}, ${selectedAddress[2].geoCode.longitude}),
-            L.latLng(${selectedAddress[3].geoCode.latitude}, ${selectedAddress[3].geoCode.longitude}),
-            L.latLng(${selectedAddress[4].geoCode.latitude}, ${selectedAddress[4].geoCode.longitude})
+            L.latLng(${selectedAddress[0].geoCode.latitude}, ${
+          selectedAddress[0].geoCode.longitude
+        }),
+            L.latLng(${selectedAddress[1].geoCode.latitude}, ${
+          selectedAddress[1].geoCode.longitude
+        }),
+            L.latLng(${selectedAddress[2].geoCode.latitude}, ${
+          selectedAddress[2].geoCode.longitude
+        }),
+            L.latLng(${selectedAddress[3].geoCode.latitude}, ${
+          selectedAddress[3].geoCode.longitude
+        }),
+            L.latLng(${selectedAddress[4].geoCode.latitude}, ${
+          selectedAddress[4].geoCode.longitude
+        })
           ]
-        }).addTo(mymap.setView([${(selectedAddress[0].geoCode.latitude + selectedAddress[4].geoCode.latitude) / 2},
-        ${(selectedAddress[0].geoCode.longitude + selectedAddress[4].geoCode.longitude) / 2}], 3));
+        }).addTo(mymap.setView([${
+          (selectedAddress[0].geoCode.latitude +
+            selectedAddress[4].geoCode.latitude) /
+          2
+        },
+        ${
+          (selectedAddress[0].geoCode.longitude +
+            selectedAddress[4].geoCode.longitude) /
+          2
+        }], 3));
    
-       L.marker([${selectedAddress[0].geoCode.latitude}, ${selectedAddress[0].geoCode.longitude}]).addTo(mymap)
+       L.marker([${selectedAddress[0].geoCode.latitude}, ${
+          selectedAddress[0].geoCode.longitude
+        }]).addTo(mymap)
        .bindPopup('Start Point')
        
        .openPopup();
@@ -191,7 +251,9 @@ class ActivityInfoScreen extends Component {
   };
 
   chooseMap = (value: string) => {
-    Geolocation.getCurrentPosition((info) => this._callShowDirections(value, info.coords));
+    Geolocation.getCurrentPosition((info) =>
+      this._callShowDirections(value, info.coords)
+    );
     this.setState({
       clickChooseMap: false,
     });
@@ -203,19 +265,20 @@ class ActivityInfoScreen extends Component {
       longitude: myLocation.longitude,
       latitude: myLocation.latitude,
     };
-    
+
     const targetPort = {
       name: 'Activity',
-      latlng: { latitude: this.state.location.latitude, longitude: this.state.location.longitude },
+      latlng: {
+        latitude: this.state.location.latitude,
+        longitude: this.state.location.longitude,
+      },
     }.latlng;
-
 
     // Alert.alert(mapType)
     if (mapType === 'google-maps' || mapType === 'yandex') {
       const googleMapOpenUrl = ({ latitude, longitude }) => {
         const start = `${myLocation.latitude},${myLocation.longitude}`;
         const finish = `${latitude},${longitude}`;
-        
 
         if (Platform.OS === 'android' && mapType === 'google-maps') {
           return `google.navigation:q=${finish}&mode=d`;
@@ -270,9 +333,13 @@ class ActivityInfoScreen extends Component {
         memberToken: context.user.token,
         memberName: context.user.name,
         memberPhoto: context.user.photo,
+        memberState: true, // Istek gonderdi mi, iptal etti mi bilgisi
+        memberJoin: null,
+        memberTalent: null,
         activityId: this.props.route.params.activity.id,
-        ownerState: false,
-        memberState: true,
+        ownerState: false, // Istek gonderdi mi, iptal etti mi bilgisi
+        ownerJoin: null,
+        ownerTalent: null,
         startTime: this.props.route.params.activity.startTime,
         createdTime: new Date().getTime(),
       };
@@ -356,6 +423,23 @@ class ActivityInfoScreen extends Component {
       });
   };
 
+  joined = async (value: Boolean, member: Object) => {
+    // Istek kayitli mi bilgisi
+    const memberCollection = await firestore()
+      .collection('Members')
+      .where('activityId', '==', this.props.route.params.activity.id)
+      .where('memberMail', '==', member._data.memberMail)
+      .get();
+
+    memberCollection.docs[0].data().memberJoin = value;
+
+    this.fireStoreUpdateFunction(
+      'Members',
+      memberCollection?.docs[0].data().id,
+      memberCollection.docs[0].data()
+    );
+  };
+
   render() {
     const join = (
       <View style={styles.viewbuttonAction}>
@@ -414,6 +498,7 @@ class ActivityInfoScreen extends Component {
           {this.state.selectedAddress != null &&
             this.state.selectedAddress.map((address, index) => (
               <TouchableOpacity
+              key={index}
                 style={styles.viewLocation}
                 onPress={() => {
                   this.setState({
@@ -422,8 +507,8 @@ class ActivityInfoScreen extends Component {
                       latitude: address.geoCode.latitude,
                       longitude: address.geoCode.longitude,
                     },
-                  })}
-                }
+                  });
+                }}
               >
                 <View
                   style={{
@@ -636,9 +721,9 @@ class ActivityInfoScreen extends Component {
             </Text>
           </View>
           {this.state.members != null &&
-            this.state.members.map((member) => (
+            this.state.members.map((member, index) => (
               <View
-                key={member.id}
+                key={member._data.id}
                 style={{
                   flex: 1,
                   marginStart: '5%',
@@ -686,16 +771,12 @@ class ActivityInfoScreen extends Component {
                   <Button
                     title="No"
                     color={'red'}
-                    onPress={() =>
-                      Alert.alert('Button with adjusted color pressed')
-                    }
+                    onPress={() => this.joined(false, member)}
                   />
                   <Button
                     title="Yes"
                     color={'#37CC4A'}
-                    onPress={() =>
-                      Alert.alert('Button with adjusted color pressed')
-                    }
+                    onPress={() => this.joined(true, member)}
                   />
                 </View>
               </View>
