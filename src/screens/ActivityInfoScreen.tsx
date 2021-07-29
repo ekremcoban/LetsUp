@@ -12,7 +12,7 @@ import {
   PixelRatio,
   LogBox,
   Modal,
-  Pressable
+  Pressable,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -27,6 +27,7 @@ import ContextApi from 'context/ContextApi';
 import messaging from '@react-native-firebase/messaging';
 import { Alert } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
+import { Rating, AirbnbRating } from 'react-native-ratings';
 
 const IconStart = locationTag['start'];
 const IconJoin = locationTag['join'];
@@ -59,6 +60,7 @@ class ActivityInfoScreen extends Component {
     selectedAddress: null,
     members: null,
     modalVisible: false,
+    selectedMember: null,
   };
 
   componentDidMount() {
@@ -338,11 +340,11 @@ class ActivityInfoScreen extends Component {
         memberPhoto: context.user.photo,
         memberState: true, // Istek gonderdi mi, iptal etti mi bilgisi
         memberJoin: null,
-        memberTalent: null,
+        memberRating: null,
         activityId: this.props.route.params.activity.id,
         ownerState: false, // Istek gonderdi mi, iptal etti mi bilgisi
         ownerJoin: null,
-        ownerTalent: null,
+        ownerRating: null,
         startTime: this.props.route.params.activity.startTime,
         createdTime: new Date().getTime(),
       };
@@ -426,24 +428,49 @@ class ActivityInfoScreen extends Component {
       });
   };
 
-  joined = async (value: Boolean, member: Object) => {
-    this.setState({modalVisible: true});
+  // Aktiviteye katilmadi
+  joinNo = async (member: Object) => {
+    // Istek kayitli mi bilgisi
+    const memberCollection = await firestore()
+      .collection('Members')
+      .where('activityId', '==', this.props.route.params.activity.id)
+      .where('memberMail', '==', member._data.memberMail)
+      .get();
 
-  //   // Istek kayitli mi bilgisi
-  //   const memberCollection = await firestore()
-  //     .collection('Members')
-  //     .where('activityId', '==', this.props.route.params.activity.id)
-  //     .where('memberMail', '==', member._data.memberMail)
-  //     .get();
+    memberCollection.docs[0].data().memberJoin = false;
+    memberCollection.docs[0].data().memberRating = null;
 
-  //   memberCollection.docs[0].data().memberJoin = value;
+    this.fireStoreUpdateFunction(
+      'Members',
+      memberCollection?.docs[0].data().id,
+      memberCollection.docs[0].data()
+    );
 
-  //   this.fireStoreUpdateFunction(
-  //     'Members',
-  //     memberCollection?.docs[0].data().id,
-  //     memberCollection.docs[0].data()
-  //   );
-   };
+    this.setState({members:memberCollection.docs });
+  };
+
+  joinYes = async (rating: number) => {
+    this.setState({ modalVisible: false });
+    console.log('Memner', rating);
+
+    // Istek kayitli mi bilgisi
+    const memberCollection = await firestore()
+      .collection('Members')
+      .where('activityId', '==', this.props.route.params.activity.id)
+      .where('memberMail', '==', this.state.selectedMember._data.memberMail)
+      .get();
+
+    memberCollection.docs[0].data().memberJoin = true;
+    memberCollection.docs[0].data().memberRating = rating;
+
+    this.fireStoreUpdateFunction(
+      'Members',
+      memberCollection?.docs[0].data().id,
+      memberCollection.docs[0].data()
+    );
+
+    this.setState({members: memberCollection.docs });
+  };
 
   render() {
     const join = (
@@ -596,29 +623,36 @@ class ActivityInfoScreen extends Component {
 
     const modal = (
       <View style={styles.centeredView}>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={this.state.modalVisible}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          this.setState({modalVisible: false});
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Hello World!</Text>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => this.setState({modalVisible: false})}
-            >
-              <Text style={styles.textStyle}>Hide Modal</Text>
-            </Pressable>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+            this.setState({ modalVisible: false });
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Rating
+                // showRating
+                onFinishRating={(rating) =>
+                  this.joinYes(rating)
+                }
+                style={{ paddingVertical: 10 }}
+                imageSize={30}
+              />
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => this.setState({modalVisible: false})}
+              >
+                <Text style={styles.textStyle}>Close</Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
-      </Modal>
-    </View>
-    )
+        </Modal>
+      </View>
+    );
 
     return (
       <ScrollView style={{ height: 1000 }}>
@@ -802,13 +836,13 @@ class ActivityInfoScreen extends Component {
                   <Text style={{ fontSize: 15 }}>Joined: </Text>
                   <Button
                     title="No"
-                    color={'red'}
-                    onPress={() => this.joined(false, member)}
+                    color={!member._data.memberJoin === false || member._data.memberJoin == null ? '#DDD' : 'red'}
+                    onPress={() => this.joinNo(member)}
                   />
                   <Button
                     title="Yes"
-                    color={'#37CC4A'}
-                    onPress={() => this.joined(true, member)}
+                    color={!member._data.memberJoin === true || member._data.memberJoin == null ? '#DDD' : '#37CC4A'}
+                    onPress={() => this.setState({selectedMember: member, modalVisible: true})}
                   />
                 </View>
               </View>
@@ -823,44 +857,45 @@ class ActivityInfoScreen extends Component {
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     // paddingTop: '40%'
   },
   modalView: {
     margin: 20,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2
+      height: 2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5
+    elevation: 5,
   },
   button: {
+    marginTop: 10,
     borderRadius: 20,
     padding: 10,
-    elevation: 2
+    elevation: 2,
   },
   buttonOpen: {
-    backgroundColor: "#F194FF",
+    backgroundColor: '#F194FF',
   },
   buttonClose: {
-    backgroundColor: "#2196F3",
+    backgroundColor: '#2196F3',
   },
   textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center"
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   modalText: {
     marginBottom: 15,
-    textAlign: "center"
+    textAlign: 'center',
   },
   viewTitle: {
     height: heightView,
