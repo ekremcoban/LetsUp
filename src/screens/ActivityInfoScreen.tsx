@@ -697,17 +697,33 @@ class ActivityInfoScreen extends Component {
       </View>
     );
 
-    const showEmail = (
-      <View
+    // const showEmail = (
+    //   <View
+    //     style={{
+    //       flex: 0.5,
+    //       alignItems: 'center',
+    //       justifyContent: 'center',
+    //     }}
+    //   >
+    //     <Ionicons size={20} name="mail" style={{ color: 'gray' }} 
+    //     onPress={() => Linking.openURL(`mailto:${this.props.route.params.activity.owner.email}?subject=${this.props.route.params.activity.name}&body=Hello ${this.props.route.params.activity.owner.name}`) } />
+    //   </View>
+    // );
+
+    const showEmailIcon = (member: Object) => {
+      return (
+        <View
         style={{
           flex: 0.5,
           alignItems: 'center',
           justifyContent: 'center',
         }}
       >
-        <Ionicons size={20} name="mail" style={{ color: 'gray' }} />
+        <Ionicons size={20} name="mail" style={{ color: 'gray' }} 
+        onPress={() => Linking.openURL(`mailto:${member._data.memberMail}?subject=${this.props.route.params.activity.name}&body=Hello ${member._data.memberName}`) } />
       </View>
-    );
+      )
+    }
 
     const showApproval = (member: Object) => {
       return (
@@ -777,7 +793,7 @@ class ActivityInfoScreen extends Component {
               {member._data.memberName}
             </Text>
           </View>
-          {this.state.showPageToOwner && showEmail}
+          {this.state.showPageToOwner && showEmailIcon(member)}
           {this.state.showPageToOwner && showApproval(member)}
         </View>
       ))
@@ -813,7 +829,7 @@ class ActivityInfoScreen extends Component {
               {member._data.memberName}
             </Text>
           </View>
-          {this.state.showPageToOwner && showEmail}
+          {this.state.showPageToOwner && showEmailIcon(member)}
           {this.state.showPageToOwner && showApproval(member)}
         </View>
       ))
