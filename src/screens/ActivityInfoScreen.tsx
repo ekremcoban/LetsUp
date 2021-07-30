@@ -61,6 +61,8 @@ class ActivityInfoScreen extends Component {
     members: null,
     modalVisible: false,
     selectedMember: null,
+    showPageToOwner: false,
+    showPageToMember: false,
   };
 
   componentDidMount() {
@@ -72,11 +74,18 @@ class ActivityInfoScreen extends Component {
     const selectedAddress = this.props.route.params.addressList.filter(
       (x) => x.activityId === this.props.route.params.activity.id
     );
-    this.setState({ selectedAddress });
 
-    setTimeout(() => {
-      if (selectedAddress.length === 1) {
-        this.refs['mapRef'].injectJavaScript(`
+    this.setState({
+      selectedAddress: selectedAddress,
+      showPageToOwner:
+        this.context.user.email ===
+        this.props.route.params.activity.owner.email,
+    });
+
+    if (this.state.showPageToOwner) {
+      setTimeout(() => {
+        if (selectedAddress.length === 1) {
+          this.refs['mapRef'].injectJavaScript(`
         L.Routing.control({
           show: false,
           waypoints: [
@@ -85,21 +94,20 @@ class ActivityInfoScreen extends Component {
         }).addTo(mymap.setView([${selectedAddress[0].geoCode.latitude}, ${selectedAddress[0].geoCode.longitude}], 11));
     
         L.marker([${selectedAddress[0].geoCode.latitude}, ${selectedAddress[0].geoCode.longitude}]).addTo(mymap)
-        .bindPopup('Start Point')
         
         .openPopup();
         `);
-      } else if (selectedAddress.length === 2) {
-        this.refs['mapRef'].injectJavaScript(`
+        } else if (selectedAddress.length === 2) {
+          this.refs['mapRef'].injectJavaScript(`
         L.Routing.control({
           show: false,
           waypoints: [
             L.latLng(${selectedAddress[0].geoCode.latitude}, ${
-          selectedAddress[0].geoCode.longitude
-        }),
+            selectedAddress[0].geoCode.longitude
+          }),
             L.latLng(${selectedAddress[1].geoCode.latitude}, ${
-          selectedAddress[1].geoCode.longitude
-        })
+            selectedAddress[1].geoCode.longitude
+          })
           ]
         }).addTo(mymap.setView([${
           (selectedAddress[0].geoCode.latitude +
@@ -113,26 +121,26 @@ class ActivityInfoScreen extends Component {
         }], 9));
     
         L.marker([${selectedAddress[0].geoCode.latitude}, ${
-          selectedAddress[0].geoCode.longitude
-        }]).addTo(mymap)
+            selectedAddress[0].geoCode.longitude
+          }]).addTo(mymap)
         .bindPopup('Start Point')
         
         .openPopup();
         `);
-      } else if (selectedAddress.length === 3) {
-        this.refs['mapRef'].injectJavaScript(`
+        } else if (selectedAddress.length === 3) {
+          this.refs['mapRef'].injectJavaScript(`
         L.Routing.control({
           show: false,
           waypoints: [
             L.latLng(${selectedAddress[0].geoCode.latitude}, ${
-          selectedAddress[0].geoCode.longitude
-        }),
+            selectedAddress[0].geoCode.longitude
+          }),
             L.latLng(${selectedAddress[1].geoCode.latitude}, ${
-          selectedAddress[1].geoCode.longitude
-        }),
+            selectedAddress[1].geoCode.longitude
+          }),
             L.latLng(${selectedAddress[2].geoCode.latitude}, ${
-          selectedAddress[2].geoCode.longitude
-        })
+            selectedAddress[2].geoCode.longitude
+          })
           ]
         }).addTo(mymap.setView([${
           (selectedAddress[0].geoCode.latitude +
@@ -146,29 +154,29 @@ class ActivityInfoScreen extends Component {
          }], 8));
     
         L.marker([${selectedAddress[0].geoCode.latitude}, ${
-          selectedAddress[0].geoCode.longitude
-        }]).addTo(mymap)
+            selectedAddress[0].geoCode.longitude
+          }]).addTo(mymap)
         .bindPopup('Start Point')
         
         .openPopup();
         `);
-      } else if (selectedAddress.length === 4) {
-        this.refs['mapRef'].injectJavaScript(`
+        } else if (selectedAddress.length === 4) {
+          this.refs['mapRef'].injectJavaScript(`
         L.Routing.control({
           show: false,
           waypoints: [
             L.latLng(${selectedAddress[0].geoCode.latitude}, ${
-          selectedAddress[0].geoCode.longitude
-        }),
+            selectedAddress[0].geoCode.longitude
+          }),
             L.latLng(${selectedAddress[1].geoCode.latitude}, ${
-          selectedAddress[1].geoCode.longitude
-        }),
+            selectedAddress[1].geoCode.longitude
+          }),
             L.latLng(${selectedAddress[2].geoCode.latitude}, ${
-          selectedAddress[2].geoCode.longitude
-        }),
+            selectedAddress[2].geoCode.longitude
+          }),
             L.latLng(${selectedAddress[3].geoCode.latitude}, ${
-          selectedAddress[3].geoCode.longitude
-        })
+            selectedAddress[3].geoCode.longitude
+          })
           ]
         }).addTo(mymap.setView([${
           (selectedAddress[0].geoCode.latitude +
@@ -182,32 +190,32 @@ class ActivityInfoScreen extends Component {
          }], 5));
     
         L.marker([${selectedAddress[0].geoCode.latitude}, ${
-          selectedAddress[0].geoCode.longitude
-        }]).addTo(mymap)
+            selectedAddress[0].geoCode.longitude
+          }]).addTo(mymap)
         .bindPopup('Start Point')
         
         .openPopup();
         `);
-      } else {
-        this.refs['mapRef'].injectJavaScript(`
+        } else {
+          this.refs['mapRef'].injectJavaScript(`
         L.Routing.control({
           show: false,
           waypoints: [
             L.latLng(${selectedAddress[0].geoCode.latitude}, ${
-          selectedAddress[0].geoCode.longitude
-        }),
+            selectedAddress[0].geoCode.longitude
+          }),
             L.latLng(${selectedAddress[1].geoCode.latitude}, ${
-          selectedAddress[1].geoCode.longitude
-        }),
+            selectedAddress[1].geoCode.longitude
+          }),
             L.latLng(${selectedAddress[2].geoCode.latitude}, ${
-          selectedAddress[2].geoCode.longitude
-        }),
+            selectedAddress[2].geoCode.longitude
+          }),
             L.latLng(${selectedAddress[3].geoCode.latitude}, ${
-          selectedAddress[3].geoCode.longitude
-        }),
+            selectedAddress[3].geoCode.longitude
+          }),
             L.latLng(${selectedAddress[4].geoCode.latitude}, ${
-          selectedAddress[4].geoCode.longitude
-        })
+            selectedAddress[4].geoCode.longitude
+          })
           ]
         }).addTo(mymap.setView([${
           (selectedAddress[0].geoCode.latitude +
@@ -221,14 +229,15 @@ class ActivityInfoScreen extends Component {
         }], 3));
    
        L.marker([${selectedAddress[0].geoCode.latitude}, ${
-          selectedAddress[0].geoCode.longitude
-        }]).addTo(mymap)
+            selectedAddress[0].geoCode.longitude
+          }]).addTo(mymap)
        .bindPopup('Start Point')
        
        .openPopup();
        `);
-      }
-    }, 1500);
+        }
+      }, 1500);
+    }
   }
 
   getMembers = async () => {
@@ -238,7 +247,17 @@ class ActivityInfoScreen extends Component {
       .where('memberState', '==', true)
       .get();
     console.log('Members', members.docs);
-    this.setState({ members: members.docs });
+    let isThere = false;
+    members.docs.forEach((item) => {
+      isThere =
+        item._data.memberMail === this.context.user.email &&
+        item._data.ownerState;
+    });
+
+    this.setState({
+      members: members.docs,
+      showPageToMember: isThere,
+    });
   };
 
   isMember = async () => {
@@ -429,25 +448,67 @@ class ActivityInfoScreen extends Component {
       });
   };
 
+    // Aktiviteye katilma izni red yedi
+    approvalNo = async (member: Object) => {
+      // Istek kayitli mi bilgisi
+      const memberCollection = await firestore()
+        .collection('Members')
+        .where('activityId', '==', this.props.route.params.activity.id)
+        .get();
+  
+      const selectedMember = memberCollection.docs
+        .filter((item) => item.data().memberMail === member._data.memberMail)[0]
+        .data();
+      selectedMember.ownerState = false;
+      selectedMember.memberRating = null;
+  
+      this.fireStoreUpdateFunction('Members', selectedMember.id, selectedMember);
+  
+      this.setState({ members: memberCollection.docs });
+    };
+
+    approvalYes = async (member: number) => {
+      this.setState({ modalVisible: false });
+      console.log('Memner', member._data);
+  
+      // Istek kayitli mi bilgisi
+      const memberCollection = await firestore()
+        .collection('Members')
+        .where('activityId', '==', this.props.route.params.activity.id)
+        .get();
+  
+      const selectedMember = memberCollection.docs
+        .filter(
+          (item) =>
+            item.data().memberMail === member._data.memberMail
+        )[0]
+        .data();
+
+      selectedMember.ownerState = true;
+  
+      this.fireStoreUpdateFunction('Members', selectedMember.id, selectedMember);
+  
+      this.setState({ members: memberCollection.docs });
+    };
+
   // Aktiviteye katilmadi
   joinNo = async (member: Object) => {
     // Istek kayitli mi bilgisi
     const memberCollection = await firestore()
       .collection('Members')
       .where('activityId', '==', this.props.route.params.activity.id)
-      .where('memberMail', '==', member._data.memberMail)
+      // .where('memberMail', '==', member._data.memberMail)
       .get();
 
-    memberCollection.docs[0].data().memberJoin = false;
-    memberCollection.docs[0].data().memberRating = null;
+    const selectedMember = memberCollection.docs
+      .filter((item) => item.data().memberMail === member._data.memberMail)[0]
+      .data();
+    selectedMember.memberJoin = false;
+    selectedMember.memberRating = null;
 
-    this.fireStoreUpdateFunction(
-      'Members',
-      memberCollection?.docs[0].data().id,
-      memberCollection.docs[0].data()
-    );
+    this.fireStoreUpdateFunction('Members', selectedMember.id, selectedMember);
 
-    this.setState({members:memberCollection.docs });
+    this.setState({ members: memberCollection.docs });
   };
 
   joinYes = async (rating: number) => {
@@ -458,19 +519,21 @@ class ActivityInfoScreen extends Component {
     const memberCollection = await firestore()
       .collection('Members')
       .where('activityId', '==', this.props.route.params.activity.id)
-      .where('memberMail', '==', this.state.selectedMember._data.memberMail)
+      // .where('memberMail', '==', this.state.selectedMember._data.memberMail)
       .get();
 
-    memberCollection.docs[0].data().memberJoin = true;
-    memberCollection.docs[0].data().memberRating = rating;
+    const selectedMember = memberCollection.docs
+      .filter(
+        (item) =>
+          item.data().memberMail === this.state.selectedMember._data.memberMail
+      )[0]
+      .data();
+    selectedMember.memberJoin = true;
+    selectedMember.memberRating = rating;
 
-    this.fireStoreUpdateFunction(
-      'Members',
-      memberCollection?.docs[0].data().id,
-      memberCollection.docs[0].data()
-    );
+    this.fireStoreUpdateFunction('Members', selectedMember.id, selectedMember);
 
-    this.setState({members: memberCollection.docs });
+    this.setState({ members: memberCollection.docs });
   };
 
   render() {
@@ -622,6 +685,154 @@ class ActivityInfoScreen extends Component {
       </View>
     );
 
+    const showEmail = (
+      <View
+        style={{
+          flex: 0.5,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Ionicons size={20} name="mail" style={{ color: 'gray' }} />
+      </View>
+    );
+
+    const showApproval = (member: Object) => {
+      return (
+      <View
+      style={{
+        flex: 3,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        marginEnd: '5%',
+      }}
+    >
+      <Text style={{ fontSize: 15 }}>
+        Approval:
+      </Text>
+      <Button
+        title="No"
+        color={
+          member._data.ownerState === false ||
+          member._data.ownerState == null
+            ? 'red'
+            : '#CCC'
+        }
+        onPress={() => this.approvalNo(member)}
+      />
+      <Button
+        title="Yes"
+        color={
+          member._data.ownerState === true ||
+          member._data.ownerState == null
+            ? '#37CC4A'
+            : '#CCC'
+        }
+        onPress={() => this.approvalYes(member)}
+      />
+    </View>
+    )
+  }
+
+  const showMembersForMembers = (
+    this.state.members != null &&
+      this.state.members.filter(item => item._data.ownerState === true).map((member, index) => (
+        <View
+          key={member._data.id}
+          style={{
+            flex: 1,
+            marginStart: '5%',
+            marginTop: 10,
+            flexDirection: 'row',
+          }}
+        >
+          <View
+            style={{
+              flex: 3,
+              flexDirection: 'row',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+            }}
+          >
+            <Image
+              source={{
+                uri: member._data.memberPhoto,
+              }}
+              style={styles.imgMemberPic}
+            />
+            <Text style={{ fontSize: 15, paddingStart: 5 }}>
+              {member._data.memberName}
+            </Text>
+          </View>
+          {this.state.showPageToOwner && showEmail}
+          {this.state.showPageToOwner && showApproval(member)}
+        </View>
+      ))
+  )
+
+  const showMembersForOwner = (
+    this.state.members != null &&
+      this.state.members.map((member, index) => (
+        <View
+          key={member._data.id}
+          style={{
+            flex: 1,
+            marginStart: '5%',
+            marginTop: 10,
+            flexDirection: 'row',
+          }}
+        >
+          <View
+            style={{
+              flex: 3,
+              flexDirection: 'row',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+            }}
+          >
+            <Image
+              source={{
+                uri: member._data.memberPhoto,
+              }}
+              style={styles.imgMemberPic}
+            />
+            <Text style={{ fontSize: 15, paddingStart: 5 }}>
+              {member._data.memberName}
+            </Text>
+          </View>
+          {this.state.showPageToOwner && showEmail}
+          {this.state.showPageToOwner && showApproval(member)}
+        </View>
+      ))
+  )
+
+    const showMembersTitle = (
+      <View>
+        <View
+          style={{
+            marginStart: '5%',
+            marginEnd: '5%',
+            paddingTop: 10,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            // backgroundColor: 'orange',
+          }}
+        >
+          <Text style={{ fontWeight: '700', color: '#515151', fontSize: 18 }}>
+            Members
+          </Text>
+          <Text style={{ color: '#515151', fontSize: 18 }}>
+            {this.state.members != null && (!this.state.showPageToOwner ? this.state.members.filter(item => item._data.ownerState === true).length : this.state.members.length)}/
+            {this.props.route.params.activity.maxQuota == null
+              ? String.fromCharCode(126)
+              : this.props.route.params.activity.maxQuota}
+          </Text>
+        </View>
+        {this.state.showPageToOwner ? showMembersForOwner : showMembersForMembers}
+      </View>
+    );
+
     const modal = (
       <View style={styles.centeredView}>
         <Modal
@@ -637,15 +848,13 @@ class ActivityInfoScreen extends Component {
             <View style={styles.modalView}>
               <Rating
                 // showRating
-                onFinishRating={(rating) =>
-                  this.joinYes(rating)
-                }
+                onFinishRating={(rating) => this.joinYes(rating)}
                 style={{ paddingVertical: 10 }}
                 imageSize={30}
               />
               <Pressable
                 style={[styles.button, styles.buttonClose]}
-                onPress={() => this.setState({modalVisible: false})}
+                onPress={() => this.setState({ modalVisible: false })}
               >
                 <Text style={styles.textStyle}>Close</Text>
               </Pressable>
@@ -726,13 +935,11 @@ class ActivityInfoScreen extends Component {
                   : this.deleteActivity()
               }
             >
-              {this.props.route.params.activity.owner.email !==
-                this.context.user.email && this.state.isJoin
-                ? join
-                : this.props.route.params.activity.owner.email !==
-                  this.context.user.email
+              {this.state.showPageToOwner
+                ? deleteView
+                : !this.state.showPageToOwner && !this.state.isJoin
                 ? leave
-                : deleteView}
+                : join}
             </TouchableOpacity>
           </View>
         </View>
@@ -767,88 +974,9 @@ class ActivityInfoScreen extends Component {
                   ).getMinutes())}
           </Text>
         </View>
-        {showDetail}
+        {(this.state.showPageToOwner || this.state.showPageToMember) && showDetail}
         {showAgeGender}
-        <View>
-          <View
-            style={{
-              marginStart: '5%',
-              marginEnd: '5%',
-              paddingTop: 10,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              // backgroundColor: 'orange',
-            }}
-          >
-            <Text style={{ fontWeight: '700', color: '#515151', fontSize: 18 }}>
-              Members
-            </Text>
-            <Text style={{ color: '#515151', fontSize: 18 }}>
-              {this.state.members != null && this.state.members.length}/13
-            </Text>
-          </View>
-          {this.state.members != null &&
-            this.state.members.map((member, index) => (
-              <View
-                key={member._data.id}
-                style={{
-                  flex: 1,
-                  marginStart: '5%',
-                  marginTop: 10,
-                  flexDirection: 'row',
-                }}
-              >
-                <View
-                  style={{
-                    flex: 3,
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Image
-                    source={{
-                      uri: member._data.memberPhoto,
-                    }}
-                    style={styles.imgMemberPic}
-                  />
-                  <Text style={{ fontSize: 15, paddingStart: 5 }}>
-                    {member._data.memberName}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flex: 0.5,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Ionicons size={20} name="mail" style={{ color: 'gray' }} />
-                </View>
-                <View
-                  style={{
-                    flex: 3,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-around',
-                    marginEnd: '5%',
-                  }}
-                >
-                  <Text style={{ fontSize: 15 }}>Joined: </Text>
-                  <Button
-                    title="No"
-                    color={member._data.memberJoin === true || member._data.memberJoin == null ? 'red' : '#DDD'}
-                    onPress={() => this.joinNo(member)}
-                  />
-                  <Button
-                    title="Yes"
-                    color={member._data.memberJoin === false || member._data.memberJoin == null ? '#37CC4A' : '#DDD'}
-                    onPress={() => this.setState({selectedMember: member, modalVisible: true})}
-                  />
-                </View>
-              </View>
-            ))}
-        </View>
+        {showMembersTitle}
         <View style={{ height: 50 }} />
       </ScrollView>
     );
