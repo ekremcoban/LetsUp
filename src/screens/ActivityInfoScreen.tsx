@@ -82,9 +82,10 @@ class ActivityInfoScreen extends Component {
         this.props.route.params.activity.owner.email,
     });
 
-    if (this.context.user.email ===
-      this.props.route.params.activity.owner.email) {
-        this.showMap(selectedAddress);
+    if (
+      this.context.user.email === this.props.route.params.activity.owner.email
+    ) {
+      this.showMap(selectedAddress);
     }
   }
 
@@ -243,7 +244,7 @@ class ActivityInfoScreen extends Component {
      `);
       }
     }, 1500);
-  }
+  };
 
   getMembers = async () => {
     const members = await firestore()
@@ -258,9 +259,9 @@ class ActivityInfoScreen extends Component {
         item._data.memberMail === this.context.user.email &&
         item._data.ownerState;
 
-        if (isThere) {
-          this.setState({ showPageToMember: isThere })
-        }
+      if (isThere) {
+        this.setState({ showPageToMember: isThere });
+      }
     });
 
     if (this.state.showPageToMember) {
@@ -460,48 +461,45 @@ class ActivityInfoScreen extends Component {
       });
   };
 
-    // Aktiviteye katilma izni red yedi
-    approvalNo = async (member: Object) => {
-      // Istek kayitli mi bilgisi
-      const memberCollection = await firestore()
-        .collection('Members')
-        .where('activityId', '==', this.props.route.params.activity.id)
-        .get();
-  
-      const selectedMember = memberCollection.docs
-        .filter((item) => item.data().memberMail === member._data.memberMail)[0]
-        .data();
-      selectedMember.ownerState = false;
-      selectedMember.memberRating = null;
-  
-      this.fireStoreUpdateFunction('Members', selectedMember.id, selectedMember);
-  
-      this.setState({ members: memberCollection.docs });
-    };
+  // Aktiviteye katilma izni red yedi
+  approvalNo = async (member: Object) => {
+    // Istek kayitli mi bilgisi
+    const memberCollection = await firestore()
+      .collection('Members')
+      .where('activityId', '==', this.props.route.params.activity.id)
+      .get();
 
-    approvalYes = async (member: number) => {
-      this.setState({ modalVisible: false });
-      console.log('Memner', member._data);
-  
-      // Istek kayitli mi bilgisi
-      const memberCollection = await firestore()
-        .collection('Members')
-        .where('activityId', '==', this.props.route.params.activity.id)
-        .get();
-  
-      const selectedMember = memberCollection.docs
-        .filter(
-          (item) =>
-            item.data().memberMail === member._data.memberMail
-        )[0]
-        .data();
+    const selectedMember = memberCollection.docs
+      .filter((item) => item.data().memberMail === member._data.memberMail)[0]
+      .data();
+    selectedMember.ownerState = false;
+    selectedMember.memberRating = null;
 
-      selectedMember.ownerState = true;
-  
-      this.fireStoreUpdateFunction('Members', selectedMember.id, selectedMember);
-  
-      this.setState({ members: memberCollection.docs });
-    };
+    this.fireStoreUpdateFunction('Members', selectedMember.id, selectedMember);
+
+    this.setState({ members: memberCollection.docs });
+  };
+
+  approvalYes = async (member: number) => {
+    this.setState({ modalVisible: false });
+    console.log('Memner', member._data);
+
+    // Istek kayitli mi bilgisi
+    const memberCollection = await firestore()
+      .collection('Members')
+      .where('activityId', '==', this.props.route.params.activity.id)
+      .get();
+
+    const selectedMember = memberCollection.docs
+      .filter((item) => item.data().memberMail === member._data.memberMail)[0]
+      .data();
+
+    selectedMember.ownerState = true;
+
+    this.fireStoreUpdateFunction('Members', selectedMember.id, selectedMember);
+
+    this.setState({ members: memberCollection.docs });
+  };
 
   // Aktiviteye katilmadi
   joinNo = async (member: Object) => {
@@ -705,7 +703,7 @@ class ActivityInfoScreen extends Component {
     //       justifyContent: 'center',
     //     }}
     //   >
-    //     <Ionicons size={20} name="mail" style={{ color: 'gray' }} 
+    //     <Ionicons size={20} name="mail" style={{ color: 'gray' }}
     //     onPress={() => Linking.openURL(`mailto:${this.props.route.params.activity.owner.email}?subject=${this.props.route.params.activity.name}&body=Hello ${this.props.route.params.activity.owner.name}`) } />
     //   </View>
     // );
@@ -713,94 +711,114 @@ class ActivityInfoScreen extends Component {
     const showEmailIcon = (member: Object) => {
       return (
         <View
-        style={{
-          flex: 0.5,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Ionicons size={20} name="mail" style={{ color: 'gray' }} 
-        onPress={() => Linking.openURL(`mailto:${member._data.memberMail}?subject=${this.props.route.params.activity.name}&body=Hello ${member._data.memberName}`) } />
-      </View>
-      )
-    }
+          style={{
+            flex: 0.5,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Ionicons
+            size={20}
+            name="mail"
+            style={{ color: 'gray' }}
+            onPress={() =>
+              Linking.openURL(
+                `mailto:${member._data.memberMail}?subject=${this.props.route.params.activity.name}&body=Hello ${member._data.memberName}`
+              )
+            }
+          />
+        </View>
+      );
+    };
+
+    const showOwnerMailIcon = (
+      <Ionicons
+              size={20}
+              name="mail"
+              style={{ color: 'gray' }}
+              onPress={() =>
+                Linking.openURL(
+                  `mailto:${this.props.route.params.activity.owner.email}?subject=${this.props.route.params.activity.name}&body=Hello ${this.props.route.params.activity.owner.name}`
+                )
+              }
+            />
+    )
 
     const showApproval = (member: Object) => {
       return (
-      <View
-      style={{
-        flex: 3,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        marginEnd: '5%',
-      }}
-    >
-      <Text style={{ fontSize: 15 }}>
-        Approval:
-      </Text>
-      <Button
-        title="No"
-        color={
-          member._data.ownerState === false ||
-          member._data.ownerState == null
-            ? 'red'
-            : '#CCC'
-        }
-        onPress={() => this.approvalNo(member)}
-      />
-      <Button
-        title="Yes"
-        color={
-          member._data.ownerState === true ||
-          member._data.ownerState == null
-            ? '#37CC4A'
-            : '#CCC'
-        }
-        onPress={() => this.approvalYes(member)}
-      />
-    </View>
-    )
-  }
-
-  const showMembersForMembers = (
-    this.state.members != null &&
-      this.state.members.filter(item => item._data.ownerState === true).map((member, index) => (
         <View
-          key={member._data.id}
           style={{
-            flex: 1,
-            marginStart: '5%',
-            marginTop: 10,
+            flex: 3,
             flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-around',
+            marginEnd: '5%',
           }}
         >
+          <Text style={{ fontSize: 15 }}>Approval:</Text>
+          <Button
+            title="No"
+            color={
+              member._data.ownerState === false ||
+              member._data.ownerState == null
+                ? 'red'
+                : '#CCC'
+            }
+            onPress={() => this.approvalNo(member)}
+          />
+          <Button
+            title="Yes"
+            color={
+              member._data.ownerState === true ||
+              member._data.ownerState == null
+                ? '#37CC4A'
+                : '#CCC'
+            }
+            onPress={() => this.approvalYes(member)}
+          />
+        </View>
+      );
+    };
+
+    const showMembersForMembers =
+      this.state.members != null &&
+      this.state.members
+        .filter((item) => item._data.ownerState === true)
+        .map((member, index) => (
           <View
+            key={member._data.id}
             style={{
-              flex: 3,
+              flex: 1,
+              marginStart: '5%',
+              marginTop: 10,
               flexDirection: 'row',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
             }}
           >
-            <Image
-              source={{
-                uri: member._data.memberPhoto,
+            <View
+              style={{
+                flex: 3,
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
               }}
-              style={styles.imgMemberPic}
-            />
-            <Text style={{ fontSize: 15, paddingStart: 5 }}>
-              {member._data.memberName}
-            </Text>
+            >
+              <Image
+                source={{
+                  uri: member._data.memberPhoto,
+                }}
+                style={styles.imgMemberPic}
+              />
+              <Text style={{ fontSize: 15, paddingStart: 5 }}>
+                {member._data.memberName}
+              </Text>
+            </View>
+            {this.state.showPageToOwner && showEmailIcon(member)}
+            {this.state.showPageToOwner && showApproval(member)}
           </View>
-          {this.state.showPageToOwner && showEmailIcon(member)}
-          {this.state.showPageToOwner && showApproval(member)}
-        </View>
-      ))
-  )
+        ));
 
-  const showMembersForOwner = (
-    this.state.members != null &&
+    const showMembersForOwner =
+      this.state.members != null &&
       this.state.members.map((member, index) => (
         <View
           key={member._data.id}
@@ -832,8 +850,7 @@ class ActivityInfoScreen extends Component {
           {this.state.showPageToOwner && showEmailIcon(member)}
           {this.state.showPageToOwner && showApproval(member)}
         </View>
-      ))
-  )
+      ));
 
     const showMembersTitle = (
       <View>
@@ -851,13 +868,21 @@ class ActivityInfoScreen extends Component {
             Members
           </Text>
           <Text style={{ color: '#515151', fontSize: 18 }}>
-            {this.state.members != null && (!this.state.showPageToOwner ? this.state.members.filter(item => item._data.ownerState === true).length : this.state.members.length)}/
+            {this.state.members != null &&
+              (!this.state.showPageToOwner
+                ? this.state.members.filter(
+                    (item) => item._data.ownerState === true
+                  ).length
+                : this.state.members.length)}
+            /
             {this.props.route.params.activity.maxQuota == null
               ? String.fromCharCode(126)
               : this.props.route.params.activity.maxQuota}
           </Text>
         </View>
-        {this.state.showPageToOwner ? showMembersForOwner : showMembersForMembers}
+        {this.state.showPageToOwner
+          ? showMembersForOwner
+          : showMembersForMembers}
       </View>
     );
 
@@ -953,6 +978,7 @@ class ActivityInfoScreen extends Component {
                   this.props.route.params.activity.owner.surname}
               </Text>
             </TouchableNativeFeedback>
+            {this.state.showPageToMember && showOwnerMailIcon}
           </View>
           <View style={styles.viewAction}>
             <TouchableOpacity
@@ -1002,7 +1028,8 @@ class ActivityInfoScreen extends Component {
                   ).getMinutes())}
           </Text>
         </View>
-        {(this.state.showPageToOwner || this.state.showPageToMember) && showDetail}
+        {(this.state.showPageToOwner || this.state.showPageToMember) &&
+          showDetail}
         {showAgeGender}
         {showMembersTitle}
         <View style={{ height: 50 }} />
@@ -1101,10 +1128,13 @@ const styles = StyleSheet.create({
   },
   viewOwnerName: {
     flex: 5,
+    flexDirection: 'row',
     alignSelf: 'center',
   },
   textOwnerName: {
     fontSize: 12, //width * 0.03,
+    alignSelf: 'center',
+    marginEnd: 10,
   },
   viewAction: {
     flex: 2,
