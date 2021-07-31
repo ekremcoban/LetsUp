@@ -405,13 +405,13 @@ class ActivityInfoScreen extends Component {
         memberToken: context.user.token,
         memberName: context.user.name,
         memberPhoto: context.user.photo,
-        memberState: true, // Istek gonderdi mi, iptal etti mi bilgisi
-        memberJoin: null,
+        memberState: true, // Istek gonderdi mi, iptal etti mi bilgisi (true ise gonderdi false iptal etti)
+        memberJoin: null, // Aktivite sonunda uyenin katilip katilmadigi bilgisi
         memberIsCanceled: null,
         memberRating: null,
         activityId: this.props.route.params.activity.id,
         ownerState: null, // Istek gonderdi mi, iptal etti mi bilgisi
-        ownerJoin: null,
+        ownerJoin: null, // Aktivite sonunda aktivite sahibinin katilip katilmadigi bilgisi
         ownerRating: null,
         startTime: this.props.route.params.activity.startTime,
         createdTime: new Date().getTime(),
@@ -616,7 +616,7 @@ class ActivityInfoScreen extends Component {
   };
 
   render() {
-    const join = (
+    const joinButton = (
       <View style={styles.viewbuttonAction}>
         <Ionicons
           size={20}
@@ -627,7 +627,7 @@ class ActivityInfoScreen extends Component {
       </View>
     );
 
-    const leave = (
+    const leaveButton = (
       <View style={[styles.viewbuttonAction, styles.viewButtonActionLeave]}>
         <Ionicons size={20} name="hand-left" style={{ color: 'white' }} />
         <Text style={styles.textButtonAction}>Leave</Text>
@@ -1044,8 +1044,8 @@ class ActivityInfoScreen extends Component {
               {this.state.showPageToOwner
                 ? deleteView
                 : !this.state.showPageToOwner && !this.state.isJoin
-                ? leave
-                : join}
+                ? leaveButton
+                : joinButton}
             </TouchableOpacity>
           </View>
         </View>

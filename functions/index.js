@@ -4,65 +4,102 @@ const admin = require('firebase-admin');
 admin.initializeApp(functions.config());
 const db = admin.firestore();
 
+exports.usersUpdate=functions.firestore.document('Users/{id}').onUpdate(async event => {
+    const id = event.after.get('id');
 
+    const user = await db.collection('Users')
+    .where('id', '==', id)
+    .get();
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+    const activities = await db.collection('Activities')
+    .where('owner.id', '==', id)
+    .get();
 
+    activities.docs.map(activity => {
+        let activityTemp = activity.data();
+        activityTemp.owner = user.docs[0].data();
 
-// const createNotification = (noti => {
-// return admin.firestore().collection('notifications').add(noti)
-// .then(a => console.log('Sent'), noti) 
-// })
-
-// exports.members = functions.firestore.document('Members/{id}')
-// .onWrite( event => {
-
-//     const id = event.after.id;
-//     // const notification = {
-//     //     content:'Test 1',
-//     //     user: 'Ekrem',
-//     //     time: admin.firestore.FieldValue.serverTimestamp()
-//     // }
-//         var message = {
-//         notification: {
-//             title:'Test 1',
-//             body: 'Ekrem',
-//         },
-//     };
-
-//     const topis = "notification"
-
-//     return admin.messaging().sendToTopic(topis, message).then(res => {
-//         console.log('basarili', res);
-//     }).catch(err => {
-//         console('hata', err)
-//     })
-// })
+        db.collection('Activities')
+        .doc(activity.id)
+        .set(activityTemp)
+        .then(() => {
+            console.log('Activity', ' Update');
+          })
+          .catch((e) => {
+            console.log('Activity', ' Update error: ', e);
+          });
+    })
+});
 
 // Aktiviteye uye oldugunda
 exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite(async event => {
+    const id = event.after.get('activityId');
     const ownerName = event.after.get('ownerName');
     const memberName = event.after.get('memberName');
     const ownerToken = event.after.get('ownerToken');
+    const memberToken = event.after.get('memberToken');
+    const memberState = event.after.get('memberState');
+    const ownerState = event.after.get('ownerState');
+    const memberIsCanceled = event.after.get('memberIsCanceled');
 
-    const message = {
-        notification: {
-            title: 'New Request',
-            body: `${memberName} sent a request`
-        },
-   }
+    const members = await db.collection('Activities')
+    .where('id', '==', id)
+    .get();
 
-    return admin.messaging().sendToDevice(ownerToken, message).then(res => {
+    let message;
+
+    if (ownerState && !memberState) {
+        message = {
+            notification: {
+                title: 'Someone Has Gone',
+                body: `${memberName} left from ${members.docs[0].data().name}`
+            },
+       }
+       return admin.messaging().sendToDevice(ownerToken, message).then(res => {
         console.log('memberNotifications is succeess --> ', ownerName, memberName)
-    }).catch(e => {
-        console.log('memberNotifications is error --> ')
-    })
+        }).catch(e => {
+            console.log('memberNotifications is error --> ')
+        })
+    }
+    else if (memberIsCanceled == null) {
+        message = {
+            notification: {
+                title: 'New Request',
+                body: `${memberName} wants to join ${members.docs[0].data().name}`
+            },
+       }
+       return admin.messaging().sendToDevice(ownerToken, message).then(res => {
+        console.log('memberNotifications is succeess --> ', ownerName, memberName)
+        }).catch(e => {
+            console.log('memberNotifications is error --> ')
+        })
+    }
+    else if (ownerState) {
+        message = {
+            notification: {
+                title: 'Accepted You',
+                body: `Approvaled you to join ${members.docs[0].data().name}`
+            },
+       }
+       return admin.messaging().sendToDevice(memberToken, message).then(res => {
+        console.log('memberNotifications is succeess --> ', ownerName, memberName)
+        }).catch(e => {
+            console.log('memberNotifications is error --> ')
+        })
+    }
+    else if (!ownerState) {
+        message = {
+            notification: {
+                title: 'Sorry For This',
+                body: `Denied you to join ${members.docs[0].data().name}`
+            },
+       }
+       return admin.messaging().sendToDevice(memberToken, message).then(res => {
+        console.log('memberNotifications is succeess --> ', ownerName, memberName)
+        }).catch(e => {
+            console.log('memberNotifications is error --> ')
+        })
+    }
 });
 
 // Aktivite silindiginde
@@ -73,7 +110,7 @@ exports.activityNotifications=functions.firestore.document('Activities/{id}').on
 
     const message = {
         notification: {
-            title: 'Info',
+            title: 'Sorry For This',
             body: `${name} was canceled`
         },
    }
