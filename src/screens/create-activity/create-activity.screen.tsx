@@ -411,6 +411,8 @@ const CreateActivityScreen2 = () => {
             ),
             owner: user,
             state: true,
+            isCanceled: null,
+            isDeleted: null,
             date: activityDate.getTime(),
             startTime: activityStartTime != null && startActivityTime.getTime(),
             finishTime:

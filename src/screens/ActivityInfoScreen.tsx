@@ -340,6 +340,40 @@ class ActivityInfoScreen extends Component {
     }
   };
 
+  requestAlert = () => {
+    const activityStartTime = this.props.route.params.activity.startTime;
+    const convinientTime =  new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours() + 2, new Date().getMinutes()).getMilliseconds();
+
+    let title;
+    let content;
+    if (activityStartTime < convinientTime && !this.state.isJoin) {
+      content = 'Your point is going to be affected because the remaining time is less 2 hours.\nAre you sure?'
+    }
+    else if (!this.state.isJoin) {
+      title = 'Warning'
+      content = 'You will leave the activity.\nAre you sure?'
+    }
+    else {
+      title = 'Sending Request';
+      content = 'Are you sure?'
+    }
+
+    Alert.alert(title, content, [
+      {
+        text: 'No',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'Yes',
+        onPress: async () => {
+          this.sendRequest();
+        },
+      },
+    ]);
+  }
+
+  // Aktiviteye katilma ya da ayrilma talebi gonderir
   sendRequest = async () => {
     const token = await messaging().getToken();
     console.log('token', token);
@@ -373,9 +407,10 @@ class ActivityInfoScreen extends Component {
         memberPhoto: context.user.photo,
         memberState: true, // Istek gonderdi mi, iptal etti mi bilgisi
         memberJoin: null,
+        memberIsCanceled: null,
         memberRating: null,
         activityId: this.props.route.params.activity.id,
-        ownerState: false, // Istek gonderdi mi, iptal etti mi bilgisi
+        ownerState: null, // Istek gonderdi mi, iptal etti mi bilgisi
         ownerJoin: null,
         ownerRating: null,
         startTime: this.props.route.params.activity.startTime,
@@ -385,6 +420,7 @@ class ActivityInfoScreen extends Component {
       this.fireStoreInsertFunction('Members', request.id, request);
     } else if (request.memberState === false) {
       this.setState((prev) => ({ isJoin: !prev.isJoin }));
+      request.memberIsCanceled = false;
       request.memberState = true;
       console.log('ilk güncelleme', request);
       this.fireStoreUpdateFunction(
@@ -395,6 +431,15 @@ class ActivityInfoScreen extends Component {
     } else if (request.memberState === true) {
       this.setState((prev) => ({ isJoin: !prev.isJoin }));
       console.log('ikinci güncelleme', request);
+
+      const activityStartTime = this.props.route.params.activity.startTime;
+      const convinientTime =  1627837960000//new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours() + 2, new Date().getMinutes()).getMilliseconds();
+
+      // Katilimcinin puani etkilenir cunku 2 saatten az zaman var
+      if (activityStartTime < convinientTime) {
+        request.memberIsCanceled = true
+      }
+
       request.memberState = false;
       this.fireStoreUpdateFunction(
         'Members',
@@ -404,8 +449,8 @@ class ActivityInfoScreen extends Component {
     }
   };
 
-  deleteActivity = async () => {
-    Alert.alert('Delete Activity', 'Are you sure?', [
+  deleteAlert = (title: string, content: string, type: number) => {
+    Alert.alert(title, content, [
       {
         text: 'No',
         onPress: () => console.log('Cancel Pressed'),
@@ -423,6 +468,13 @@ class ActivityInfoScreen extends Component {
             .get();
 
           let request = memberCollection?.docs[0].data();
+          if (type === 0) {
+            request.isDeleted = true;
+          }
+          else if (type === 2) {
+            request.isCanceled = true;
+          }
+          
           request.state = false;
           this.fireStoreUpdateFunction(
             'Activities',
@@ -433,6 +485,22 @@ class ActivityInfoScreen extends Component {
         },
       },
     ]);
+  }
+
+  deleteActivity = async () => {
+    const activityStartTime = this.props.route.params.activity.startTime;
+    const convinientTime = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours() + 2, new Date().getMinutes()).getMilliseconds();
+    const activeMembers = this.state.members.filter(item => item._data.ownerState === true);
+   
+    if (activeMembers.length === 0) {
+      this.deleteAlert('Delete the Activity', 'Are you sure?', 0);
+    }
+    else if (activityStartTime > convinientTime) {
+      this.deleteAlert('Cancel the Activity', 'A message is going to be sent to its members\nAre you sure?', 1);
+    }
+    else {
+      this.deleteAlert('Cancel the Activity', 'Your point is going to be affected because the remaining time is less 2 hours.\nAre you sure?', 2);
+    }
   };
 
   fireStoreInsertFunction = (title: string, id: string, data: Object) => {
@@ -521,6 +589,7 @@ class ActivityInfoScreen extends Component {
     this.setState({ members: memberCollection.docs });
   };
 
+  // Aktivitye katildi yetenek puani verildi
   joinYes = async (rating: number) => {
     this.setState({ modalVisible: false });
     console.log('Memner', rating);
@@ -568,7 +637,13 @@ class ActivityInfoScreen extends Component {
     const deleteView = (
       <View style={[styles.viewbuttonAction, styles.viewButtonActionDelete]}>
         <Ionicons size={20} name="trash-outline" style={{ color: 'white' }} />
-        <Text style={styles.textButtonAction}>Delete</Text>
+        <Text style={styles.textButtonAction}>
+          {this.state.members != null &&
+          this.state.members.filter((item) => item._data.ownerState === true)
+            .length > 0
+            ? 'Cancel'
+            : 'Delete'}
+        </Text>
       </View>
     );
 
@@ -682,31 +757,8 @@ class ActivityInfoScreen extends Component {
               : '---'}
           </Text>
         </View>
-        {/* <View style={styles.featureRight}>
-        <Text style={styles.featureTitle}>Quota</Text>
-        <Text style={styles.featureText}>
-          {this.props.route.params.activity.minQuota != null
-            ? this.props.route.params.activity.minQuota +
-              ' - ' +
-              this.props.route.params.activity.maxQuota
-            : '---'}
-        </Text>
-      </View> */}
       </View>
     );
-
-    // const showEmail = (
-    //   <View
-    //     style={{
-    //       flex: 0.5,
-    //       alignItems: 'center',
-    //       justifyContent: 'center',
-    //     }}
-    //   >
-    //     <Ionicons size={20} name="mail" style={{ color: 'gray' }}
-    //     onPress={() => Linking.openURL(`mailto:${this.props.route.params.activity.owner.email}?subject=${this.props.route.params.activity.name}&body=Hello ${this.props.route.params.activity.owner.name}`) } />
-    //   </View>
-    // );
 
     const showEmailIcon = (member: Object) => {
       return (
@@ -733,16 +785,16 @@ class ActivityInfoScreen extends Component {
 
     const showOwnerMailIcon = (
       <Ionicons
-              size={20}
-              name="mail"
-              style={{ color: 'gray' }}
-              onPress={() =>
-                Linking.openURL(
-                  `mailto:${this.props.route.params.activity.owner.email}?subject=${this.props.route.params.activity.name}&body=Hello ${this.props.route.params.activity.owner.name}`
-                )
-              }
-            />
-    )
+        size={20}
+        name="mail"
+        style={{ color: 'gray' }}
+        onPress={() =>
+          Linking.openURL(
+            `mailto:${this.props.route.params.activity.owner.email}?subject=${this.props.route.params.activity.name}&body=Hello ${this.props.route.params.activity.owner.name}`
+          )
+        }
+      />
+    );
 
     const showApproval = (member: Object) => {
       return (
@@ -852,7 +904,7 @@ class ActivityInfoScreen extends Component {
         </View>
       ));
 
-    const showMembersTitle = (
+    const showMembersContainer = (
       <View>
         <View
           style={{
@@ -985,7 +1037,7 @@ class ActivityInfoScreen extends Component {
               onPress={() =>
                 this.props.route.params.activity.owner.email !==
                 this.context.user.email
-                  ? this.sendRequest()
+                  ? this.requestAlert()
                   : this.deleteActivity()
               }
             >
@@ -1031,7 +1083,7 @@ class ActivityInfoScreen extends Component {
         {(this.state.showPageToOwner || this.state.showPageToMember) &&
           showDetail}
         {showAgeGender}
-        {showMembersTitle}
+        {showMembersContainer}
         <View style={{ height: 50 }} />
       </ScrollView>
     );
