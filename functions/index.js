@@ -4,6 +4,7 @@ const admin = require('firebase-admin');
 admin.initializeApp(functions.config());
 const db = admin.firestore();
 
+// Profil guncellendiginde
 exports.usersUpdate=functions.firestore.document('Users/{id}').onUpdate(async event => {
     const id = event.after.get('id');
 
@@ -35,11 +36,14 @@ exports.usersUpdate=functions.firestore.document('Users/{id}').onUpdate(async ev
 exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite(async event => {
     const id = event.after.get('activityId');
     const ownerName = event.after.get('ownerName');
+    const memberMail = event.after.get('memberMail');
     const memberName = event.after.get('memberName');
     const ownerToken = event.after.get('ownerToken');
     const memberToken = event.after.get('memberToken');
+    const ownerMail = event.after.get('ownerMail');
     const memberState = event.after.get('memberState');
-    const ownerState = event.after.get('ownerState');
+    const afterOwnerState = event.after.get('ownerState');
+    const beforeOwnerState = event.before.get('ownerState');
     const memberIsCanceled = event.after.get('memberIsCanceled');
 
     const activities = await db.collection('Activities')
@@ -53,7 +57,8 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
 
     let message;
 
-    if (ownerState && !memberState) {
+    // Member uyelik icin ownerdan onay aldiktan sonra giderse
+    if (afterOwnerState && !memberState) {
         message = {
             data: {
                 activityId: activities.docs[0].data().id
@@ -63,45 +68,162 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
                 body: `${memberName} left from ${activities.docs[0].data().name}`
             },
        }
+
+       db.collection('Notifications')
+       .doc()
+       .set({
+           activityId: id,
+           title: message.notification.title,
+           body: message.notification.body,
+           fromWho: memberMail,
+           toWho: ownerMail,
+           state: true,
+           tyep: 2,
+           createdTime: new Date().getTime()
+       });
+
        return admin.messaging().sendToDevice(ownerToken, message).then(res => {
         console.log('memberNotifications is succeess --> ', ownerName, memberName)
         }).catch(e => {
             console.log('memberNotifications is error --> ')
         })
     }
-    else if (memberIsCanceled == null) {
+    // Member ownerdan onayli iken geri donerse
+    else if (beforeOwnerState && afterOwnerState && memberState) {
+        message = {
+            data: {
+                activityId: activities.docs[0].data().id
+            },
+            notification: {
+                title: 'Someone Came Back',
+                body: `${memberName} came back to ${activities.docs[0].data().name}`
+            },
+       }
+
+       db.collection('Notifications')
+       .doc()
+       .set({
+           activityId: id,
+           title: message.notification.title,
+           body: message.notification.body,
+           fromWho: memberMail,
+           toWho: ownerMail,
+           state: true,
+           tyep: 3,
+           createdTime: new Date().getTime()
+       });
+
+       return admin.messaging().sendToDevice(ownerToken, message).then(res => {
+        console.log('memberNotifications is succeess --> ', ownerName, memberName)
+        }).catch(e => {
+            console.log('memberNotifications is error --> ')
+        })
+    }
+    // Memberdan uyelik istegi owner onaylamadi ya da reddetmedi daha
+    else if (memberIsCanceled == null && memberState && afterOwnerState == null) {
         message = {
             notification: {
-                title: 'New Request',
+                title: 'A New Request',
                 body: `${memberName} wants to join ${activities.docs[0].data().name}`
             },
        }
+
+       db.collection('Notifications')
+       .doc()
+       .set({
+           activityId: id,
+           title: message.notification.title,
+           body: message.notification.body,
+           fromWho: memberMail,
+           toWho: ownerMail,
+           state: true,
+           type: 0,
+           createdTime: new Date().getTime()
+       });
+
        return admin.messaging().sendToDevice(ownerToken, message).then(res => {
         console.log('memberNotifications is succeess --> ', ownerName, memberName)
         }).catch(e => {
             console.log('memberNotifications is error --> ')
         })
     }
-    else if (ownerState) {
+    // Ownerdan cevap gelmeden iptal etti
+    else if (memberIsCanceled == null && !memberState && afterOwnerState == null) {
+        message = {
+            notification: {
+                title: 'Request Was Withdrawn',
+                body: `${memberName} was withdrawn ${activities.docs[0].data().name}`
+            },
+       }
+
+       db.collection('Notifications')
+       .doc()
+       .set({
+           activityId: id,
+           title: message.notification.title,
+           body: message.notification.body,
+           fromWho: memberMail,
+           toWho: ownerMail,
+           state: true,
+           type: 1,
+           createdTime: new Date().getTime()
+       });
+
+       return admin.messaging().sendToDevice(ownerToken, message).then(res => {
+        console.log('memberNotifications is succeess --> ', ownerName, memberName)
+        }).catch(e => {
+            console.log('memberNotifications is error --> ')
+        })
+    }
+
+    else if (!beforeOwnerState && afterOwnerState) {
         message = {
             notification: {
                 title: 'Accepted You',
                 body: `Approvaled you to join ${activities.docs[0].data().name}`
             },
        }
+
+       db.collection('Notifications')
+       .doc()
+       .set({
+           activityId: id,
+           title: message.notification.title,
+           body: message.notification.body,
+           fromWho: ownerMail,
+           toWho: memberMail,
+           state: true,
+           createdTime: new Date().getTime()
+       });
+
        return admin.messaging().sendToDevice(memberToken, message).then(res => {
         console.log('memberNotifications is succeess --> ', ownerName, memberName)
         }).catch(e => {
             console.log('memberNotifications is error --> ')
         })
     }
-    else if (!ownerState) {
+
+    else if (!afterOwnerState) {
         message = {
             notification: {
                 title: 'Sorry For This',
                 body: `Denied you to join ${activities.docs[0].data().name}`
             },
        }
+
+       db.collection('Notifications')
+       .doc()
+       .set({
+           activityId: id,
+           title: message.notification.title,
+           body: message.notification.body,
+           fromWho: ownerMail,
+           toWho: memberMail,
+           state: true,
+           type: 4,
+           createdTime: new Date().getTime()
+       });
+
        return admin.messaging().sendToDevice(memberToken, message).then(res => {
         console.log('memberNotifications is succeess --> ', ownerName, memberName)
         }).catch(e => {

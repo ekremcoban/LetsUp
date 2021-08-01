@@ -279,22 +279,6 @@ const CreateActivityScreen2 = () => {
       });
   };
 
-  const save2 = () => {
-    Alert.alert('Info', 'Do you confirm to create a new activity?', [
-      {
-        text: 'No',
-        onPress: () => console.log('Cancel Pressed'),
-        style: 'cancel',
-      },
-      {
-        text: 'Yes',
-        onPress: () => {
-          navigation.navigate('Activity List');
-        },
-      },
-    ]);
-  };
-
   const save = async () => {
     let warningTemp = {
       activityName: false,

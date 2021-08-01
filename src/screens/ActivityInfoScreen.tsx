@@ -69,7 +69,7 @@ class ActivityInfoScreen extends Component {
     this.isMember();
     LogBox.ignoreAllLogs();
 
-    console.log('Serefsiz')
+    console.log('Serefsiz');
     this.getMembers();
 
     const selectedAddress = this.props.route.params.addressList.filter(
@@ -343,20 +343,25 @@ class ActivityInfoScreen extends Component {
 
   requestAlert = () => {
     const activityStartTime = this.props.route.params.activity.startTime;
-    const convinientTime =  new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours() + 2, new Date().getMinutes()).getMilliseconds();
+    const convinientTime = new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      new Date().getDate(),
+      new Date().getHours() + 2,
+      new Date().getMinutes()
+    ).getMilliseconds();
 
     let title;
     let content;
     if (activityStartTime < convinientTime && !this.state.isJoin) {
-      content = 'Your point is going to be affected because the remaining time is less 2 hours.\nAre you sure?'
-    }
-    else if (!this.state.isJoin) {
-      title = 'Warning'
-      content = 'You will leave the activity.\nAre you sure?'
-    }
-    else {
+      content =
+        'Your point is going to be affected because the remaining time is less 2 hours.\nAre you sure?';
+    } else if (!this.state.isJoin) {
+      title = 'Warning';
+      content = 'You will leave the activity.\nAre you sure?';
+    } else {
       title = 'Sending Request';
-      content = 'Are you sure?'
+      content = 'Are you sure?';
     }
 
     Alert.alert(title, content, [
@@ -372,7 +377,7 @@ class ActivityInfoScreen extends Component {
         },
       },
     ]);
-  }
+  };
 
   // Aktiviteye katilma ya da ayrilma talebi gonderir
   sendRequest = async () => {
@@ -421,7 +426,10 @@ class ActivityInfoScreen extends Component {
       this.fireStoreInsertFunction('Members', request.id, request);
     } else if (request.memberState === false) {
       this.setState((prev) => ({ isJoin: !prev.isJoin }));
-      request.memberIsCanceled = false;
+      if (request.ownerState != null) {
+        request.memberIsCanceled = false;
+      }
+
       request.memberState = true;
       console.log('ilk güncelleme', request);
       this.fireStoreUpdateFunction(
@@ -434,11 +442,11 @@ class ActivityInfoScreen extends Component {
       console.log('ikinci güncelleme', request);
 
       const activityStartTime = this.props.route.params.activity.startTime;
-      const convinientTime =  1627837960000//new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours() + 2, new Date().getMinutes()).getMilliseconds();
+      const convinientTime = 1627837960000; //new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours() + 2, new Date().getMinutes()).getMilliseconds();
 
       // Katilimcinin puani etkilenir cunku 2 saatten az zaman var
       if (activityStartTime < convinientTime) {
-        request.memberIsCanceled = true
+        request.memberIsCanceled = true;
       }
 
       request.memberState = false;
@@ -471,11 +479,10 @@ class ActivityInfoScreen extends Component {
           let request = memberCollection?.docs[0].data();
           if (type === 0) {
             request.isDeleted = true;
-          }
-          else if (type === 2) {
+          } else if (type === 2) {
             request.isCanceled = true;
           }
-          
+
           request.state = false;
           this.fireStoreUpdateFunction(
             'Activities',
@@ -486,21 +493,35 @@ class ActivityInfoScreen extends Component {
         },
       },
     ]);
-  }
+  };
 
   deleteActivity = async () => {
     const activityStartTime = this.props.route.params.activity.startTime;
-    const convinientTime = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours() + 2, new Date().getMinutes()).getMilliseconds();
-    const activeMembers = this.state.members.filter(item => item._data.ownerState === true);
-   
+    const convinientTime = new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      new Date().getDate(),
+      new Date().getHours() + 2,
+      new Date().getMinutes()
+    ).getMilliseconds();
+    const activeMembers = this.state.members.filter(
+      (item) => item._data.ownerState === true
+    );
+
     if (activeMembers.length === 0) {
       this.deleteAlert('Delete the Activity', 'Are you sure?', 0);
-    }
-    else if (activityStartTime > convinientTime) {
-      this.deleteAlert('Cancel the Activity', 'A message is going to be sent to its members\nAre you sure?', 1);
-    }
-    else {
-      this.deleteAlert('Cancel the Activity', 'Your point is going to be affected because the remaining time is less 2 hours.\nAre you sure?', 2);
+    } else if (activityStartTime > convinientTime) {
+      this.deleteAlert(
+        'Cancel the Activity',
+        'A message is going to be sent to its members\nAre you sure?',
+        1
+      );
+    } else {
+      this.deleteAlert(
+        'Cancel the Activity',
+        'Your point is going to be affected because the remaining time is less 2 hours.\nAre you sure?',
+        2
+      );
     }
   };
 
@@ -644,6 +665,15 @@ class ActivityInfoScreen extends Component {
             .length > 0
             ? 'Cancel'
             : 'Delete'}
+        </Text>
+      </View>
+    );
+
+    const deniedView = (
+      <View style={[styles.viewbuttonAction, styles.viewButtonActionDelete]}>
+        <Ionicons size={20} name="sad-outline" style={{ color: 'white' }} />
+        <Text style={styles.textButtonAction}>
+          Denied
         </Text>
       </View>
     );
@@ -939,6 +969,71 @@ class ActivityInfoScreen extends Component {
       </View>
     );
 
+    const showActionView = () => {
+      let selectedMembers = [];
+
+      if (this.state.members != null && this.state.members.length > 0) {
+        selectedMembers = this.state.members.filter(
+          (item) =>
+            item._data.activityId === this.props.route.params.activity.id
+        )[0]._data;
+      }
+      
+      if (selectedMembers.ownerState == false) {
+        console.log('1')
+        return deniedView;
+      }
+      else if (selectedMembers.ownerState == true && this.state.showPageToOwner) {
+        console.log('2')
+        return deleteView;
+      } 
+      else if (selectedMembers.ownerState == true && !this.state.showPageToOwner && !this.state.isJoin) {
+        console.log('3')
+        return leaveButton;
+      } 
+      else if (selectedMembers.ownerState == true) {
+        console.log('4')
+        return joinButton;
+      }
+      else if (selectedMembers.length === 0 && this.state.showPageToOwner) {
+        console.log('2')
+        return deleteView;
+      } 
+      else if (selectedMembers.length === 0 && !this.state.showPageToOwner && !this.state.isJoin) {
+        console.log('3')
+        return leaveButton;
+      } 
+      else if (selectedMembers.length === 0) {
+        console.log('4')
+        return joinButton;
+      }
+    };
+
+    const showActionButton = () => {
+      let selectedMembers = [];
+      if (this.state.members != null && this.state.members.length > 0) {
+        selectedMembers = this.state.members.filter(
+          (item) =>
+            item._data.activityId === this.props.route.params.activity.id
+        )[0]._data;
+      }
+
+      if (selectedMembers.ownerState == true && this.props.route.params.activity.owner.email !==
+        this.context.user.email) {
+          return this.requestAlert()
+      }
+      else if (selectedMembers.ownerState == true) {
+        return this.deleteActivity()
+      }
+      else if (selectedMembers.length === 0 && this.props.route.params.activity.owner.email !==
+        this.context.user.email) {
+          return this.requestAlert()
+      }
+      else if (selectedMembers.length === 0) {
+        return this.deleteActivity()
+      }
+    }
+
     const modal = (
       <View style={styles.centeredView}>
         <Modal
@@ -1036,17 +1131,10 @@ class ActivityInfoScreen extends Component {
           <View style={styles.viewAction}>
             <TouchableOpacity
               onPress={() =>
-                this.props.route.params.activity.owner.email !==
-                this.context.user.email
-                  ? this.requestAlert()
-                  : this.deleteActivity()
+                showActionButton()
               }
             >
-              {this.state.showPageToOwner
-                ? deleteView
-                : !this.state.showPageToOwner && !this.state.isJoin
-                ? leaveButton
-                : joinButton}
+              {showActionView()}
             </TouchableOpacity>
           </View>
         </View>
@@ -1081,7 +1169,9 @@ class ActivityInfoScreen extends Component {
                   ).getMinutes())}
           </Text>
         </View>
-        {(this.state.showPageToOwner || this.state.showPageToMember || this.props.route.params.from === 'Someone Has Gone') &&
+        {(this.state.showPageToOwner ||
+          this.state.showPageToMember ||
+          this.props.route.params.from === 'Someone Has Gone') &&
           showDetail}
         {showAgeGender}
         {showMembersContainer}

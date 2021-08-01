@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useEffect, useContext } from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
+import firestore from '@react-native-firebase/firestore';
+import ContextApi from 'context/ContextApi';
+import { useState } from 'react';
 
 const noti = [
     {
@@ -26,22 +29,51 @@ const noti = [
 ]
 
 const NotificationScreen = () => {
+    const { user } = useContext(ContextApi);
+    const [notifications, setNotifications] = useState([]);
+
+    useEffect(() => {
+        getNotificationsInfo();
+
+    }, []);
+    
+    const getNotificationsInfo = () => {
+        let notificationArray = [];
+        console.log('---------', user)
+        firestore()
+        .collection('Notifications')
+        .where('toWho', '==', user.email)
+        .where('state', '==', true)
+        .onSnapshot(noti => {
+            console.log('noti', noti.docs)
+            notificationArray = [];
+            noti.docs.forEach(item => {
+                notificationArray.push(item.data())
+            })
+            setNotifications([...notificationArray]);
+        })
+    }
+
     return (
         <View style={{marginTop: 10}}>
-            {noti.map(item => (
+            {notifications != [] && notifications
+             .sort((a, b) => {
+                return b.createdTime - a.createdTime;
+              })
+            .map(item => (
                 <View 
-                key={item.id}
+                key={item.createdTime}
                 style={styles.viewContainer}>
                     <View style={styles.viewLeft}>
-                        <Image
+                        {/* <Image
                             source={item.pic}
                             style={styles.icon}
-                        />
+                        /> */}
                     </View>
                     <View style={styles.viewRight}>
                         <Text style={styles.textBold}>{item.boldText}</Text>
-                        <Text> {item.text}</Text>
-                        <Text style={styles.textDate}> {item.date}</Text>
+                        <Text> {item.title}</Text>
+                        <Text style={styles.textDate}> {item.body}</Text>
                     </View>
                 </View>
             ))}
