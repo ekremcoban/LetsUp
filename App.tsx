@@ -58,7 +58,7 @@ let App = () => {
   useEffect(() => {
     CodePush.sync();
     requestUserPermission();
-    subscribeToTopic()
+    subscribeToTopic();
 
     const subscriber1 = getData('myLocation').then((myLocation) => {
       console.log('muy', myLocation);

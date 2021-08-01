@@ -31,7 +31,7 @@ exports.usersUpdate=functions.firestore.document('Users/{id}').onUpdate(async ev
     })
 });
 
-// Aktiviteye uye oldugunda
+// Aktiviteye uye oldugunda, uyelikten ciktiginda
 exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite(async event => {
     const id = event.after.get('activityId');
     const ownerName = event.after.get('ownerName');
@@ -42,17 +42,25 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
     const ownerState = event.after.get('ownerState');
     const memberIsCanceled = event.after.get('memberIsCanceled');
 
-    const members = await db.collection('Activities')
+    const activities = await db.collection('Activities')
     .where('id', '==', id)
     .get();
+
+    const activityAddress = await db.collection('ActivityAddress')
+    .where('time', '>=', new Date().getTime())
+    .orderBy('time')
+    .get()
 
     let message;
 
     if (ownerState && !memberState) {
         message = {
+            data: {
+                activityId: activities.docs[0].data().id
+            },
             notification: {
                 title: 'Someone Has Gone',
-                body: `${memberName} left from ${members.docs[0].data().name}`
+                body: `${memberName} left from ${activities.docs[0].data().name}`
             },
        }
        return admin.messaging().sendToDevice(ownerToken, message).then(res => {
@@ -65,7 +73,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
         message = {
             notification: {
                 title: 'New Request',
-                body: `${memberName} wants to join ${members.docs[0].data().name}`
+                body: `${memberName} wants to join ${activities.docs[0].data().name}`
             },
        }
        return admin.messaging().sendToDevice(ownerToken, message).then(res => {
@@ -78,7 +86,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
         message = {
             notification: {
                 title: 'Accepted You',
-                body: `Approvaled you to join ${members.docs[0].data().name}`
+                body: `Approvaled you to join ${activities.docs[0].data().name}`
             },
        }
        return admin.messaging().sendToDevice(memberToken, message).then(res => {
@@ -91,7 +99,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
         message = {
             notification: {
                 title: 'Sorry For This',
-                body: `Denied you to join ${members.docs[0].data().name}`
+                body: `Denied you to join ${activities.docs[0].data().name}`
             },
        }
        return admin.messaging().sendToDevice(memberToken, message).then(res => {
@@ -120,12 +128,6 @@ exports.activityNotifications=functions.firestore.document('Activities/{id}').on
         .where('activityId', '==', id)
         .where('memberState', '==', true)
         .get();
-
-        // await admin.messaging().sendToDevice(members.docs[0].data().memberToken, message).then(res => {
-        //     console.log('activitiesNotifications is succeess 1', name)
-        // }).catch(e => {
-        //     console.log('activitiesNotifications is error 1', e)
-        // })
 
         members.docs.map(async member => {
             await admin.messaging().sendToDevice(member.data().memberToken, message).then(res => {

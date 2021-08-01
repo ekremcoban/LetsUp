@@ -54,6 +54,7 @@ const CreateActivityScreen2 = () => {
   const [showLocation3, setShowLocation3] = useState(null);
   const [showLocation4, setShowLocation4] = useState(null);
   const [numberShowLocation, setNumberShowLocation] = useState(1);
+  const [isMounted, setIsMounted] = useState(false);
 
   const [activityDate, setActivityDate] = useState<Date>(new Date());
   const [activityStartTime, setActivityStartTime] = useState<Date>(undefined);
@@ -278,6 +279,22 @@ const CreateActivityScreen2 = () => {
       });
   };
 
+  const save2 = () => {
+    Alert.alert('Info', 'Do you confirm to create a new activity?', [
+      {
+        text: 'No',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'Yes',
+        onPress: () => {
+          navigation.navigate('Activity List');
+        },
+      },
+    ]);
+  };
+
   const save = async () => {
     let warningTemp = {
       activityName: false,
@@ -447,24 +464,27 @@ const CreateActivityScreen2 = () => {
             {
               text: 'Yes',
               onPress: () => {
-                setIsCreateActivity(true);
-                // Activity bilgisini sunucuya yazar
-                fireStoreFunction('Activities', activity.id, activity);
-                convertAndSendAddressToServer(activity);
-
-                setBranchName(String || undefined);
-                setLocation0(null);
-                setLocation1(null);
-                setLocation2(null);
-                setLocation3(null);
-                setLocation4(null);
-                setActivityDate(new Date());
-                setActivityStartTime(null);
-                setActivityFinishTime(null);
-                setSelectedActivityNameValue(null);
-                setSelectedAgeRange([null, null]);
-                setSelectedQuotaRange([null, null]);
-                setSelectedGenderValue(null);
+                setIsMounted(true);
+                if (!isMounted) {
+                  setIsCreateActivity(true);
+                  // Activity bilgisini sunucuya yazar
+                  fireStoreFunction('Activities', activity.id, activity);
+                  convertAndSendAddressToServer(activity);
+                  setBranchName(String || undefined);
+                  setLocation0(null);
+                  setLocation1(null);
+                  setLocation2(null);
+                  setLocation3(null);
+                  setLocation4(null);
+                  setActivityDate(new Date());
+                  setActivityStartTime(null);
+                  setActivityFinishTime(null);
+                  setSelectedActivityNameValue(null);
+                  setSelectedAgeRange([null, null]);
+                  setSelectedQuotaRange([null, null]);
+                  setSelectedGenderValue(null);
+                }
+                navigation.navigate('Activity List');
               },
             },
           ]);

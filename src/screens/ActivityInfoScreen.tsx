@@ -69,6 +69,7 @@ class ActivityInfoScreen extends Component {
     this.isMember();
     LogBox.ignoreAllLogs();
 
+    console.log('Serefsiz')
     this.getMembers();
 
     const selectedAddress = this.props.route.params.addressList.filter(
@@ -1080,7 +1081,7 @@ class ActivityInfoScreen extends Component {
                   ).getMinutes())}
           </Text>
         </View>
-        {(this.state.showPageToOwner || this.state.showPageToMember) &&
+        {(this.state.showPageToOwner || this.state.showPageToMember || this.props.route.params.from === 'Someone Has Gone') &&
           showDetail}
         {showAgeGender}
         {showMembersContainer}

@@ -30,6 +30,7 @@ import { useEffect } from 'react';
 import ContextApi from 'context/ContextApi';
 import { convertLowerString } from 'components/functions/common';
 import DisplaySpinner from '../../components/spinner';
+import messaging from '@react-native-firebase/messaging';
 
 const ageActionSheetRef = createRef<IActionSheet>();
 
@@ -53,6 +54,33 @@ export const ActivityListScreen = () => {
     if (!isMounted) {
       getFirebase();
     }
+
+    messaging().onNotificationOpenedApp((remoteMessage) => {
+      console.log('remote', remoteMessage);
+      console.log('TEST')
+      navigation.navigate('Notification');
+
+      // if (activityTemp != [] && addressTemp != []) {
+      //   console.log('2222', activityTemp);
+      //   const selectedActivity = activityTemp.filter(
+      //     (activity) => activity.id === remoteMessage.data.activityId
+      //   );
+      //   console.log('11', selectedActivity);
+      //   const selectedAddress = addressTemp.filter(
+      //     (address) => address.activityId === selectedActivity[0].id
+      //   );
+
+      //   console.log('22', selectedAddress);
+      //   if (selectedActivity != [] && selectedAddress != []) {
+      //     navigation.navigate('Activity Info', {
+      //       activity: selectedActivity[0],
+      //       getPlace: getPlace,
+      //       addressList: selectedAddress,
+      //       from: remoteMessage.notification.title,
+      //     });
+      //   }
+      // }
+    });
 
     const unsubscribe = navigation.addListener('focus', () => {
       if (isCreateActivity) {
@@ -127,12 +155,13 @@ export const ActivityListScreen = () => {
                   .onSnapshot((documentSnapshot) => {
                     documentSnapshot.docs.forEach((s) => {
                       // console.log('User data: ', s.data());
-                      const isIt = activityTemp.filter(a => a.id === s.data().id)
+                      const isIt = activityTemp.filter(
+                        (a) => a.id === s.data().id
+                      );
 
                       if (isIt.length === 0) {
                         activityTemp.push(s.data());
                       }
-                      
                     });
                     console.log('activityTemp 1', activityTemp);
                     setActivityList([...activityTemp]);
@@ -150,7 +179,9 @@ export const ActivityListScreen = () => {
                     .onSnapshot((documentSnapshot) => {
                       documentSnapshot.docs.forEach((s) => {
                         // console.log('User data: ', s.data());
-                        const isIt = activityTemp.filter(a => a.id === s.data().id)
+                        const isIt = activityTemp.filter(
+                          (a) => a.id === s.data().id
+                        );
 
                         if (isIt.length === 0) {
                           activityTemp.push(s.data());
@@ -168,49 +199,49 @@ export const ActivityListScreen = () => {
           }
 
           // if (activityId.length > 10) {
-            // for (let i = 0; i < Math.floor(activityId.length / 10); i++) {
-            //   // where deki in icin 10 luk blok haline gitirir
-            //   let stackTen = [];
-            //   for (let j = i * 10; j < (i + 1) * 10; j++) {
-            //     stackTen.push(activityId[j]);
-            //   }
-            //   index += 10;
-            //   console.log('x: ', stackTen, index);
-            //   firestore()
-            //     .collection('Activities')
-            //     .where('id', 'in', stackTen)
-            //     // .where('ime', '>', 1626820440000)
-            //     .onSnapshot((documentSnapshot) => {
-            //       documentSnapshot.docs.forEach((s) => {
-            //         // console.log('User data: ', s.data());
-            //         activityTemp.push(s.data());
-            //       });
-            //       console.log('activityTemp 1', activityTemp);
-            //       setActivityList([...activityTemp]);
-            //       setSpinner(false);
-            //     });
-            // }
-            // console.log('index ', index, 'length ', activityId.length)
-            // if (index !== activityId.length) {
-            //   let stackTen = [];
-            //   for (let i = index; i < activityId.length; i++) {
-            //     stackTen.push(activityId[i]);
-            //   }
-            //   console.log('hadia', stackTen)
-            //   firestore()
-            //       .collection('Activities')
-            //       .where('id', 'in', stackTen)
-            //       // .where('ime', '>', 1626820440000)
-            //       .onSnapshot((documentSnapshot) => {
-            //         documentSnapshot.docs.forEach((s) => {
-            //           // console.log('User data: ', s.data());
-            //           activityTemp.push(s.data());
-            //         });
-            //         console.log('activityTemp 2', activityTemp);
-            //         setActivityList([...activityTemp]);
-            //         setSpinner(false);
-            //       });
-            // }
+          // for (let i = 0; i < Math.floor(activityId.length / 10); i++) {
+          //   // where deki in icin 10 luk blok haline gitirir
+          //   let stackTen = [];
+          //   for (let j = i * 10; j < (i + 1) * 10; j++) {
+          //     stackTen.push(activityId[j]);
+          //   }
+          //   index += 10;
+          //   console.log('x: ', stackTen, index);
+          //   firestore()
+          //     .collection('Activities')
+          //     .where('id', 'in', stackTen)
+          //     // .where('ime', '>', 1626820440000)
+          //     .onSnapshot((documentSnapshot) => {
+          //       documentSnapshot.docs.forEach((s) => {
+          //         // console.log('User data: ', s.data());
+          //         activityTemp.push(s.data());
+          //       });
+          //       console.log('activityTemp 1', activityTemp);
+          //       setActivityList([...activityTemp]);
+          //       setSpinner(false);
+          //     });
+          // }
+          // console.log('index ', index, 'length ', activityId.length)
+          // if (index !== activityId.length) {
+          //   let stackTen = [];
+          //   for (let i = index; i < activityId.length; i++) {
+          //     stackTen.push(activityId[i]);
+          //   }
+          //   console.log('hadia', stackTen)
+          //   firestore()
+          //       .collection('Activities')
+          //       .where('id', 'in', stackTen)
+          //       // .where('ime', '>', 1626820440000)
+          //       .onSnapshot((documentSnapshot) => {
+          //         documentSnapshot.docs.forEach((s) => {
+          //           // console.log('User data: ', s.data());
+          //           activityTemp.push(s.data());
+          //         });
+          //         console.log('activityTemp 2', activityTemp);
+          //         setActivityList([...activityTemp]);
+          //         setSpinner(false);
+          //       });
+          // }
           // } else {
           //   firestore()
           //     .collection('Activities')
@@ -292,7 +323,8 @@ export const ActivityListScreen = () => {
             <ActivitySelector>
               {activityList != null &&
                 activityList != undefined &&
-                activityList.filter(x => x.state === true)
+                activityList
+                  .filter((x) => x.state === true)
                   .sort((a, b) => {
                     return a.startTime - b.startTime;
                   })
@@ -318,7 +350,7 @@ export const ActivityListScreen = () => {
                         navigation.navigate('Activity Info', {
                           activity: activity,
                           getPlace: getPlace,
-                          addressList: addressList
+                          addressList: addressList,
                         })
                       }
                     />
