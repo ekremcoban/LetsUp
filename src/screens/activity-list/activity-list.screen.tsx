@@ -200,68 +200,6 @@ export const ActivityListScreen = () => {
               }
             }
           }
-
-          // if (activityId.length > 10) {
-          // for (let i = 0; i < Math.floor(activityId.length / 10); i++) {
-          //   // where deki in icin 10 luk blok haline gitirir
-          //   let stackTen = [];
-          //   for (let j = i * 10; j < (i + 1) * 10; j++) {
-          //     stackTen.push(activityId[j]);
-          //   }
-          //   index += 10;
-          //   console.log('x: ', stackTen, index);
-          //   firestore()
-          //     .collection('Activities')
-          //     .where('id', 'in', stackTen)
-          //     // .where('ime', '>', 1626820440000)
-          //     .onSnapshot((documentSnapshot) => {
-          //       documentSnapshot.docs.forEach((s) => {
-          //         // console.log('User data: ', s.data());
-          //         activityTemp.push(s.data());
-          //       });
-          //       console.log('activityTemp 1', activityTemp);
-          //       setActivityList([...activityTemp]);
-          //       setSpinner(false);
-          //     });
-          // }
-          // console.log('index ', index, 'length ', activityId.length)
-          // if (index !== activityId.length) {
-          //   let stackTen = [];
-          //   for (let i = index; i < activityId.length; i++) {
-          //     stackTen.push(activityId[i]);
-          //   }
-          //   console.log('hadia', stackTen)
-          //   firestore()
-          //       .collection('Activities')
-          //       .where('id', 'in', stackTen)
-          //       // .where('ime', '>', 1626820440000)
-          //       .onSnapshot((documentSnapshot) => {
-          //         documentSnapshot.docs.forEach((s) => {
-          //           // console.log('User data: ', s.data());
-          //           activityTemp.push(s.data());
-          //         });
-          //         console.log('activityTemp 2', activityTemp);
-          //         setActivityList([...activityTemp]);
-          //         setSpinner(false);
-          //       });
-          // }
-          // } else {
-          //   firestore()
-          //     .collection('Activities')
-          //     .where('id', 'in', activityId)
-          //     // .where('ime', '>', 1626820440000)
-          //     .onSnapshot((documentSnapshot) => {
-          //       documentSnapshot.docs.forEach((s) => {
-          //         activityTemp = [];
-          //         // console.log('User data: ', s.data());
-          //         activityTemp.push(s.data());
-          //       });
-
-          //       console.log('activityTemp 1', activityTemp);
-          //       setActivityList([...activityTempSet]);
-          //       setSpinner(false);
-          //     });
-          // }
         })
         .catch((e) => {
           setSpinner(false);
