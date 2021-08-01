@@ -979,32 +979,25 @@ class ActivityInfoScreen extends Component {
         )[0]._data;
       }
       
-      if (selectedMembers.ownerState == false) {
-        console.log('1')
+      if (!this.state.showPageToOwner && selectedMembers.ownerState == false) {
         return deniedView;
       }
-      else if (selectedMembers.ownerState == true && this.state.showPageToOwner) {
-        console.log('2')
+      else if (this.state.showPageToOwner) {
         return deleteView;
       } 
       else if (selectedMembers.ownerState == true && !this.state.showPageToOwner && !this.state.isJoin) {
-        console.log('3')
         return leaveButton;
       } 
       else if (selectedMembers.ownerState == true) {
-        console.log('4')
         return joinButton;
       }
       else if (selectedMembers.length === 0 && this.state.showPageToOwner) {
-        console.log('2')
         return deleteView;
       } 
       else if (selectedMembers.length === 0 && !this.state.showPageToOwner && !this.state.isJoin) {
-        console.log('3')
         return leaveButton;
       } 
       else if (selectedMembers.length === 0) {
-        console.log('4')
         return joinButton;
       }
     };
@@ -1022,7 +1015,7 @@ class ActivityInfoScreen extends Component {
         this.context.user.email) {
           return this.requestAlert()
       }
-      else if (selectedMembers.ownerState == true) {
+      else if (this.state.showPageToOwner) {
         return this.deleteActivity()
       }
       else if (selectedMembers.length === 0 && this.props.route.params.activity.owner.email !==

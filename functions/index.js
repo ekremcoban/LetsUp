@@ -175,7 +175,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
             console.log('memberNotifications is error --> ')
         })
     }
-
+    // Owner memberi onayladiginda
     else if (!beforeOwnerState && afterOwnerState) {
         message = {
             notification: {
@@ -193,6 +193,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
            fromWho: ownerMail,
            toWho: memberMail,
            state: true,
+           type: 5,
            createdTime: new Date().getTime()
        });
 
@@ -202,7 +203,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
             console.log('memberNotifications is error --> ')
         })
     }
-
+    // Owner memberi reddettiginde
     else if (!afterOwnerState) {
         message = {
             notification: {
