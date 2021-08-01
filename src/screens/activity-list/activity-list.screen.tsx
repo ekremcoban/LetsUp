@@ -55,9 +55,29 @@ export const ActivityListScreen = () => {
       getFirebase();
     }
 
+    getNotifications();
+
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (isCreateActivity) {
+        console.log('İÇERDE');
+        setIsCreateActivity(false);
+        if (!isMounted) {
+          getFirebase();
+        }
+      } else {
+        console.log('DIŞARDA');
+      }
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return () => {
+      unsubscribe(), setIsMounted(false);
+    };
+  }, [navigation]);
+
+  const getNotifications = () => {
     messaging().onNotificationOpenedApp((remoteMessage) => {
-      console.log('remote', remoteMessage);
-      console.log('TEST')
+      // console.log('remote', remoteMessage);
       navigation.navigate('Notification');
 
       // if (activityTemp != [] && addressTemp != []) {
@@ -81,24 +101,7 @@ export const ActivityListScreen = () => {
       //   }
       // }
     });
-
-    const unsubscribe = navigation.addListener('focus', () => {
-      if (isCreateActivity) {
-        console.log('İÇERDE');
-        setIsCreateActivity(false);
-        if (!isMounted) {
-          getFirebase();
-        }
-      } else {
-        console.log('DIŞARDA');
-      }
-    });
-
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return () => {
-      unsubscribe(), setIsMounted(false);
-    };
-  }, [navigation]);
+  }
 
   const getFirebase = () => {
     if (location != null) {
