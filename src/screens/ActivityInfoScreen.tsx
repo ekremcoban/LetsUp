@@ -69,7 +69,6 @@ class ActivityInfoScreen extends Component {
     this.isMember();
     LogBox.ignoreAllLogs();
 
-    console.log('Serefsiz');
     this.getMembers();
 
     const selectedAddress = this.props.route.params.addressList.filter(
@@ -248,13 +247,16 @@ class ActivityInfoScreen extends Component {
   };
 
   getMembers = async () => {
+    console.log('-----', this.state.showPageToMember);
     const members = await firestore()
       .collection('Members')
       .where('activityId', '==', this.props.route.params.activity.id)
       .where('memberState', '==', true)
       .get();
+
     console.log('Members', members.docs);
     let isThere = false;
+
     members.docs.forEach((item) => {
       isThere =
         item._data.memberMail === this.context.user.email &&
@@ -382,7 +384,7 @@ class ActivityInfoScreen extends Component {
   // Aktiviteye katilma ya da ayrilma talebi gonderir
   sendRequest = async () => {
     const token = await messaging().getToken();
-    console.log('token', token);
+    // console.log('token', token);
     let context = this.context;
     let memberCollection;
 
@@ -672,9 +674,7 @@ class ActivityInfoScreen extends Component {
     const deniedView = (
       <View style={[styles.viewbuttonAction, styles.viewButtonActionDelete]}>
         <Ionicons size={20} name="sad-outline" style={{ color: 'white' }} />
-        <Text style={styles.textButtonAction}>
-          Denied
-        </Text>
+        <Text style={styles.textButtonAction}>Denied</Text>
       </View>
     );
 
@@ -978,28 +978,52 @@ class ActivityInfoScreen extends Component {
             item._data.activityId === this.props.route.params.activity.id
         )[0]._data;
       }
-      
+      if (this.state.members != null) {
+        console.log('this.state.members', this.state.members[0]);
+      }
+
+      console.log(
+        'this.props.route.params.activity',
+        this.props.route.params.activity
+      );
+      console.log('selectedMembers', selectedMembers);
       if (!this.state.showPageToOwner && selectedMembers.ownerState == false) {
+        console.log('1');
         return deniedView;
-      }
-      else if (this.state.showPageToOwner) {
+      } else if (this.state.showPageToOwner) {
+        console.log('2');
         return deleteView;
-      } 
-      else if (selectedMembers.ownerState == true && !this.state.showPageToOwner && !this.state.isJoin) {
+      } else if (
+        selectedMembers.ownerState == true &&
+        !this.state.showPageToOwner &&
+        !this.state.isJoin
+      ) {
+        console.log('3');
         return leaveButton;
-      } 
-      else if (selectedMembers.ownerState == true) {
+      } else if (selectedMembers.ownerState == true) {
+        console.log('4');
+        return joinButton;
+      } else if (selectedMembers.length === 0 && this.state.showPageToOwner) {
+        console.log('5');
+        return deleteView;
+      } else if (
+        selectedMembers.length === 0 &&
+        !this.state.showPageToOwner &&
+        !this.state.isJoin
+      ) {
+        console.log('6');
+        return leaveButton;
+      } else if (selectedMembers.length === 0) {
+        console.log('7');
+        return joinButton;
+      } else if (!this.state.isJoin) {
+        console.log('8');
+        return leaveButton;
+      } else if (this.state.isJoin) {
+        console.log('9');
         return joinButton;
       }
-      else if (selectedMembers.length === 0 && this.state.showPageToOwner) {
-        return deleteView;
-      } 
-      else if (selectedMembers.length === 0 && !this.state.showPageToOwner && !this.state.isJoin) {
-        return leaveButton;
-      } 
-      else if (selectedMembers.length === 0) {
-        return joinButton;
-      }
+      // console.log('10')
     };
 
     const showActionButton = () => {
@@ -1011,21 +1035,29 @@ class ActivityInfoScreen extends Component {
         )[0]._data;
       }
 
-      if (selectedMembers.ownerState == true && this.props.route.params.activity.owner.email !==
-        this.context.user.email) {
-          return this.requestAlert()
+      if (
+        selectedMembers.ownerState == true &&
+        this.props.route.params.activity.owner.email !== this.context.user.email
+      ) {
+        return this.requestAlert();
+      } else if (this.state.showPageToOwner) {
+        return this.deleteActivity();
+      } else if (
+        selectedMembers.length === 0 &&
+        this.props.route.params.activity.owner.email !== this.context.user.email
+      ) {
+        return this.requestAlert();
+      } else if (selectedMembers.length === 0) {
+        return this.deleteActivity();
+      } else if (
+        this.props.route.params.activity.owner.email !==
+          this.context.user.email &&
+        (selectedMembers.ownerState == null ||
+          selectedMembers.ownerState == true)
+      ) {
+        return this.requestAlert();
       }
-      else if (this.state.showPageToOwner) {
-        return this.deleteActivity()
-      }
-      else if (selectedMembers.length === 0 && this.props.route.params.activity.owner.email !==
-        this.context.user.email) {
-          return this.requestAlert()
-      }
-      else if (selectedMembers.length === 0) {
-        return this.deleteActivity()
-      }
-    }
+    };
 
     const modal = (
       <View style={styles.centeredView}>
@@ -1122,11 +1154,7 @@ class ActivityInfoScreen extends Component {
             {this.state.showPageToMember && showOwnerMailIcon}
           </View>
           <View style={styles.viewAction}>
-            <TouchableOpacity
-              onPress={() =>
-                showActionButton()
-              }
-            >
+            <TouchableOpacity onPress={() => showActionButton()}>
               {showActionView()}
             </TouchableOpacity>
           </View>

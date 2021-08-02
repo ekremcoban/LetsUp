@@ -87,7 +87,7 @@ const NotificationScreen = () => {
                   <Ionicons
                     size={20}
                     name={'trash-outline'}
-                    style={{ color: 'gray', flex: 1 }}
+                    style={{ color: 'gray', flex: 1}}
                     onPress={() => deleteNotification(item)}
                   />
                 </View>
