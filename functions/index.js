@@ -37,11 +37,11 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
     const id = event.after.get('id');
     const activityId = event.after.get('activityId');
     const ownerName = event.after.get('ownerName');
-    const memberMail = event.after.get('memberMail');
+    const memberEmail = event.after.get('memberEmail');
     const memberName = event.after.get('memberName');
     const ownerToken = event.after.get('ownerToken');
     const memberToken = event.after.get('memberToken');
-    const ownerMail = event.after.get('ownerMail');
+    const ownerEmail = event.after.get('ownerEmail');
     const memberState = event.after.get('memberState');
     const afterOwnerState = event.after.get('ownerState');
     const beforeOwnerState = event.before.get('ownerState');
@@ -61,7 +61,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
 
     const isThere = await db.collection('Notifications')
     .where('activityId', '==', activityId)
-    .where('fromWho', '==', memberMail)
+    .where('fromWho', '==', memberEmail)
     .get();
 
 
@@ -92,8 +92,8 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
             title: message.notification.title,
             body: message.notification.body,
             branch: activities.docs[0].data().type,
-            fromWho: memberMail,
-            toWho: ownerMail,
+            fromWho: memberEmail,
+            toWho: ownerEmail,
             state: true,
             isActive: true,
             type: 0,
@@ -124,8 +124,8 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
            title: message.notification.title,
            body: message.notification.body,
            branch: activities.docs[0].data().type,
-           fromWho: memberMail,
-           toWho: ownerMail,
+           fromWho: memberEmail,
+           toWho: ownerEmail,
            state: true,
            isActive: true,
            type: 1,
@@ -159,8 +159,8 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
            title: message.notification.title,
            body: message.notification.body,
            branch: activities.docs[0].data().type,
-           fromWho: memberMail,
-           toWho: ownerMail,
+           fromWho: memberEmail,
+           toWho: ownerEmail,
            state: true,
            isActive: true,
            tyep: 2,
@@ -194,8 +194,8 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
            title: message.notification.title,
            body: message.notification.body,
            branch: activities.docs[0].data().type,
-           fromWho: memberMail,
-           toWho: ownerMail,
+           fromWho: memberEmail,
+           toWho: ownerEmail,
            state: true,
            isActive: true,
            tyep: 3,
@@ -226,8 +226,8 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
            title: message.notification.title,
            body: message.notification.body,
            branch: activities.docs[0].data().type,
-           fromWho: ownerMail,
-           toWho: memberMail,
+           fromWho: ownerEmail,
+           toWho: memberEmail,
            state: true,
            isActive: true,
            type: 4,
@@ -236,7 +236,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
 
        const isThere = await db.collection('Notifications')
        .where('activityId', '==', activityId)
-       .where('fromWho', '==', memberMail)
+       .where('fromWho', '==', memberEmail)
        .get();
    
    
@@ -273,8 +273,8 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
            title: message.notification.title,
            body: message.notification.body,
            branch: activities.docs[0].data().type,
-           fromWho: ownerMail,
-           toWho: memberMail,
+           fromWho: ownerEmail,
+           toWho: memberEmail,
            state: true,
            isActive: true,
            type: 5,
@@ -283,7 +283,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
 
        const isThere = await db.collection('Notifications')
        .where('activityId', '==', activityId)
-       .where('fromWho', '==', memberMail)
+       .where('fromWho', '==', memberEmail)
        .get();
    
    
@@ -335,8 +335,8 @@ exports.activityNotifications=functions.firestore.document('Activities/{id}').on
                 title: message.notification.title,
                 body: message.notification.body,
                 branch: type,
-                fromWho: member.data().ownerMail,
-                toWho: member.data().memberMail,
+                fromWho: member.data().ownerEmail,
+                toWho: member.data().memberEmail,
                 state: true,
                 isActive: true,
                 type: 6,

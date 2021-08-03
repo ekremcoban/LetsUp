@@ -259,7 +259,7 @@ class ActivityInfoScreen extends Component {
 
     members.docs.forEach((item) => {
       isThere =
-        item._data.memberMail === this.context.user.email &&
+        item._data.memberEmail === this.context.user.email &&
         item._data.ownerState;
 
       if (isThere) {
@@ -281,7 +281,7 @@ class ActivityInfoScreen extends Component {
     const result = await firestore()
       .collection('Members')
       .where('activityId', '==', this.props.route.params.activity.id)
-      .where('memberMail', '==', this.context.user.email)
+      .where('memberEmail', '==', this.context.user.email)
       .get();
 
     console.log('te', result.docs);
@@ -392,7 +392,7 @@ class ActivityInfoScreen extends Component {
     memberCollection = await firestore()
       .collection('Members')
       .where('activityId', '==', this.props.route.params.activity.id)
-      .where('memberMail', '==', context.user.email)
+      .where('memberEmail', '==', context.user.email)
       .get();
 
     if (memberCollection.docs.length > 0) {
@@ -406,10 +406,10 @@ class ActivityInfoScreen extends Component {
       this.setState({ isJoin: false });
       request = {
         id: uuidv4(),
-        ownerMail: this.props.route.params.activity.owner.email,
+        ownerEmail: this.props.route.params.activity.owner.email,
         ownerToken: this.props.route.params.activity.owner.token,
         ownerName: this.props.route.params.activity.owner.name,
-        memberMail: context.user.email,
+        memberEmail: context.user.email,
         memberToken: context.user.token,
         memberName: context.user.name,
         memberPhoto: context.user.photo,
@@ -562,7 +562,7 @@ class ActivityInfoScreen extends Component {
       .get();
 
     const selectedMember = memberCollection.docs
-      .filter((item) => item.data().memberMail === member._data.memberMail)[0]
+      .filter((item) => item.data().memberEmail === member._data.memberEmail)[0]
       .data();
     selectedMember.ownerState = false;
     selectedMember.memberRating = null;
@@ -583,7 +583,7 @@ class ActivityInfoScreen extends Component {
       .get();
 
     const selectedMember = memberCollection.docs
-      .filter((item) => item.data().memberMail === member._data.memberMail)[0]
+      .filter((item) => item.data().memberEmail === member._data.memberEmail)[0]
       .data();
 
     selectedMember.ownerState = true;
@@ -599,11 +599,10 @@ class ActivityInfoScreen extends Component {
     const memberCollection = await firestore()
       .collection('Members')
       .where('activityId', '==', this.props.route.params.activity.id)
-      // .where('memberMail', '==', member._data.memberMail)
       .get();
 
     const selectedMember = memberCollection.docs
-      .filter((item) => item.data().memberMail === member._data.memberMail)[0]
+      .filter((item) => item.data().memberEmail === member._data.memberEmail)[0]
       .data();
     selectedMember.memberJoin = false;
     selectedMember.memberRating = null;
@@ -622,13 +621,12 @@ class ActivityInfoScreen extends Component {
     const memberCollection = await firestore()
       .collection('Members')
       .where('activityId', '==', this.props.route.params.activity.id)
-      // .where('memberMail', '==', this.state.selectedMember._data.memberMail)
       .get();
 
     const selectedMember = memberCollection.docs
       .filter(
         (item) =>
-          item.data().memberMail === this.state.selectedMember._data.memberMail
+          item.data().memberEmail === this.state.selectedMember._data.memberEmail
       )[0]
       .data();
     selectedMember.memberJoin = true;
@@ -806,7 +804,7 @@ class ActivityInfoScreen extends Component {
             style={{ color: 'gray' }}
             onPress={() =>
               Linking.openURL(
-                `mailto:${member._data.memberMail}?subject=${this.props.route.params.activity.name}&body=Hello ${member._data.memberName}`
+                `mailto:${member._data.memberEmail}?subject=${this.props.route.params.activity.name}&body=Hello ${member._data.memberName}`
               )
             }
           />
@@ -814,7 +812,7 @@ class ActivityInfoScreen extends Component {
       );
     };
 
-    const showOwnerMailIcon = (
+    const showOwnerEmailIcon = (
       <Ionicons
         size={20}
         name="mail"
@@ -1151,7 +1149,7 @@ class ActivityInfoScreen extends Component {
                   this.props.route.params.activity.owner.surname}
               </Text>
             </TouchableNativeFeedback>
-            {this.state.showPageToMember && showOwnerMailIcon}
+            {this.state.showPageToMember && showOwnerEmailIcon}
           </View>
           <View style={styles.viewAction}>
             <TouchableOpacity onPress={() => showActionButton()}>
