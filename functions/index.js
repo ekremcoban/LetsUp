@@ -33,8 +33,9 @@ exports.usersUpdate=functions.firestore.document('Users/{id}').onUpdate(async ev
 });
 
 // Aktiviteye uye oldugunda, uyelikten ciktiginda
-exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite(async event => {
-    const id = event.after.get('activityId');
+exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite(async (event) => {
+    const id = event.after.get('id');
+    const activityId = event.after.get('activityId');
     const ownerName = event.after.get('ownerName');
     const memberMail = event.after.get('memberMail');
     const memberName = event.after.get('memberName');
@@ -47,15 +48,31 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
     const memberIsCanceled = event.after.get('memberIsCanceled');
 
     const activities = await db.collection('Activities')
-    .where('id', '==', id)
+    .where('id', '==', activityId)
     .get();
 
-    const activityAddress = await db.collection('ActivityAddress')
-    .where('time', '>=', new Date().getTime())
-    .orderBy('time')
-    .get()
+    // const activityAddress = await db.collection('ActivityAddress')
+    // .where('time', '>=', new Date().getTime())
+    // .orderBy('time')
+    // .get()
 
     let message;
+    let collectionRef = await db.collection('Notifications').doc();
+
+    const isThere = await db.collection('Notifications')
+    .where('activityId', '==', activityId)
+    .where('fromWho', '==', memberMail)
+    .get();
+
+
+    if (isThere.docs.length > 0) {
+        let inactiveNotification = isThere.docs[0].data();
+        inactiveNotification.isActive = false;
+        
+        await db.collection('Notifications')
+        .doc(inactiveNotification.id)
+        .set(inactiveNotification)
+    };
 
     // Memberdan uyelik istegi owner onaylamadi ya da reddetmedi daha
     if (memberIsCanceled == null && memberState && afterOwnerState == null) {
@@ -66,19 +83,19 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
             },
         }
 
-        const docRef = await db.collection('Notifications')
-        .doc(); 
-
-        db.collection('Notifications')
-        .doc()
+        await db.collection('Notifications')
+        .doc(collectionRef.id)
         .set({
-            activityId: id,
+            id: collectionRef.id,
+            membersId: id,
+            activityId: activityId,
             title: message.notification.title,
             body: message.notification.body,
             branch: activities.docs[0].data().type,
             fromWho: memberMail,
             toWho: ownerMail,
             state: true,
+            isActive: true,
             type: 0,
             createdTime: new Date().getTime()
         });
@@ -100,8 +117,9 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
        }
 
        db.collection('Notifications')
-       .doc()
+       .doc(collectionRef.id)
        .set({
+           id: collectionRef.id,
            activityId: id,
            title: message.notification.title,
            body: message.notification.body,
@@ -109,6 +127,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
            fromWho: memberMail,
            toWho: ownerMail,
            state: true,
+           isActive: true,
            type: 1,
            createdTime: new Date().getTime()
        });
@@ -133,8 +152,9 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
        }
 
        db.collection('Notifications')
-       .doc()
+       .doc(collectionRef.id)
        .set({
+           id: collectionRef.id,
            activityId: id,
            title: message.notification.title,
            body: message.notification.body,
@@ -142,6 +162,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
            fromWho: memberMail,
            toWho: ownerMail,
            state: true,
+           isActive: true,
            tyep: 2,
            createdTime: new Date().getTime()
        });
@@ -166,8 +187,9 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
        }
 
        db.collection('Notifications')
-       .doc()
+       .doc(collectionRef.id)
        .set({
+           id: collectionRef.id,
            activityId: id,
            title: message.notification.title,
            body: message.notification.body,
@@ -175,6 +197,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
            fromWho: memberMail,
            toWho: ownerMail,
            state: true,
+           isActive: true,
            tyep: 3,
            createdTime: new Date().getTime()
        });
@@ -196,8 +219,9 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
        }
 
        db.collection('Notifications')
-       .doc()
+       .doc(collectionRef.id)
        .set({
+           id: collectionRef.id,
            activityId: id,
            title: message.notification.title,
            body: message.notification.body,
@@ -205,6 +229,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
            fromWho: ownerMail,
            toWho: memberMail,
            state: true,
+           isActive: true,
            type: 4,
            createdTime: new Date().getTime()
        });
@@ -226,8 +251,9 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
        }
 
        db.collection('Notifications')
-       .doc()
+       .doc(collectionRef.id)
        .set({
+           id: collectionRef.id,
            activityId: id,
            title: message.notification.title,
            body: message.notification.body,
@@ -235,6 +261,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
            fromWho: ownerMail,
            toWho: memberMail,
            state: true,
+           isActive: true,
            type: 5,
            createdTime: new Date().getTime()
        });
@@ -254,6 +281,8 @@ exports.activityNotifications=functions.firestore.document('Activities/{id}').on
     const state = event.after.get('state');
     const type = event.after.get('type');
 
+    let collectionRef = await db.collection('Notifications').doc();
+
     const message = {
         notification: {
             title: 'Sorry For This',
@@ -269,8 +298,9 @@ exports.activityNotifications=functions.firestore.document('Activities/{id}').on
 
         members.docs.map(async member => {
             db.collection('Notifications')
-            .doc()
+            .doc(collectionRef.id)
             .set({
+                id: collectionRef.id,
                 activityId: id,
                 title: message.notification.title,
                 body: message.notification.body,
@@ -278,6 +308,7 @@ exports.activityNotifications=functions.firestore.document('Activities/{id}').on
                 fromWho: member.data().ownerMail,
                 toWho: member.data().memberMail,
                 state: true,
+                isActive: true,
                 type: 6,
                 createdTime: new Date().getTime()
             });

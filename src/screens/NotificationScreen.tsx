@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { StyleSheet, Text, View, Image, Button } from 'react-native';
+import { StyleSheet, Text, View, Image, Button, Alert } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import ContextApi from 'context/ContextApi';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const NotificationScreen = () => {
   const { user } = useContext(ContextApi);
   const [notifications, setNotifications] = useState([]);
+  const [ first, setFirst ] = useState<number>(-1);
 
   useEffect(() => {
     getNotificationsInfo();
@@ -47,36 +49,111 @@ const NotificationScreen = () => {
     }
   };
 
-  const deleteNotification = async (item: Object) => {
+  const deleteNotification = async (title: string, content: string, item: Object) => {
+    Alert.alert(title, content, [
+      {
+        text: 'No',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'Yes',
+        onPress: async () => {
+          let temp = item;
+          temp.state = false;
+      
+          const result = await firestore()
+          .collection('Notifications')
+          .doc(temp.id)
+          .set(temp);
+        },
+      },
+    ]);
+  }
+  
+  const accept = (title: string, content: string, item: Object) => {
     console.log('item', item)
-    const result = await firestore()
-    .collection('Notifications')
-    .where('acitivityId', '==', item.activityId)
-    .where('toWho', '==', user.email)
-    .get();
+    Alert.alert(title, content, [
+      {
+        text: 'No',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'Yes',
+        onPress: async () => {
+      
+          const member = await firestore()
+          .collection('Members')
+          .doc(item.membersId)
+          .get();
 
-    console.log('sonuc', result.docs)
+          console.log('mem', member.data())
+          let temp = member.data();
+          temp.ownerState = true;
+
+          const result = await firestore()
+          .collection('Members')
+          .doc(item.membersId)
+          .set(temp);
+        },
+      },
+    ]);
   }
 
-  const showButton = (
+  const denied = (title: string, content: string, item: Object) => {
+    console.log('item', item)
+    Alert.alert(title, content, [
+      {
+        text: 'No',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'Yes',
+        onPress: async () => {
+      
+          const member = await firestore()
+          .collection('Members')
+          .doc(item.membersId)
+          .get();
+
+          console.log('mem', member.data())
+          let temp = member.data();
+          temp.ownerState = false;
+
+          const result = await firestore()
+          .collection('Members')
+          .doc(item.membersId)
+          .set(temp);
+        },
+      },
+    ]);
+  }
+
+  const showButton = (item: Object) => {
+    return (
     <View style={{ flexDirection: 'row', marginTop: 5, }}>
       <View style={{ marginEnd: 10, flex: 1 }}>
-        <Button title="Decline" color={'red'} onPress={() => {}} />
+        <Button title="Decline" color={'red'} onPress={() => denied('Warning', 'Are you sure ?', item)} />
       </View>
       <View style={{ flex: 1, marginEnd: '30%' }}>
-      <Button title="Accept" color={'#37CC4A'} onPress={() => {}} />
+      <Button title="Accept" color={'#37CC4A'} onPress={() => accept('Warning', 'Are you sure ?', item)} />
       </View>
     </View>
   );
+}
 
   return (
+    <ScrollView>
     <View style={{ marginTop: 10 }}>
       {notifications != [] &&
         notifications
           .sort((a, b) => {
             return b.createdTime - a.createdTime;
           })
-          .map((item) => (
+          .map((item) => {
+            return (
             <View key={item.createdTime} style={styles.viewContainer}>
               <View style={styles.viewLeft}>
                 <Image source={findPicture(item.branch)} style={styles.icon} />
@@ -88,15 +165,16 @@ const NotificationScreen = () => {
                     size={20}
                     name={'trash-outline'}
                     style={{ color: 'gray', flex: 1}}
-                    onPress={() => deleteNotification(item)}
+                    onPress={() => deleteNotification('Warning', 'Are you sure ?', item)}
                   />
                 </View>
                 <Text style={styles.textBody}>{item.body}</Text>
-                {item.type === 0 && showButton}
+                {item.type === 0 && item.isActive && showButton(item)}
               </View>
             </View>
-          ))}
+          )})}
     </View>
+    </ScrollView>
   );
 };
 
