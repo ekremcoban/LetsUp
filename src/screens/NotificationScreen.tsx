@@ -8,7 +8,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 const NotificationScreen = () => {
   const { user } = useContext(ContextApi);
   const [notifications, setNotifications] = useState([]);
-  const [ first, setFirst ] = useState<number>(-1);
+  const [ selected, setSelected ] = useState<Boolean>(false);
 
   useEffect(() => {
     getNotificationsInfo();
@@ -82,7 +82,7 @@ const NotificationScreen = () => {
       {
         text: 'Yes',
         onPress: async () => {
-      
+          setSelected(true);
           const member = await firestore()
           .collection('Members')
           .doc(item.membersId)
@@ -112,7 +112,7 @@ const NotificationScreen = () => {
       {
         text: 'Yes',
         onPress: async () => {
-      
+          setSelected(true);
           const member = await firestore()
           .collection('Members')
           .doc(item.membersId)
@@ -169,7 +169,7 @@ const NotificationScreen = () => {
                   />
                 </View>
                 <Text style={styles.textBody}>{item.body}</Text>
-                {item.type === 0 && item.isActive && showButton(item)}
+                {item.type === 0 && (item.isActive && !selected) && showButton(item)}
               </View>
             </View>
           )})}

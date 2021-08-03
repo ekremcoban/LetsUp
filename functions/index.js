@@ -234,6 +234,21 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
            createdTime: new Date().getTime()
        });
 
+       const isThere = await db.collection('Notifications')
+       .where('activityId', '==', activityId)
+       .where('fromWho', '==', memberMail)
+       .get();
+   
+   
+       if (isThere.docs.length > 0) {
+           let inactiveNotification = isThere.docs[0].data();
+           inactiveNotification.isActive = false;
+           
+           await db.collection('Notifications')
+           .doc(inactiveNotification.id)
+           .set(inactiveNotification)
+       };
+
        return admin.messaging().sendToDevice(memberToken, message).then(res => {
         console.log('memberNotifications is succeess --> ', ownerName, memberName)
         }).catch(e => {
@@ -265,6 +280,21 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
            type: 5,
            createdTime: new Date().getTime()
        });
+
+       const isThere = await db.collection('Notifications')
+       .where('activityId', '==', activityId)
+       .where('fromWho', '==', memberMail)
+       .get();
+   
+   
+       if (isThere.docs.length > 0) {
+           let inactiveNotification = isThere.docs[0].data();
+           inactiveNotification.isActive = false;
+           
+           await db.collection('Notifications')
+           .doc(inactiveNotification.id)
+           .set(inactiveNotification)
+       };
 
        return admin.messaging().sendToDevice(memberToken, message).then(res => {
         console.log('memberNotifications is succeess --> ', ownerName, memberName)
