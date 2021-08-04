@@ -62,6 +62,8 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
     const isThere = await db.collection('Notifications')
     .where('activityId', '==', activityId)
     .where('fromWho', '==', memberEmail)
+    .where('isActive', '==', true)
+    .where('type', '==', 0)
     .get();
 
 

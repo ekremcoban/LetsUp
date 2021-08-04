@@ -64,9 +64,9 @@ const MyActivitiesScreen = () => {
       // .where('country', '==', location.country_name)
       // .where('cityEng', '==', convertLowerString(location.city))
       .where('memberEmail', '==', user.email)
+      .where('ownerState', '==', true)
       // .where('time', '<=', new Date().getTime() + 30 * 86400000)
-      .get()
-      .then((querySnapshot) => {
+      .onSnapshot((querySnapshot) => {
         // console.log('Total users: ', querySnapshot.size);
 
         querySnapshot.forEach((documentSnapshot) => {
@@ -202,7 +202,7 @@ const MyActivitiesScreen = () => {
             </View> */}
           </View>
         ))}
-        <View style={{borderWidth: 0.5}} />
+        {activityOwnerList != null && activityOwnerList.length > 0 && <View style={{borderWidth: 0.5}} />}
         {activityMemberList != null &&
         activityMemberList.map((item) => (
           <View key={item.id} style={styles.viewContainer}>
