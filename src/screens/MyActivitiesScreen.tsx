@@ -1,36 +1,10 @@
 import React from 'react';
 import { useEffect, useContext, useState } from 'react';
-import { StyleSheet, Text, View, Image, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, Alert, TouchableOpacity } from 'react-native';
 import { Icon } from 'react-native-elements';
 import firestore from '@react-native-firebase/firestore';
 import ContextApi from 'context/ContextApi';
-
-const noti = [
-  {
-    id: 0,
-    pic: require('assets/img/jogging.png'),
-    boldText: 'Koşmaya var mısın?',
-    text: 'etkinliğinin güzergahı değişti',
-    date: 'April 8',
-    time: '20:00',
-  },
-  {
-    id: 1,
-    pic: require('assets/img/hiking.png'),
-    boldText: 'Yokuşsever Konyalılar Toplanıyor',
-    text: 'etkinliği yarın başlıyor',
-    date: 'April 11',
-    time: '23:00',
-  },
-  {
-    id: 2,
-    pic: require('assets/img/bicycle.png'),
-    boldText: 'İki teker Karaköy Turu',
-    text: 'etkinliği iptal edildi',
-    date: 'April 18',
-    time: '09:00',
-  },
-];
+import { colors } from 'utilities/constants/globalValues';
 
 let activityId = [];
 let activityTemp = [];
@@ -41,6 +15,7 @@ const MyActivitiesScreen = () => {
   const [spinner, setSpinner] = useState<boolean>(true);
   const [activityOwnerList, setActivityOwnerList] = useState(null);
   const [activityMemberList, setActivityMemberList] = useState(null);
+  const [ownerShow, setOwnerShow] = useState<Boolean>(true);
 
   useEffect(() => {
     getFirebase();
@@ -148,118 +123,198 @@ const MyActivitiesScreen = () => {
       });
   };
 
+  const showAsOwnerPage =
+    activityOwnerList != null &&
+    activityOwnerList.map((item) => (
+      <View key={item.id} style={styles.viewContainer}>
+        <View style={styles.viewLeft}>
+          <Image
+            source={
+              item.type === 'basketball'
+                ? require('assets/img/basketball.png')
+                : item.type === 'bicycle'
+                ? require('assets/img/bicycle.png')
+                : item.type === 'hiking'
+                ? require('assets/img/hiking.png')
+                : item.type === 'jogging'
+                ? require('assets/img/jogging.png')
+                : item.type === 'tennis'
+                ? require('assets/img/tennis.png')
+                : require('assets/img/join.png')
+            }
+            style={styles.icon}
+          />
+        </View>
+        <View style={styles.viewMiddle}>
+          <Text style={styles.textBold}>{item.name}</Text>
+          <View style={styles.viewDateTime}>
+            <Icon size={20} name="calendar-outline" type="ionicon" />
+            <Text style={styles.textDate}>
+              {' '}
+              {new Date(item.startTime).toString().substring(0, 15)}{' '}
+            </Text>
+            <Icon size={20} name="time-outline" type="ionicon" />
+            <Text style={styles.textDate}>
+              {' '}
+              {(new Date(item.startTime).getHours() < 10
+                ? '0' + new Date(item.startTime).getHours()
+                : new Date(item.startTime).getHours()) +
+                ':' +
+                (new Date(item.startTime).getMinutes() < 10
+                  ? '0' + new Date(item.startTime).getMinutes()
+                  : new Date(item.startTime).getMinutes())}
+            </Text>
+          </View>
+        </View>
+        {/* <View style={styles.viewRight}>
+            <Icon
+              size={20}
+              name="trash-outline"
+              type="ionicon"
+              onPress={() => Alert.alert('Silim mi :)')}
+            />
+          </View> */}
+      </View>
+    ));
+
+  const showAsMemberPage =
+    activityMemberList != null &&
+    activityMemberList.map((item) => (
+      <View key={item.id} style={styles.viewContainer}>
+        <View style={styles.viewLeft}>
+          <Image
+            source={
+              item.type === 'basketball'
+                ? require('assets/img/basketball.png')
+                : item.type === 'bicycle'
+                ? require('assets/img/bicycle.png')
+                : item.type === 'hiking'
+                ? require('assets/img/hiking.png')
+                : item.type === 'jogging'
+                ? require('assets/img/jogging.png')
+                : item.type === 'tennis'
+                ? require('assets/img/tennis.png')
+                : require('assets/img/join.png')
+            }
+            style={styles.icon}
+          />
+        </View>
+        <View style={styles.viewMiddle}>
+          <Text style={styles.textBold}>{item.name}</Text>
+          <View style={styles.viewDateTime}>
+            <Icon size={20} name="calendar-outline" type="ionicon" />
+            <Text style={styles.textDate}>
+              {' '}
+              {new Date(item.startTime).toString().substring(0, 15)}{' '}
+            </Text>
+            <Icon size={20} name="time-outline" type="ionicon" />
+            <Text style={styles.textDate}>
+              {' '}
+              {(new Date(item.startTime).getHours() < 10
+                ? '0' + new Date(item.startTime).getHours()
+                : new Date(item.startTime).getHours()) +
+                ':' +
+                (new Date(item.startTime).getMinutes() < 10
+                  ? '0' + new Date(item.startTime).getMinutes()
+                  : new Date(item.startTime).getMinutes())}
+            </Text>
+          </View>
+        </View>
+        {/* <View style={styles.viewRight}>
+          <Icon
+            size={20}
+            name="trash-outline"
+            type="ionicon"
+            onPress={() => Alert.alert('Silim mi :)')}
+          />
+        </View> */}
+      </View>
+    ));
   return (
     <View style={{ marginTop: 10 }}>
-      {activityOwnerList != null &&
-        activityOwnerList.map((item) => (
-          <View key={item.id} style={styles.viewContainer}>
-            <View style={styles.viewLeft}>
-              <Image
-                source={
-                  item.type === 'basketball'
-                    ? require('assets/img/basketball.png')
-                    : item.type === 'bicycle'
-                    ? require('assets/img/bicycle.png')
-                    : item.type === 'hiking'
-                    ? require('assets/img/hiking.png')
-                    : item.type === 'jogging'
-                    ? require('assets/img/jogging.png')
-                    : item.type === 'tennis'
-                    ? require('assets/img/tennis.png')
-                    : require('assets/img/join.png')
-                }
-                style={styles.icon}
-              />
-            </View>
-            <View style={styles.viewMiddle}>
-              <Text style={styles.textBold}>{item.name} (Owner)</Text>
-              <View style={styles.viewDateTime}>
-                <Icon size={20} name="calendar-outline" type="ionicon" />
-                <Text style={styles.textDate}>
-                  {' '}
-                  {new Date(item.startTime).toString().substring(0, 15)}{' '}
-                </Text>
-                <Icon size={20} name="time-outline" type="ionicon" />
-                <Text style={styles.textDate}>
-                  {' '}
-                  {(new Date(item.startTime).getHours() < 10
-                    ? '0' + new Date(item.startTime).getHours()
-                    : new Date(item.startTime).getHours()) +
-                    ':' +
-                    (new Date(item.startTime).getMinutes() < 10
-                      ? '0' + new Date(item.startTime).getMinutes()
-                      : new Date(item.startTime).getMinutes())}
-                </Text>
-              </View>
-            </View>
-            {/* <View style={styles.viewRight}>
-              <Icon
-                size={20}
-                name="trash-outline"
-                type="ionicon"
-                onPress={() => Alert.alert('Silim mi :)')}
-              />
-            </View> */}
-          </View>
-        ))}
-        {activityOwnerList != null && activityOwnerList.length > 0 && <View style={{borderWidth: 0.5}} />}
-        {activityMemberList != null &&
-        activityMemberList.map((item) => (
-          <View key={item.id} style={styles.viewContainer}>
-            <View style={styles.viewLeft}>
-              <Image
-                source={
-                  item.type === 'basketball'
-                    ? require('assets/img/basketball.png')
-                    : item.type === 'bicycle'
-                    ? require('assets/img/bicycle.png')
-                    : item.type === 'hiking'
-                    ? require('assets/img/hiking.png')
-                    : item.type === 'jogging'
-                    ? require('assets/img/jogging.png')
-                    : item.type === 'tennis'
-                    ? require('assets/img/tennis.png')
-                    : require('assets/img/join.png')
-                }
-                style={styles.icon}
-              />
-            </View>
-            <View style={styles.viewMiddle}>
-              <Text style={styles.textBold}>{item.name}</Text>
-              <View style={styles.viewDateTime}>
-                <Icon size={20} name="calendar-outline" type="ionicon" />
-                <Text style={styles.textDate}>
-                  {' '}
-                  {new Date(item.startTime).toString().substring(0, 15)}{' '}
-                </Text>
-                <Icon size={20} name="time-outline" type="ionicon" />
-                <Text style={styles.textDate}>
-                  {' '}
-                  {(new Date(item.startTime).getHours() < 10
-                    ? '0' + new Date(item.startTime).getHours()
-                    : new Date(item.startTime).getHours()) +
-                    ':' +
-                    (new Date(item.startTime).getMinutes() < 10
-                      ? '0' + new Date(item.startTime).getMinutes()
-                      : new Date(item.startTime).getMinutes())}
-                </Text>
-              </View>
-            </View>
-            {/* <View style={styles.viewRight}>
-              <Icon
-                size={20}
-                name="trash-outline"
-                type="ionicon"
-                onPress={() => Alert.alert('Silim mi :)')}
-              />
-            </View> */}
-          </View>
-        ))}
+      <View
+        style={{
+          flexDirection: 'row',
+          height: 50,
+          borderWidth: 0.5,
+          borderColor: '#AAA',
+          borderRadius: 20,
+          marginStart: 10,
+          marginEnd: 10,
+        }}
+      >
+        <TouchableOpacity
+        onPress={() => setOwnerShow(true)}
+          style={
+            ownerShow
+              ? [
+                  styles.asOwnerContainer,
+                  {
+                    borderWidth: 0.5,
+                    borderRadius: 20,
+                    borderColor: '#AAA',
+                    backgroundColor: colors.bar,
+                  },
+                ]
+              : styles.asOwnerContainer
+          }
+        >
+          <Text
+            style={
+              ownerShow
+                ? styles.asOwnerText
+                : [styles.asOwnerText, { color: colors.bar }]
+            }
+          >
+            As An Owner
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+        onPress={() => setOwnerShow(false)}
+          style={
+            !ownerShow
+              ? [
+                  styles.asMemberContainer,
+                  {
+                    borderWidth: 0.5,
+                    borderRadius: 20,
+                    borderColor: '#AAA',
+                    backgroundColor: colors.bar,
+                  },
+                ]
+              : styles.asMemberContainer
+          }
+        >
+          <Text
+            style={
+              !ownerShow
+                ? styles.asOwnerText
+                : [styles.asOwnerText, { color: colors.bar }]
+            }
+          >As A Member</Text>
+        </TouchableOpacity>
+      </View>
+      {ownerShow ? showAsOwnerPage : showAsMemberPage}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  asOwnerContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  asMemberContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  asOwnerText: {
+    color: 'white',
+    fontWeight: '500',
+    fontSize: 15,
+  },
   viewContainer: {
     flexDirection: 'row',
     height: 90,
