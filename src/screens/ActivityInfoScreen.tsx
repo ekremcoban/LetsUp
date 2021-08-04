@@ -49,6 +49,7 @@ const heightView =
     : 150;
 
 let request = [];
+let selectedMembers = [];
 
 class ActivityInfoScreen extends Component {
   static contextType = ContextApi;
@@ -92,157 +93,159 @@ class ActivityInfoScreen extends Component {
 
   showMap = (selectedAddress: Object) => {
     setTimeout(() => {
-      if (selectedAddress.length === 1) {
-        this.refs['mapRef'].injectJavaScript(`
-      L.Routing.control({
-        show: false,
-        waypoints: [
-          L.latLng(${selectedAddress[0].geoCode.latitude}, ${selectedAddress[0].geoCode.longitude})
-        ]
-      }).addTo(mymap.setView([${selectedAddress[0].geoCode.latitude}, ${selectedAddress[0].geoCode.longitude}], 11));
-  
-      L.marker([${selectedAddress[0].geoCode.latitude}, ${selectedAddress[0].geoCode.longitude}]).addTo(mymap)
-     
-      .openPopup();
-      `);
-      } else if (selectedAddress.length === 2) {
-        this.refs['mapRef'].injectJavaScript(`
-      L.Routing.control({
-        show: false,
-        waypoints: [
-          L.latLng(${selectedAddress[0].geoCode.latitude}, ${
-          selectedAddress[0].geoCode.longitude
-        }),
-          L.latLng(${selectedAddress[1].geoCode.latitude}, ${
-          selectedAddress[1].geoCode.longitude
-        })
-        ]
-      }).addTo(mymap.setView([${
-        (selectedAddress[0].geoCode.latitude +
-          selectedAddress[1].geoCode.latitude) /
-        2
-      }, 
-      ${
-        (selectedAddress[0].geoCode.longitude +
-          selectedAddress[1].geoCode.longitude) /
-        2
-      }], 9));
-  
-      L.marker([${selectedAddress[0].geoCode.latitude}, ${
-          selectedAddress[0].geoCode.longitude
-        }]).addTo(mymap)
-      .bindPopup('Start Point')
-      
-      .openPopup();
-      `);
-      } else if (selectedAddress.length === 3) {
-        this.refs['mapRef'].injectJavaScript(`
-      L.Routing.control({
-        show: false,
-        waypoints: [
-          L.latLng(${selectedAddress[0].geoCode.latitude}, ${
-          selectedAddress[0].geoCode.longitude
-        }),
-          L.latLng(${selectedAddress[1].geoCode.latitude}, ${
-          selectedAddress[1].geoCode.longitude
-        }),
-          L.latLng(${selectedAddress[2].geoCode.latitude}, ${
-          selectedAddress[2].geoCode.longitude
-        })
-        ]
-      }).addTo(mymap.setView([${
-        (selectedAddress[0].geoCode.latitude +
-          selectedAddress[2].geoCode.latitude) /
-        2
-      },
-       ${
-         (selectedAddress[0].geoCode.longitude +
-           selectedAddress[2].geoCode.longitude) /
-         2
-       }], 8));
-  
-      L.marker([${selectedAddress[0].geoCode.latitude}, ${
-          selectedAddress[0].geoCode.longitude
-        }]).addTo(mymap)
-      .bindPopup('Start Point')
-      
-      .openPopup();
-      `);
-      } else if (selectedAddress.length === 4) {
-        this.refs['mapRef'].injectJavaScript(`
-      L.Routing.control({
-        show: false,
-        waypoints: [
-          L.latLng(${selectedAddress[0].geoCode.latitude}, ${
-          selectedAddress[0].geoCode.longitude
-        }),
-          L.latLng(${selectedAddress[1].geoCode.latitude}, ${
-          selectedAddress[1].geoCode.longitude
-        }),
-          L.latLng(${selectedAddress[2].geoCode.latitude}, ${
-          selectedAddress[2].geoCode.longitude
-        }),
-          L.latLng(${selectedAddress[3].geoCode.latitude}, ${
-          selectedAddress[3].geoCode.longitude
-        })
-        ]
-      }).addTo(mymap.setView([${
-        (selectedAddress[0].geoCode.latitude +
-          selectedAddress[3].geoCode.latitude) /
-        2
-      },
-       ${
-         (selectedAddress[0].geoCode.longitude +
-           selectedAddress[3].geoCode.longitude) /
-         2
-       }], 5));
-  
-      L.marker([${selectedAddress[0].geoCode.latitude}, ${
-          selectedAddress[0].geoCode.longitude
-        }]).addTo(mymap)
-      .bindPopup('Start Point')
-      
-      .openPopup();
-      `);
-      } else {
-        this.refs['mapRef'].injectJavaScript(`
-      L.Routing.control({
-        show: false,
-        waypoints: [
-          L.latLng(${selectedAddress[0].geoCode.latitude}, ${
-          selectedAddress[0].geoCode.longitude
-        }),
-          L.latLng(${selectedAddress[1].geoCode.latitude}, ${
-          selectedAddress[1].geoCode.longitude
-        }),
-          L.latLng(${selectedAddress[2].geoCode.latitude}, ${
-          selectedAddress[2].geoCode.longitude
-        }),
-          L.latLng(${selectedAddress[3].geoCode.latitude}, ${
-          selectedAddress[3].geoCode.longitude
-        }),
-          L.latLng(${selectedAddress[4].geoCode.latitude}, ${
-          selectedAddress[4].geoCode.longitude
-        })
-        ]
-      }).addTo(mymap.setView([${
-        (selectedAddress[0].geoCode.latitude +
-          selectedAddress[4].geoCode.latitude) /
-        2
-      },
-      ${
-        (selectedAddress[0].geoCode.longitude +
-          selectedAddress[4].geoCode.longitude) /
-        2
-      }], 3));
- 
-     L.marker([${selectedAddress[0].geoCode.latitude}, ${
-          selectedAddress[0].geoCode.longitude
-        }]).addTo(mymap)
-     .bindPopup('Start Point')
-     
-     .openPopup();
-     `);
+      if (this.refs['mapRef'] != null) {
+        if (selectedAddress.length === 1) {
+          this.refs['mapRef'].injectJavaScript(`
+        L.Routing.control({
+          show: false,
+          waypoints: [
+            L.latLng(${selectedAddress[0].geoCode.latitude}, ${selectedAddress[0].geoCode.longitude})
+          ]
+        }).addTo(mymap.setView([${selectedAddress[0].geoCode.latitude}, ${selectedAddress[0].geoCode.longitude}], 11));
+    
+        L.marker([${selectedAddress[0].geoCode.latitude}, ${selectedAddress[0].geoCode.longitude}]).addTo(mymap)
+       
+        .openPopup();
+        `);
+        } else if (selectedAddress.length === 2) {
+          this.refs['mapRef'].injectJavaScript(`
+        L.Routing.control({
+          show: false,
+          waypoints: [
+            L.latLng(${selectedAddress[0].geoCode.latitude}, ${
+            selectedAddress[0].geoCode.longitude
+          }),
+            L.latLng(${selectedAddress[1].geoCode.latitude}, ${
+            selectedAddress[1].geoCode.longitude
+          })
+          ]
+        }).addTo(mymap.setView([${
+          (selectedAddress[0].geoCode.latitude +
+            selectedAddress[1].geoCode.latitude) /
+          2
+        }, 
+        ${
+          (selectedAddress[0].geoCode.longitude +
+            selectedAddress[1].geoCode.longitude) /
+          2
+        }], 9));
+    
+        L.marker([${selectedAddress[0].geoCode.latitude}, ${
+            selectedAddress[0].geoCode.longitude
+          }]).addTo(mymap)
+        .bindPopup('Start Point')
+        
+        .openPopup();
+        `);
+        } else if (selectedAddress.length === 3) {
+          this.refs['mapRef'].injectJavaScript(`
+        L.Routing.control({
+          show: false,
+          waypoints: [
+            L.latLng(${selectedAddress[0].geoCode.latitude}, ${
+            selectedAddress[0].geoCode.longitude
+          }),
+            L.latLng(${selectedAddress[1].geoCode.latitude}, ${
+            selectedAddress[1].geoCode.longitude
+          }),
+            L.latLng(${selectedAddress[2].geoCode.latitude}, ${
+            selectedAddress[2].geoCode.longitude
+          })
+          ]
+        }).addTo(mymap.setView([${
+          (selectedAddress[0].geoCode.latitude +
+            selectedAddress[2].geoCode.latitude) /
+          2
+        },
+         ${
+           (selectedAddress[0].geoCode.longitude +
+             selectedAddress[2].geoCode.longitude) /
+           2
+         }], 8));
+    
+        L.marker([${selectedAddress[0].geoCode.latitude}, ${
+            selectedAddress[0].geoCode.longitude
+          }]).addTo(mymap)
+        .bindPopup('Start Point')
+        
+        .openPopup();
+        `);
+        } else if (selectedAddress.length === 4) {
+          this.refs['mapRef'].injectJavaScript(`
+        L.Routing.control({
+          show: false,
+          waypoints: [
+            L.latLng(${selectedAddress[0].geoCode.latitude}, ${
+            selectedAddress[0].geoCode.longitude
+          }),
+            L.latLng(${selectedAddress[1].geoCode.latitude}, ${
+            selectedAddress[1].geoCode.longitude
+          }),
+            L.latLng(${selectedAddress[2].geoCode.latitude}, ${
+            selectedAddress[2].geoCode.longitude
+          }),
+            L.latLng(${selectedAddress[3].geoCode.latitude}, ${
+            selectedAddress[3].geoCode.longitude
+          })
+          ]
+        }).addTo(mymap.setView([${
+          (selectedAddress[0].geoCode.latitude +
+            selectedAddress[3].geoCode.latitude) /
+          2
+        },
+         ${
+           (selectedAddress[0].geoCode.longitude +
+             selectedAddress[3].geoCode.longitude) /
+           2
+         }], 5));
+    
+        L.marker([${selectedAddress[0].geoCode.latitude}, ${
+            selectedAddress[0].geoCode.longitude
+          }]).addTo(mymap)
+        .bindPopup('Start Point')
+        
+        .openPopup();
+        `);
+        } else {
+          this.refs['mapRef'].injectJavaScript(`
+        L.Routing.control({
+          show: false,
+          waypoints: [
+            L.latLng(${selectedAddress[0].geoCode.latitude}, ${
+            selectedAddress[0].geoCode.longitude
+          }),
+            L.latLng(${selectedAddress[1].geoCode.latitude}, ${
+            selectedAddress[1].geoCode.longitude
+          }),
+            L.latLng(${selectedAddress[2].geoCode.latitude}, ${
+            selectedAddress[2].geoCode.longitude
+          }),
+            L.latLng(${selectedAddress[3].geoCode.latitude}, ${
+            selectedAddress[3].geoCode.longitude
+          }),
+            L.latLng(${selectedAddress[4].geoCode.latitude}, ${
+            selectedAddress[4].geoCode.longitude
+          })
+          ]
+        }).addTo(mymap.setView([${
+          (selectedAddress[0].geoCode.latitude +
+            selectedAddress[4].geoCode.latitude) /
+          2
+        },
+        ${
+          (selectedAddress[0].geoCode.longitude +
+            selectedAddress[4].geoCode.longitude) /
+          2
+        }], 3));
+   
+       L.marker([${selectedAddress[0].geoCode.latitude}, ${
+            selectedAddress[0].geoCode.longitude
+          }]).addTo(mymap)
+       .bindPopup('Start Point')
+       
+       .openPopup();
+       `);
+        }
       }
     }, 1500);
   };
@@ -970,7 +973,6 @@ class ActivityInfoScreen extends Component {
     );
 
     const showActionView = () => {
-      let selectedMembers = [];
 
       if (this.state.members != null && this.state.members.length > 0) {
         selectedMembers = this.state.members.filter(
@@ -1184,7 +1186,7 @@ class ActivityInfoScreen extends Component {
         {(this.state.showPageToOwner ||
           this.state.showPageToMember) ?
           showDetail
-        : !this.state.isJoin && <View style={{backgroundColor: colors.bar, padding: 5, borderRadius: 10, alignSelf: 'center'}}>
+        : !this.state.isJoin && selectedMembers.ownerState != false && <View style={{backgroundColor: colors.bar, padding: 5, borderRadius: 10, alignSelf: 'center'}}>
           <Text style={{color: 'white', fontWeight: '700'}}>Awaiting confirmation...</Text>
           </View>
         }
