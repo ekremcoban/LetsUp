@@ -41,7 +41,7 @@ const genderActionSheetRef = createRef<IActionSheet>();
 
 const CreateActivityScreen2 = () => {
   const navigation = useNavigation();
-  const { user, setIsCreateActivity } = useContext(ContextApi);
+  const { user } = useContext(ContextApi);
   const [branchName, setBranchName] = useState<string>(String || undefined);
 
   const [location0, setLocation0] = useState(null);
@@ -448,11 +448,10 @@ const CreateActivityScreen2 = () => {
             {
               text: 'Yes',
               onPress: () => {
-                setIsMounted(true);
+                navigation.navigate('Activity List');
                 if (!isMounted) {
-                  setIsCreateActivity(true);
+                  setIsMounted(true);
                   // Activity bilgisini sunucuya yazar
-                  fireStoreFunction('Activities', activity.id, activity);
                   convertAndSendAddressToServer(activity);
                   setBranchName(String || undefined);
                   setLocation0(null);
@@ -467,8 +466,8 @@ const CreateActivityScreen2 = () => {
                   setSelectedAgeRange([null, null]);
                   setSelectedQuotaRange([null, null]);
                   setSelectedGenderValue(null);
+                  fireStoreFunction('Activities', activity.id, activity);
                 }
-                navigation.navigate('Activity List');
               },
             },
           ]);

@@ -28,6 +28,7 @@ import messaging from '@react-native-firebase/messaging';
 import { Alert } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import { Rating, AirbnbRating } from 'react-native-ratings';
+import { colors } from 'utilities/constants/globalValues';
 
 const IconStart = locationTag['start'];
 const IconJoin = locationTag['join'];
@@ -626,7 +627,8 @@ class ActivityInfoScreen extends Component {
     const selectedMember = memberCollection.docs
       .filter(
         (item) =>
-          item.data().memberEmail === this.state.selectedMember._data.memberEmail
+          item.data().memberEmail ===
+          this.state.selectedMember._data.memberEmail
       )[0]
       .data();
     selectedMember.memberJoin = true;
@@ -986,39 +988,30 @@ class ActivityInfoScreen extends Component {
       );
       console.log('selectedMembers', selectedMembers);
       if (!this.state.showPageToOwner && selectedMembers.ownerState == false) {
-        console.log('1');
         return deniedView;
       } else if (this.state.showPageToOwner) {
-        console.log('2');
         return deleteView;
       } else if (
         selectedMembers.ownerState == true &&
         !this.state.showPageToOwner &&
         !this.state.isJoin
       ) {
-        console.log('3');
         return leaveButton;
       } else if (selectedMembers.ownerState == true) {
-        console.log('4');
         return joinButton;
       } else if (selectedMembers.length === 0 && this.state.showPageToOwner) {
-        console.log('5');
         return deleteView;
       } else if (
         selectedMembers.length === 0 &&
         !this.state.showPageToOwner &&
         !this.state.isJoin
       ) {
-        console.log('6');
         return leaveButton;
       } else if (selectedMembers.length === 0) {
-        console.log('7');
         return joinButton;
       } else if (!this.state.isJoin) {
-        console.log('8');
         return leaveButton;
       } else if (this.state.isJoin) {
-        console.log('9');
         return joinButton;
       }
       // console.log('10')
@@ -1115,14 +1108,14 @@ class ActivityInfoScreen extends Component {
             </Text>
           </View>
           <View style={styles.viewTitleStar}>
-            <Ionicons
+            {/* <Ionicons
               size={25}
               name={this.state.isStar ? 'star' : 'star-outline'}
               style={{ color: 'orange' }}
               onPress={() =>
                 this.setState((prev) => ({ isStar: !prev.isStar }))
               }
-            />
+            /> */}
           </View>
         </View>
 
@@ -1189,9 +1182,12 @@ class ActivityInfoScreen extends Component {
           </Text>
         </View>
         {(this.state.showPageToOwner ||
-          this.state.showPageToMember ||
-          this.props.route.params.from === 'Someone Has Gone') &&
-          showDetail}
+          this.state.showPageToMember) ?
+          showDetail
+        : !this.state.isJoin && <View style={{backgroundColor: colors.bar, padding: 5, borderRadius: 10, alignSelf: 'center'}}>
+          <Text style={{color: 'white', fontWeight: '700'}}>Awaiting confirmation...</Text>
+          </View>
+        }
         {showAgeGender}
         {showMembersContainer}
         <View style={{ height: 50 }} />

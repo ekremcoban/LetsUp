@@ -7,8 +7,6 @@ const ContextApi = React.createContext({
     setUserPhoto: () => {},
     location: undefined,
     setLocation: () => {},
-    isCreateActivity: false,
-    setIsCreateActivity: () => {},
   });
 
   export default ContextApi;

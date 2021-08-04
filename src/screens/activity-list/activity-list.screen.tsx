@@ -35,7 +35,7 @@ import messaging from '@react-native-firebase/messaging';
 const ageActionSheetRef = createRef<IActionSheet>();
 
 export const ActivityListScreen = () => {
-  const { location, isCreateActivity, setIsCreateActivity } = useContext(
+  const { location } = useContext(
     ContextApi
   );
   const navigation = useNavigation();
@@ -43,36 +43,29 @@ export const ActivityListScreen = () => {
   const [spinner, setSpinner] = useState<boolean>(true);
   const [activityList, setActivityList] = useState(null);
   const [addressList, setAddressList] = useState(null);
-  const [isMounted, setIsMounted] = useState(false);
 
   let activityId = [];
   let addressTemp = [];
   let activityTemp = [];
 
   useEffect(() => {
-    setIsMounted(true);
-    if (!isMounted) {
-      getFirebase();
-    }
-
+    getFirebase();
     getNotifications();
 
-    const unsubscribe = navigation.addListener('focus', () => {
-      if (isCreateActivity) {
-        console.log('İÇERDE');
-        setIsCreateActivity(false);
-        if (!isMounted) {
-          getFirebase();
-        }
-      } else {
-        console.log('DIŞARDA');
-      }
-    });
+    // const unsubscribe = navigation.addListener('focus', () => {
+    //   if (isCreateActivity) {
+    //     console.log('İÇERDE');
+    //     setIsCreateActivity(false);
+    //     if (!isMounted) {
+    //       getFirebase();
+    //     }
+    //   } else {
+    //     console.log('DIŞARDA');
+    //   }
+    // });
 
     // Return the function to unsubscribe from the event so it gets removed on unmount
-    return () => {
-      unsubscribe(), setIsMounted(false);
-    };
+    return () => {};
   }, [navigation]);
 
   const getNotifications = () => {
@@ -112,8 +105,8 @@ export const ActivityListScreen = () => {
         .where('time', '>=', new Date().getTime())
         // .where('time', '<=', new Date().getTime() + 30 * 86400000)
         .orderBy('time')
-        .get()
-        .then((querySnapshot) => {
+
+        .onSnapshot((querySnapshot) => {
           // console.log('Total users: ', querySnapshot.size);
           addressTemp = [];
 
@@ -201,10 +194,10 @@ export const ActivityListScreen = () => {
             }
           }
         })
-        .catch((e) => {
-          setSpinner(false);
-          setActivityList(null);
-        });
+        // .catch((e) => {
+        //   setSpinner(false);
+        //   setActivityList(null);
+        // });
     }
   };
 
