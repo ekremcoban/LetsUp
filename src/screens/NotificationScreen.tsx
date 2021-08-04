@@ -167,9 +167,14 @@ const NotificationScreen = () => {
             .sort((a, b) => {
               return b.createdTime - a.createdTime;
             })
-            .map((item) => {
+            .map((item, index) => {
               return (
-                <View key={item.createdTime} style={styles.viewContainer}>
+                <View key={item.createdTime} 
+                style={
+                  index % 2
+                    ? [styles.viewContainer, { backgroundColor: '#E5E5E5' }]
+                    : styles.viewContainer
+                }>
                   <View style={styles.viewLeft}>
                     <Image
                       source={findPicture(item.branch)}

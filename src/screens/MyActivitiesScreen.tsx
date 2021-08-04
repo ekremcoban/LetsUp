@@ -1,16 +1,26 @@
 import React from 'react';
 import { useEffect, useContext, useState } from 'react';
-import { StyleSheet, Text, View, Image, Alert, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
 import { Icon } from 'react-native-elements';
 import firestore from '@react-native-firebase/firestore';
 import ContextApi from 'context/ContextApi';
 import { colors } from 'utilities/constants/globalValues';
+import { ScrollView } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
 
 let activityId = [];
 let activityTemp = [];
 let ownerActivity = [];
 
 const MyActivitiesScreen = () => {
+  const navigation = useNavigation();
   const { user } = useContext(ContextApi);
   const [spinner, setSpinner] = useState<boolean>(true);
   const [activityOwnerList, setActivityOwnerList] = useState(null);
@@ -25,8 +35,7 @@ const MyActivitiesScreen = () => {
     await firestore()
       .collection('Activities')
       .where('owner.email', '==', user.email)
-      .get()
-      .then((querySnapshot) => {
+      .onSnapshot((querySnapshot) => {
         querySnapshot.forEach((documentSnapshot) => {
           console.log('1', documentSnapshot.data());
           ownerActivity.push(documentSnapshot.data());
@@ -125,8 +134,16 @@ const MyActivitiesScreen = () => {
 
   const showAsOwnerPage =
     activityOwnerList != null &&
-    activityOwnerList.map((item) => (
-      <View key={item.id} style={styles.viewContainer}>
+    activityOwnerList.map((item, index) => (
+      <TouchableOpacity
+        key={item.id}
+        style={
+          index % 2
+            ? [styles.viewContainer, { backgroundColor: '#E5E5E5' }]
+            : styles.viewContainer
+        }
+        onPress={() => Alert.alert('Yapılacak')}
+      >
         <View style={styles.viewLeft}>
           <Image
             source={
@@ -174,13 +191,21 @@ const MyActivitiesScreen = () => {
               onPress={() => Alert.alert('Silim mi :)')}
             />
           </View> */}
-      </View>
+      </TouchableOpacity>
     ));
 
   const showAsMemberPage =
     activityMemberList != null &&
-    activityMemberList.map((item) => (
-      <View key={item.id} style={styles.viewContainer}>
+    activityMemberList.map((item, index) => (
+      <TouchableOpacity
+        key={item.id}
+        style={
+          index % 2
+            ? [styles.viewContainer, { backgroundColor: '#E5E5E5' }]
+            : styles.viewContainer
+        }
+        onPress={() => Alert.alert('Yapılacak')}
+      >
         <View style={styles.viewLeft}>
           <Image
             source={
@@ -228,7 +253,7 @@ const MyActivitiesScreen = () => {
             onPress={() => Alert.alert('Silim mi :)')}
           />
         </View> */}
-      </View>
+      </TouchableOpacity>
     ));
   return (
     <View style={{ marginTop: 10 }}>
@@ -244,7 +269,7 @@ const MyActivitiesScreen = () => {
         }}
       >
         <TouchableOpacity
-        onPress={() => setOwnerShow(true)}
+          onPress={() => setOwnerShow(true)}
           style={
             ownerShow
               ? [
@@ -270,7 +295,7 @@ const MyActivitiesScreen = () => {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-        onPress={() => setOwnerShow(false)}
+          onPress={() => setOwnerShow(false)}
           style={
             !ownerShow
               ? [
@@ -291,10 +316,16 @@ const MyActivitiesScreen = () => {
                 ? styles.asOwnerText
                 : [styles.asOwnerText, { color: colors.bar }]
             }
-          >As A Member</Text>
+          >
+            As A Member
+          </Text>
         </TouchableOpacity>
       </View>
-      {ownerShow ? showAsOwnerPage : showAsMemberPage}
+      <View style={{ marginTop: 5, marginBottom: 50 }}>
+        <ScrollView>
+          {ownerShow ? showAsOwnerPage : showAsMemberPage}
+        </ScrollView>
+      </View>
     </View>
   );
 };
@@ -318,8 +349,8 @@ const styles = StyleSheet.create({
   viewContainer: {
     flexDirection: 'row',
     height: 90,
-    borderBottomWidth: 1,
-    borderColor: '#CCC',
+    // borderBottomWidth: 1,
+    // borderColor: '#CCC',
   },
   viewLeft: {
     flex: 1,
