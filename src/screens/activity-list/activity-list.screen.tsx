@@ -13,7 +13,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { Divider } from 'react-native-elements';
+import { Divider, ListItem } from 'react-native-elements';
 import { IActionSheet } from 'components/action-sheet/action-sheet';
 import firestore from '@react-native-firebase/firestore';
 import { ActivityTypeSelector } from 'components/activity-type-selector/activity-type-selector';
@@ -33,6 +33,7 @@ import DisplaySpinner from '../../components/spinner';
 import messaging from '@react-native-firebase/messaging';
 
 const ageActionSheetRef = createRef<IActionSheet>();
+let activityListTemp: any;
 
 export const ActivityListScreen = () => {
   const { location } = useContext(
@@ -161,6 +162,7 @@ export const ActivityListScreen = () => {
                     });
                     console.log('activityTemp 1', activityTemp);
                     setActivityList([...activityTemp]);
+                    activityListTemp = [...activityList];
                     setSpinner(false);
                   });
 
@@ -185,6 +187,7 @@ export const ActivityListScreen = () => {
                       });
                       console.log('activityTemp 2', activityTemp);
                       setActivityList([...activityTemp]);
+                      activityListTemp = [...activityList];
                       setSpinner(false);
                     });
 
@@ -217,6 +220,38 @@ export const ActivityListScreen = () => {
     }
   };
 
+  const filterActive = (selectedActivityTypes: number[]) => {
+    console.log('bende', selectedActivityTypes);
+    console.log('bende 2', activityListTemp);
+    let filteredActivityList;
+    if (activityListTemp != null && selectedActivityTypes.length === 0) {
+      console.log('hepsi', activityListTemp)
+      filteredActivityList = [...activityListTemp];
+    }
+    else if (activityListTemp != null && selectedActivityTypes.length === 1) {
+      filteredActivityList = activityListTemp.filter(item => item.type === activityTypes[selectedActivityTypes[0]].image)
+    }
+    else if (activityListTemp != null && selectedActivityTypes.length === 2) {
+      filteredActivityList = activityListTemp
+      .filter(item => item.type === activityTypes[selectedActivityTypes[0]].image
+        || item.type === activityTypes[selectedActivityTypes[1]].image)
+    }
+    else if (activityListTemp != null && selectedActivityTypes.length === 3) {
+      filteredActivityList = activityListTemp
+      .filter(item => item.type === activityTypes[selectedActivityTypes[0]].image
+        || item.type === activityTypes[selectedActivityTypes[1]].image
+        || item.type === activityTypes[selectedActivityTypes[2]].image)
+    }
+    else if (activityListTemp != null && selectedActivityTypes.length === 4) {
+      filteredActivityList = activityListTemp
+      .filter(item => item.type === activityTypes[selectedActivityTypes[0]].image
+        || item.type === activityTypes[selectedActivityTypes[1]].image
+        || item.type === activityTypes[selectedActivityTypes[2]].image
+        || item.type === activityTypes[selectedActivityTypes[3]].image)
+    }
+    setActivityList(filteredActivityList)
+  }
+
   const _activityTypes = activityTypes.map(
     (activityType: IActivityType, index: number) => (
       <ActivityTypeSelector.TextItem
@@ -225,8 +260,9 @@ export const ActivityListScreen = () => {
         firstItem={false /*index === 0*/}
         lastItem={index === activityTypes.length - 1}
         text={polyglot.t(activityType.textKey)}
-        onItemPress={(selecteActivityTypes: number[]) => {
-          Alert.alert('Tipe basıldı! ' + selecteActivityTypes.join(', '));
+        onItemPress={(selectedActivityTypes: number[]) => {
+          filterActive(selectedActivityTypes);
+          // Alert.alert('Tipe basıldı! ' + selectedActivityTypes.join(', '));
         }}
       />
     )
