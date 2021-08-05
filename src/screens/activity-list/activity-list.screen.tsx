@@ -267,18 +267,18 @@ export const ActivityListScreen = () => {
       />
     )
   );
-  _activityTypes.unshift(
-    <ActivityTypeSelector.TextItem
-      key={99}
-      id={99}
-      firstItem={true}
-      lastItem={false}
-      text="Actionsheet"
-      onItemPress={(selecteActivityTypes: number[]) => {
-        ageActionSheetRef.current?.open();
-      }}
-    />
-  );
+  // _activityTypes.unshift(
+  //   <ActivityTypeSelector.TextItem
+  //     key={99}
+  //     id={99}
+  //     firstItem={true}
+  //     lastItem={false}
+  //     text="Actionsheet"
+  //     onItemPress={(selecteActivityTypes: number[]) => {
+  //       ageActionSheetRef.current?.open();
+  //     }}
+  //   />
+  // );
 
   return (
     <SafeAreaView style={styles.wrapper}>
