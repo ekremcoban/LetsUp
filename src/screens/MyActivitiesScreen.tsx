@@ -260,10 +260,7 @@ const MyActivitiesScreen = () => {
       <View
         style={{
           flexDirection: 'row',
-          height: 50,
-          borderWidth: 0.5,
-          borderColor: '#AAA',
-          borderRadius: 20,
+          height: 40,
           marginStart: 10,
           marginEnd: 10,
         }}
@@ -273,12 +270,15 @@ const MyActivitiesScreen = () => {
           style={
             ownerShow
               ? [
-                  styles.asOwnerContainer,
                   {
-                    borderWidth: 0.5,
-                    borderRadius: 20,
-                    borderColor: '#AAA',
-                    backgroundColor: colors.bar,
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  },
+                  {
+                    borderBottomColor: colors.bar,
+                    borderBottomWidth: 2,
+                    borderColor: colors.bar,
                   },
                 ]
               : styles.asOwnerContainer
@@ -288,7 +288,7 @@ const MyActivitiesScreen = () => {
             style={
               ownerShow
                 ? styles.asOwnerText
-                : [styles.asOwnerText, { color: colors.bar }]
+                : [styles.asOwnerText, { color: 'gray' }]
             }
           >
             As An Owner
@@ -299,12 +299,11 @@ const MyActivitiesScreen = () => {
           style={
             !ownerShow
               ? [
-                  styles.asMemberContainer,
+                  { flex: 1, justifyContent: 'center', alignItems: 'center' },
                   {
-                    borderWidth: 0.5,
-                    borderRadius: 20,
-                    borderColor: '#AAA',
-                    backgroundColor: colors.bar,
+                    borderBottomColor: colors.bar,
+                    borderBottomWidth: 2,
+                    borderColor: colors.bar,
                   },
                 ]
               : styles.asMemberContainer
@@ -314,7 +313,7 @@ const MyActivitiesScreen = () => {
             style={
               !ownerShow
                 ? styles.asOwnerText
-                : [styles.asOwnerText, { color: colors.bar }]
+                : [styles.asOwnerText, { color: 'gray' }]
             }
           >
             As A Member
@@ -335,14 +334,18 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    borderBottomWidth: 1,
+    borderColor: 'gray',
   },
   asMemberContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    borderBottomWidth: 1,
+    borderColor: 'gray',
   },
   asOwnerText: {
-    color: 'white',
+    color: colors.bar,
     fontWeight: '500',
     fontSize: 15,
   },
