@@ -33,7 +33,7 @@ import DisplaySpinner from '../../components/spinner';
 import messaging from '@react-native-firebase/messaging';
 
 const ageActionSheetRef = createRef<IActionSheet>();
-let activityListTemp: any;
+let activityListTemp;
 
 export const ActivityListScreen = () => {
   const { location } = useContext(
@@ -162,7 +162,7 @@ export const ActivityListScreen = () => {
                     });
                     console.log('activityTemp 1', activityTemp);
                     setActivityList([...activityTemp]);
-                    activityListTemp = [...activityList];
+                    activityListTemp = [...activityTemp];
                     setSpinner(false);
                   });
 
@@ -187,7 +187,7 @@ export const ActivityListScreen = () => {
                       });
                       console.log('activityTemp 2', activityTemp);
                       setActivityList([...activityTemp]);
-                      activityListTemp = [...activityList];
+                      activityListTemp = [...activityTemp];
                       setSpinner(false);
                     });
 
