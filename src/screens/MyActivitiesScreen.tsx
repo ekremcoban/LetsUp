@@ -36,6 +36,7 @@ const MyActivitiesScreen = () => {
       .collection('Activities')
       .where('owner.email', '==', user.email)
       .onSnapshot((querySnapshot) => {
+        ownerActivity = [];
         querySnapshot.forEach((documentSnapshot) => {
           console.log('1', documentSnapshot.data());
           ownerActivity.push(documentSnapshot.data());
@@ -126,10 +127,10 @@ const MyActivitiesScreen = () => {
           }
         }
       })
-      .catch((e) => {
-        setSpinner(false);
-        setActivityMemberList(null);
-      });
+      // .catch((e) => {
+      //   setSpinner(false);
+      //   setActivityMemberList(null);
+      // });
   };
 
   const showAsOwnerPage =
@@ -142,7 +143,9 @@ const MyActivitiesScreen = () => {
             ? [styles.viewContainer, { backgroundColor: '#E5E5E5' }]
             : styles.viewContainer
         }
-        onPress={() => Alert.alert('Yapılacak')}
+        onPress={() => navigation.navigate('Owner Old Activity Info', {
+          activity: item
+        })}
       >
         <View style={styles.viewLeft}>
           <Image
@@ -204,7 +207,9 @@ const MyActivitiesScreen = () => {
             ? [styles.viewContainer, { backgroundColor: '#E5E5E5' }]
             : styles.viewContainer
         }
-        onPress={() => Alert.alert('Yapılacak')}
+        onPress={() => navigation.navigate('Member Old Activity Info', {
+          activity: item
+        })}
       >
         <View style={styles.viewLeft}>
           <Image

@@ -483,9 +483,9 @@ class ActivityInfoScreen extends Component {
             .get();
 
           let request = memberCollection?.docs[0].data();
-          if (type === 0) {
+          if (this.props.route.params.activity.startTime > new Date().getTime() + 7200000) {
             request.isDeleted = true;
-          } else if (type === 2) {
+          } else {
             request.isCanceled = true;
           }
 
