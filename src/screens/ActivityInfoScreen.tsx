@@ -73,13 +73,12 @@ class ActivityInfoScreen extends Component {
 
     this.getMembers();
 
-    console.log('selectedAddress', this.props.route.params.addressList)
-    console.log('this.props.route.params.activity.id', this.props.route.params.activity.id)
+    console.log('-------photo', this.props.route.params.activity.owner.photo);
 
     const selectedAddress = this.props.route.params.addressList.filter(
       (x) => x.activityId === this.props.route.params.activity.id
     );
-    console.log('selectedAddress', selectedAddress)
+
     this.setState({
       selectedAddress: selectedAddress,
       showPageToOwner:
@@ -87,10 +86,11 @@ class ActivityInfoScreen extends Component {
         this.props.route.params.activity.owner.email,
     });
 
-    if ( this.context.user.email === this.props.route.params.activity.owner.email) {
+    if (
+      this.context.user.email === this.props.route.params.activity.owner.email
+    ) {
       this.showMap(selectedAddress);
     }
-
   }
 
   showMap = (selectedAddress: Object) => {
@@ -253,14 +253,12 @@ class ActivityInfoScreen extends Component {
   };
 
   getMembers = async () => {
-    console.log('-----', this.state.showPageToMember);
     const members = await firestore()
       .collection('Members')
       .where('activityId', '==', this.props.route.params.activity.id)
       .where('memberState', '==', true)
       .get();
 
-    console.log('Members', members.docs);
     let isThere = false;
 
     members.docs.forEach((item) => {
@@ -290,7 +288,6 @@ class ActivityInfoScreen extends Component {
       .where('memberEmail', '==', this.context.user.email)
       .get();
 
-    console.log('te', result.docs);
     if (result.docs.length > 0) {
       console.log(result.docs[0].data().memberState);
       this.setState({ isJoin: !result.docs[0].data().memberState });
@@ -485,7 +482,10 @@ class ActivityInfoScreen extends Component {
             .get();
 
           let request = memberCollection?.docs[0].data();
-          if (this.props.route.params.activity.startTime > new Date().getTime() + 7200000) {
+          if (
+            this.props.route.params.activity.startTime >
+            new Date().getTime() + 7200000
+          ) {
             request.isDeleted = true;
           } else {
             request.isCanceled = true;
@@ -890,15 +890,31 @@ class ActivityInfoScreen extends Component {
                 alignItems: 'center',
               }}
             >
-              <Image
-                source={{
-                  uri: member._data.memberPhoto,
-                }}
-                style={styles.imgMemberPic}
-              />
-              <Text style={{ fontSize: 15, paddingStart: 5 }}>
-                {member._data.memberName}
-              </Text>
+              <TouchableNativeFeedback
+                onPress={() =>
+                  this.props.navigation.navigate('Member Info', {
+                    data: member._data,
+                  })
+                }
+              >
+                <Image
+                  source={{
+                    uri: member._data.memberPhoto,
+                  }}
+                  style={styles.imgMemberPic}
+                />
+              </TouchableNativeFeedback>
+              <TouchableNativeFeedback
+                onPress={() =>
+                  this.props.navigation.navigate('Member Info', {
+                    data: member._data,
+                  })
+                }
+              >
+                <Text style={{ fontSize: 15, paddingStart: 5 }}>
+                  {member._data.memberName}
+                </Text>
+              </TouchableNativeFeedback>
             </View>
             {this.state.showPageToOwner && showEmailIcon(member)}
             {this.state.showPageToOwner && showApproval(member)}
@@ -925,15 +941,31 @@ class ActivityInfoScreen extends Component {
               alignItems: 'center',
             }}
           >
+             <TouchableNativeFeedback
+                onPress={() =>
+                  this.props.navigation.navigate('Member Info', {
+                    data: member._data,
+                  })
+                }
+              >
             <Image
               source={{
                 uri: member._data.memberPhoto,
               }}
               style={styles.imgMemberPic}
             />
+            </TouchableNativeFeedback>
+            <TouchableNativeFeedback
+                onPress={() =>
+                  this.props.navigation.navigate('Member Info', {
+                    data: member._data,
+                  })
+                }
+              >
             <Text style={{ fontSize: 15, paddingStart: 5 }}>
               {member._data.memberName}
             </Text>
+            </TouchableNativeFeedback>
           </View>
           {this.state.showPageToOwner && showEmailIcon(member)}
           {this.state.showPageToOwner && showApproval(member)}
@@ -975,7 +1007,6 @@ class ActivityInfoScreen extends Component {
     );
 
     const showActionView = () => {
-
       if (this.state.members != null && this.state.members.length > 0) {
         selectedMembers = this.state.members.filter(
           (item) =>
@@ -1126,7 +1157,11 @@ class ActivityInfoScreen extends Component {
         <View style={styles.viewOwner}>
           <View style={styles.viewIconPic}>
             <TouchableNativeFeedback
-              onPress={() => this.props.navigation.navigate('Profile Info')}
+              onPress={() =>
+                this.props.navigation.navigate('Owner Info', {
+                  data: this.props.route.params.activity.owner,
+                })
+              }
             >
               <Image
                 source={{
@@ -1138,7 +1173,11 @@ class ActivityInfoScreen extends Component {
           </View>
           <View style={styles.viewOwnerName}>
             <TouchableNativeFeedback
-              onPress={() => this.props.navigation.navigate('Profile Info')}
+              onPress={() =>
+                this.props.navigation.navigate('Owner Info', {
+                  data: this.props.route.params.activity.owner,
+                })
+              }
             >
               <Text style={styles.textOwnerName}>
                 {this.props.route.params.activity.owner.name +
@@ -1185,13 +1224,23 @@ class ActivityInfoScreen extends Component {
                   ).getMinutes())}
           </Text>
         </View>
-        {(this.state.showPageToOwner ||
-          this.state.showPageToMember) ?
-          showDetail
-        : !this.state.isJoin && selectedMembers.ownerState != false && <View style={{backgroundColor: colors.bar, padding: 5, borderRadius: 10, alignSelf: 'center'}}>
-          <Text style={{color: 'white', fontWeight: '700'}}>Awaiting confirmation...</Text>
-          </View>
-        }
+        {this.state.showPageToOwner || this.state.showPageToMember
+          ? showDetail
+          : !this.state.isJoin &&
+            selectedMembers.ownerState != false && (
+              <View
+                style={{
+                  backgroundColor: colors.bar,
+                  padding: 5,
+                  borderRadius: 10,
+                  alignSelf: 'center',
+                }}
+              >
+                <Text style={{ color: 'white', fontWeight: '700' }}>
+                  Awaiting confirmation...
+                </Text>
+              </View>
+            )}
         {showAgeGender}
         {showMembersContainer}
         <View style={{ height: 50 }} />

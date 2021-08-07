@@ -77,6 +77,7 @@ const CreateProfilScreen = () => {
     getData('Users').then((user) => {
       console.log('user create', user);
       from === 'Profile Info' && onChangeFullName(user.name + ' ' + user.surname)
+      from === 'Profile Info' && setEmail(user.email)
       setUser(user);
       user.age != null && setSelectedAge(user.age);
       user.gender != null &&

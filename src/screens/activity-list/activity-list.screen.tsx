@@ -214,6 +214,7 @@ export const ActivityListScreen = () => {
     }
   };
 
+  // Bransa gore
   const filterActive = (selectedActivityTypes: number[]) => {
     console.log('bende', selectedActivityTypes);
     console.log('bende 2', activityListTemp);

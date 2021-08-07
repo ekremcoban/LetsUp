@@ -243,15 +243,31 @@ class OwnerOldActivityInfoScreen extends Component {
                 alignItems: 'center',
               }}
             >
+               <TouchableNativeFeedback
+                onPress={() =>
+                  this.props.navigation.navigate('Member Info', {
+                    data: member._data,
+                  })
+                }
+              >
               <Image
                 source={{
                   uri: member._data.memberPhoto,
                 }}
                 style={styles.imgMemberPic}
               />
+              </TouchableNativeFeedback>
+               <TouchableNativeFeedback
+                onPress={() =>
+                  this.props.navigation.navigate('Member Info', {
+                    data: member._data,
+                  })
+                }
+              >
               <Text style={{ fontSize: 15, paddingStart: 5 }}>
                 {member._data.memberName}
               </Text>
+              </TouchableNativeFeedback>
             </View>
             {showEmailIcon(member)}
             {showJoined(member)}

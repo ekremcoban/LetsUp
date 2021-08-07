@@ -36,6 +36,8 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { getData, removeItem, storeData } from 'db/localDb';
 import { convertLowerString } from 'components/functions/common';
 import messaging from '@react-native-firebase/messaging';
+import MemberInfoScreen from 'screens/MemberInfoScreen';
+import OwnerInfoScreen from 'screens/OwnerInfoScreen';
 
 let App = () => {
   const [user, setUser] = useState();
@@ -112,7 +114,7 @@ let App = () => {
 
   const subscribeToTopic = async () => {
     await messaging().subscribeToTopic('memberNotifications');
-  }
+  };
 
   const requestUserPermission = async () => {
     const authStatus = await messaging().requestPermission();
@@ -124,17 +126,17 @@ let App = () => {
       getFcmToken();
       // console.log('Authorization status:', authStatus);
     }
-  }
+  };
 
   const getFcmToken = async () => {
     const fcmToken = await messaging().getToken();
     if (fcmToken) {
-    //  console.log(fcmToken);
-    //  console.log("Your Firebase Token is:", fcmToken);
+      //  console.log(fcmToken);
+      //  console.log("Your Firebase Token is:", fcmToken);
     } else {
-     console.log("Failed", "No token received");
+      console.log('Failed', 'No token received');
     }
-  }
+  };
 
   const getLocations = async () => {
     let location = await getLocationFromIp('https://ipapi.co/json/');
@@ -299,21 +301,6 @@ let App = () => {
                     </View>
                   ),
                 })}
-                // options={{
-                //   title: 'Lets Up',
-                //   headerStyle: {
-                //     backgroundColor: colors.bar,
-                //   },
-                //   headerTintColor: '#fff',
-                //   headerTitleStyle: {
-                //     fontWeight: 'bold',
-                //   },
-                //   headerRight: (navigation) => (
-                //     <View style={{ flexDirection: 'row', margin: 10 }}>
-                //       {loginTitle(navigation)}
-                //     </View>
-                //   ),
-                // }}
               />
               <Stack.Screen
                 name="Activity Info"
@@ -362,6 +349,44 @@ let App = () => {
                 component={ProfileInfoScreen}
                 options={({ navigation, route }) => ({
                   title: 'Profile Info',
+                  headerStyle: {
+                    backgroundColor: colors.bar,
+                  },
+                  headerTintColor: '#fff',
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                  },
+                  headerRight: () => (
+                    <View style={{ flexDirection: 'row', margin: 10 }}>
+                      {exit(navigation)}
+                    </View>
+                  ),
+                })}
+              />
+              <Stack.Screen
+                name="Member Info"
+                component={MemberInfoScreen}
+                options={({ navigation, route }) => ({
+                  title: 'Profil',
+                  headerStyle: {
+                    backgroundColor: colors.bar,
+                  },
+                  headerTintColor: '#fff',
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                  },
+                  headerRight: () => (
+                    <View style={{ flexDirection: 'row', margin: 10 }}>
+                      {exit(navigation)}
+                    </View>
+                  ),
+                })}
+              />
+              <Stack.Screen
+                name="Owner Info"
+                component={OwnerInfoScreen}
+                options={({ navigation, route }) => ({
+                  title: 'Profil',
                   headerStyle: {
                     backgroundColor: colors.bar,
                   },

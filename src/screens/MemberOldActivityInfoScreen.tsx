@@ -222,15 +222,31 @@ class MemberOldActivityInfoScreen extends Component {
             alignItems: 'center',
           }}
         >
-          <Image
-            source={{
-              uri: this.props.route.params.activity.owner.photo,
-            }}
-            style={styles.imgMemberPic}
-          />
-          <Text style={{ fontSize: 15, paddingStart: 5 }}>
-            {this.props.route.params.activity.owner.name}
-          </Text>
+          <TouchableNativeFeedback
+            onPress={() =>
+              this.props.navigation.navigate('Owner Info', {
+                data: this.props.route.params.activity.owner,
+              })
+            }
+          >
+            <Image
+              source={{
+                uri: this.props.route.params.activity.owner.photo,
+              }}
+              style={styles.imgMemberPic}
+            />
+          </TouchableNativeFeedback>
+          <TouchableNativeFeedback
+            onPress={() =>
+              this.props.navigation.navigate('Owner Info', {
+                data: this.props.route.params.activity.owner,
+              })
+            }
+          >
+            <Text style={{ fontSize: 15, paddingStart: 5 }}>
+              {this.props.route.params.activity.owner.name}
+            </Text>
+          </TouchableNativeFeedback>
         </View>
         {showEmailIcon(this.props.route.params.activity.owner)}
         {showJoined(this.props.route.params.activity.owner)}
@@ -268,35 +284,44 @@ class MemberOldActivityInfoScreen extends Component {
     );
 
     const modal = (
-        <View style={styles.centeredView}>
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={this.state.modalVisible}
-            onRequestClose={() => {
-              Alert.alert('Modal has been closed.');
-              this.setState({ modalVisible: false });
-            }}
-          >
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-              {this.state.members != null && <Text style={{fontSize: 15}}>{`${this.props.route.params.activity.owner.name}'s talent in the activity`}</Text>}
-                <AirbnbRating
-                  // showRating
-                  onFinishRating={(rating) => this.joinYes(rating)}
-                  defaultRating={this.state.members != null && (this.state.members.ownerRating != null ? this.state.members.ownerRating : 0)}
-                />
-                <Pressable
-                  style={[styles.button, styles.buttonClose]}
-                  onPress={() => this.setState({ modalVisible: false })}
-                >
-                  <Text style={styles.textStyle}>Close</Text>
-                </Pressable>
-              </View>
+      <View style={styles.centeredView}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+            this.setState({ modalVisible: false });
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              {this.state.members != null && (
+                <Text
+                  style={{ fontSize: 15 }}
+                >{`${this.props.route.params.activity.owner.name}'s talent in the activity`}</Text>
+              )}
+              <AirbnbRating
+                // showRating
+                onFinishRating={(rating) => this.joinYes(rating)}
+                defaultRating={
+                  this.state.members != null &&
+                  (this.state.members.ownerRating != null
+                    ? this.state.members.ownerRating
+                    : 0)
+                }
+              />
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => this.setState({ modalVisible: false })}
+              >
+                <Text style={styles.textStyle}>Close</Text>
+              </Pressable>
             </View>
-          </Modal>
-        </View>
-      );
+          </View>
+        </Modal>
+      </View>
+    );
 
     return (
       <ScrollView style={{ height: 1000 }}>
@@ -329,7 +354,11 @@ class MemberOldActivityInfoScreen extends Component {
         <View style={styles.viewOwner}>
           <View style={styles.viewIconPic}>
             <TouchableNativeFeedback
-              onPress={() => this.props.navigation.navigate('Profile Info')}
+              onPress={() =>
+                this.props.navigation.navigate('Owner Info', {
+                  data: this.props.route.params.activity.owner,
+                })
+              }
             >
               <Image
                 source={{
@@ -341,7 +370,11 @@ class MemberOldActivityInfoScreen extends Component {
           </View>
           <View style={styles.viewOwnerName}>
             <TouchableNativeFeedback
-              onPress={() => this.props.navigation.navigate('Profile Info')}
+              onPress={() =>
+                this.props.navigation.navigate('Owner Info', {
+                  data: this.props.route.params.activity.owner,
+                })
+              }
             >
               <Text style={styles.textOwnerName}>
                 {this.props.route.params.activity.owner.name +
