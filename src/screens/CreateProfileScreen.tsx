@@ -68,11 +68,15 @@ const CreateProfilScreen = () => {
   const { from } = route.params;
 
   useEffect(() => {
-    getCurrentUser();
+    if (from !== 'Profile Info') {
+      getCurrentUser();
+    }
+  
     console.log('Girdi', location);
     // Kullanici resim eklemediyse
     getData('Users').then((user) => {
       console.log('user create', user);
+      from === 'Profile Info' && onChangeFullName(user.name + ' ' + user.surname)
       setUser(user);
       user.age != null && setSelectedAge(user.age);
       user.gender != null &&
@@ -517,7 +521,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     paddingLeft: 10,
-    paddingTop: 10,
+    // paddingTop: 10,
+    justifyContent: 'center',
     borderColor: '#DADADA',
     backgroundColor: 'white',
   },
