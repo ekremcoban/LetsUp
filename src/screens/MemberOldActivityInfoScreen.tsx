@@ -17,7 +17,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
 import ContextApi from 'context/ContextApi';
 import { Alert } from 'react-native';
-import { Rating } from 'react-native-ratings';
+import { AirbnbRating } from 'react-native-ratings';
 import { getData } from 'db/localDb';
 
 const heightView =
@@ -268,35 +268,35 @@ class MemberOldActivityInfoScreen extends Component {
     );
 
     const modal = (
-      <View style={styles.centeredView}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={this.state.modalVisible}
-          onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
-            this.setState({ modalVisible: false });
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Rating
-                // showRating
-                onFinishRating={(rating) => this.joinYes(rating)}
-                style={{ paddingVertical: 10 }}
-                imageSize={30}
-              />
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => this.setState({ modalVisible: false })}
-              >
-                <Text style={styles.textStyle}>Close</Text>
-              </Pressable>
+        <View style={styles.centeredView}>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.modalVisible}
+            onRequestClose={() => {
+              Alert.alert('Modal has been closed.');
+              this.setState({ modalVisible: false });
+            }}
+          >
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+              {this.state.members != null && <Text style={{fontSize: 15}}>{`${this.props.route.params.activity.owner.name}'s talent in the activity`}</Text>}
+                <AirbnbRating
+                  // showRating
+                  onFinishRating={(rating) => this.joinYes(rating)}
+                  defaultRating={this.state.members != null && (this.state.members.ownerRating != null ? this.state.members.ownerRating : 0)}
+                />
+                <Pressable
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={() => this.setState({ modalVisible: false })}
+                >
+                  <Text style={styles.textStyle}>Close</Text>
+                </Pressable>
+              </View>
             </View>
-          </View>
-        </Modal>
-      </View>
-    );
+          </Modal>
+        </View>
+      );
 
     return (
       <ScrollView style={{ height: 1000 }}>
