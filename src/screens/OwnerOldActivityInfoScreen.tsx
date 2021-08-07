@@ -17,7 +17,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
 import ContextApi from 'context/ContextApi';
 import { Alert } from 'react-native';
-import { Rating } from 'react-native-ratings';
+import { Rating, AirbnbRating } from 'react-native-ratings';
 
 const heightView =
   PixelRatio.get() === 1
@@ -301,11 +301,11 @@ class OwnerOldActivityInfoScreen extends Component {
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Rating
+            {this.state.selectedMember != null && <Text style={{fontSize: 15}}>{`${this.state.selectedMember.memberName}'s talent in the activity`}</Text>}
+              <AirbnbRating
                 // showRating
                 onFinishRating={(rating) => this.joinYes(rating)}
-                style={{ paddingVertical: 10 }}
-                imageSize={30}
+                defaultRating={this.state.selectedMember != null && (this.state.selectedMember.memberRating != null ? this.state.selectedMember.memberRating : 0)}
               />
               <Pressable
                 style={[styles.button, styles.buttonClose]}
@@ -414,7 +414,7 @@ const styles = StyleSheet.create({
     // paddingTop: '40%'
   },
   modalView: {
-    margin: 20,
+    // margin: 10,
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,
@@ -436,6 +436,7 @@ const styles = StyleSheet.create({
   },
   buttonClose: {
     backgroundColor: '#2196F3',
+    
   },
   textStyle: {
     color: 'white',
