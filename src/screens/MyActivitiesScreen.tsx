@@ -34,7 +34,8 @@ const MyActivitiesScreen = () => {
   }, []);
 
   const getFirebase = async () => {
-    await firestore()
+    if (user != null) {
+      await firestore()
       .collection('Activities')
       .where('owner.email', '==', user.email)
       .onSnapshot((querySnapshot) => {
@@ -53,7 +54,7 @@ const MyActivitiesScreen = () => {
         setActivityOwnerList(ownerActivity);
       });
 
-    await firestore()
+      await firestore()
       .collection('Members')
       .where('memberEmail', '==', user.email)
       .where('ownerState', '==', true)
@@ -142,10 +143,7 @@ const MyActivitiesScreen = () => {
           }
         }
       });
-    // .catch((e) => {
-    //   setSpinner(false);
-    //   setActivityMemberList(null);
-    // });
+    }
   };
 
   const getPlace = (activity: Object) => {

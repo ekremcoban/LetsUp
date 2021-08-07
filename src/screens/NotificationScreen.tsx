@@ -17,8 +17,8 @@ const NotificationScreen = () => {
 
   const getNotificationsInfo = () => {
     let notificationArray = [];
-    console.log('---------', user);
-    firestore()
+    if (user != undefined) {
+      firestore()
       .collection('Notifications')
       .where('toWho', '==', user.email)
       .where('state', '==', true)
@@ -31,6 +31,7 @@ const NotificationScreen = () => {
         });
         setNotifications([...notificationArray]);
       });
+    }
   };
 
   const findPicture = (type: string) => {

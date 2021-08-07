@@ -82,11 +82,13 @@ class ActivityInfoScreen extends Component {
     this.setState({
       selectedAddress: selectedAddress,
       showPageToOwner:
+        this.context.user != null &&
         this.context.user.email ===
-        this.props.route.params.activity.owner.email,
+          this.props.route.params.activity.owner.email,
     });
 
     if (
+      this.context.user != null &&
       this.context.user.email === this.props.route.params.activity.owner.email
     ) {
       this.showMap(selectedAddress);
@@ -261,15 +263,17 @@ class ActivityInfoScreen extends Component {
 
     let isThere = false;
 
-    members.docs.forEach((item) => {
-      isThere =
-        item._data.memberEmail === this.context.user.email &&
-        item._data.ownerState;
+    if (this.context.user != null) {
+      members.docs.forEach((item) => {
+        isThere =
+          item._data.memberEmail === this.context.user.email &&
+          item._data.ownerState;
 
-      if (isThere) {
-        this.setState({ showPageToMember: isThere });
-      }
-    });
+        if (isThere) {
+          this.setState({ showPageToMember: isThere });
+        }
+      });
+    }
 
     if (this.state.showPageToMember) {
       this.showMap(this.state.selectedAddress);
@@ -281,16 +285,18 @@ class ActivityInfoScreen extends Component {
   };
 
   isMember = async () => {
-    // Istek kayitli mi bilgisi
-    const result = await firestore()
-      .collection('Members')
-      .where('activityId', '==', this.props.route.params.activity.id)
-      .where('memberEmail', '==', this.context.user.email)
-      .get();
+    if (this.context.user != null) {
+      // Istek kayitli mi bilgisi
+      const result = await firestore()
+        .collection('Members')
+        .where('activityId', '==', this.props.route.params.activity.id)
+        .where('memberEmail', '==', this.context.user.email)
+        .get();
 
-    if (result.docs.length > 0) {
-      console.log(result.docs[0].data().memberState);
-      this.setState({ isJoin: !result.docs[0].data().memberState });
+      if (result.docs.length > 0) {
+        console.log(result.docs[0].data().memberState);
+        this.setState({ isJoin: !result.docs[0].data().memberState });
+      }
     }
   };
 
@@ -941,30 +947,30 @@ class ActivityInfoScreen extends Component {
               alignItems: 'center',
             }}
           >
-             <TouchableNativeFeedback
-                onPress={() =>
-                  this.props.navigation.navigate('Member Info', {
-                    data: member._data,
-                  })
-                }
-              >
-            <Image
-              source={{
-                uri: member._data.memberPhoto,
-              }}
-              style={styles.imgMemberPic}
-            />
+            <TouchableNativeFeedback
+              onPress={() =>
+                this.props.navigation.navigate('Member Info', {
+                  data: member._data,
+                })
+              }
+            >
+              <Image
+                source={{
+                  uri: member._data.memberPhoto,
+                }}
+                style={styles.imgMemberPic}
+              />
             </TouchableNativeFeedback>
             <TouchableNativeFeedback
-                onPress={() =>
-                  this.props.navigation.navigate('Member Info', {
-                    data: member._data,
-                  })
-                }
-              >
-            <Text style={{ fontSize: 15, paddingStart: 5 }}>
-              {member._data.memberName}
-            </Text>
+              onPress={() =>
+                this.props.navigation.navigate('Member Info', {
+                  data: member._data,
+                })
+              }
+            >
+              <Text style={{ fontSize: 15, paddingStart: 5 }}>
+                {member._data.memberName}
+              </Text>
             </TouchableNativeFeedback>
           </View>
           {this.state.showPageToOwner && showEmailIcon(member)}
@@ -1061,7 +1067,16 @@ class ActivityInfoScreen extends Component {
         )[0]._data;
       }
 
-      if (
+      if (this.context.user == null) {
+        Alert.alert('Warning', 'You have to login first', [
+          {
+            text: 'Ok',
+            onPress: async () => {
+              this.props.navigation.navigate('Login');
+            },
+          },
+        ]);
+      } else if (
         selectedMembers.ownerState == true &&
         this.props.route.params.activity.owner.email !== this.context.user.email
       ) {
