@@ -112,12 +112,6 @@ export const ActivityListScreen = () => {
           addressTemp = [];
 
           querySnapshot.forEach((documentSnapshot) => {
-            console.log(
-              'Activity Address: ',
-              documentSnapshot.id,
-              documentSnapshot.data()
-            );
-
             // Sadece bulundugu sehirdeki aktiviteleri aldik
             if (
               documentSnapshot.data().cityEng ===

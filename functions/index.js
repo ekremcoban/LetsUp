@@ -42,10 +42,13 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
     const ownerToken = event.after.get('ownerToken');
     const memberToken = event.after.get('memberToken');
     const ownerEmail = event.after.get('ownerEmail');
-    const memberState = event.after.get('memberState');
+    const afterMemberState = event.after.get('memberState');
+    const beforeMemberState = event.before.get('memberState');
     const afterOwnerState = event.after.get('ownerState');
     const beforeOwnerState = event.before.get('ownerState');
     const memberIsCanceled = event.after.get('memberIsCanceled');
+    const afterMemberJoin = event.after.get('memberJoin');
+    const afterOwnerJoin = event.after.get('ownerJoin');
 
     const activities = await db.collection('Activities')
     .where('id', '==', activityId)
@@ -77,7 +80,8 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
     };
 
     // Memberdan uyelik istegi owner onaylamadi ya da reddetmedi daha
-    if (memberIsCanceled == null && memberState && afterOwnerState == null) {
+    if (memberIsCanceled == null && afterMemberState && afterOwnerState == null
+        && afterMemberJoin == null && afterOwnerJoin == null) {
         message = {
             notification: {
                 title: 'A New Request',
@@ -110,7 +114,8 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
     }
 
     // Ownerdan cevap gelmeden iptal etti
-    else if (memberIsCanceled == null && !memberState && afterOwnerState == null) {
+    else if (memberIsCanceled == null && !afterMemberState && afterOwnerState == null
+        && afterMemberJoin == null && afterOwnerJoin == null) {
         message = {
             notification: {
                 title: 'Request Was Withdrawn',
@@ -142,7 +147,8 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
     }
 
     // Member uyelik icin ownerdan onay aldiktan sonra giderse
-    else if (afterOwnerState && !memberState) {
+    else if (afterOwnerState && !afterMemberState
+        && afterMemberJoin == null && afterOwnerJoin == null) {
         message = {
             data: {
                 activityId: activities.docs[0].data().id
@@ -177,7 +183,8 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
     }
 
     // Member ownerdan onayli iken geri donerse
-    else if (beforeOwnerState !== afterOwnerState && memberState) {
+    else if (afterOwnerState && (beforeMemberState !== afterMemberState) && afterMemberState
+        && afterMemberJoin == null && afterOwnerJoin == null) {
         message = {
             data: {
                 activityId: activities.docs[0].data().id
@@ -212,7 +219,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
     }
     
     // Owner memberi reddettiginde
-    else if (!afterOwnerState) {
+    else if (!afterOwnerState && afterMemberJoin == null && afterOwnerJoin == null) {
         message = {
             notification: {
                 title: 'Sorry For This',
@@ -259,7 +266,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
     }
 
     // Owner memberi onayladiginda
-    else if (!beforeOwnerState && afterOwnerState) {
+    else if (afterOwnerState && afterMemberJoin == null && afterOwnerJoin == null) {
         message = {
             notification: {
                 title: 'Accepted You',

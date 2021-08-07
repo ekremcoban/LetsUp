@@ -18,6 +18,7 @@ import { useNavigation } from '@react-navigation/native';
 let activityId = [];
 let activityTemp = [];
 let ownerActivity = [];
+let address = [];
 
 const MyActivitiesScreen = () => {
   const navigation = useNavigation();
@@ -25,6 +26,7 @@ const MyActivitiesScreen = () => {
   const [spinner, setSpinner] = useState<boolean>(true);
   const [activityOwnerList, setActivityOwnerList] = useState(null);
   const [activityMemberList, setActivityMemberList] = useState(null);
+  const [addressList, setAddressList] = useState(null);
   const [ownerShow, setOwnerShow] = useState<Boolean>(true);
 
   useEffect(() => {
@@ -38,7 +40,14 @@ const MyActivitiesScreen = () => {
       .onSnapshot((querySnapshot) => {
         ownerActivity = [];
         querySnapshot.forEach((documentSnapshot) => {
-          console.log('1', documentSnapshot.data());
+          firestore()
+            .collection('ActivityAddress')
+            .where('activityId', '==', documentSnapshot.data().id)
+            .get()
+            .then((items) => {
+              address.push(items.docs[0].data());
+              setAddressList(address);
+            });
           ownerActivity.push(documentSnapshot.data());
         });
         setActivityOwnerList(ownerActivity);
@@ -46,21 +55,11 @@ const MyActivitiesScreen = () => {
 
     await firestore()
       .collection('Members')
-      // .where('country', '==', location.country_name)
-      // .where('cityEng', '==', convertLowerString(location.city))
       .where('memberEmail', '==', user.email)
       .where('ownerState', '==', true)
-      // .where('time', '<=', new Date().getTime() + 30 * 86400000)
       .onSnapshot((querySnapshot) => {
-        // console.log('Total users: ', querySnapshot.size);
 
         querySnapshot.forEach((documentSnapshot) => {
-          console.log(
-            'Activity Address: ',
-            documentSnapshot.id,
-            documentSnapshot.data()
-          );
-
           activityId.push(documentSnapshot.data().activityId);
         });
         console.log('activityId 1', activityId);
@@ -82,14 +81,22 @@ const MyActivitiesScreen = () => {
                 .where('id', 'in', stackTen)
                 // .where('ime', '>', 1626820440000)
                 .onSnapshot((documentSnapshot) => {
-                  documentSnapshot.docs.forEach((s) => {
+                  documentSnapshot.docs.forEach((documentSnapshot) => {
+                    firestore()
+                    .collection('ActivityAddress')
+                    .where('activityId', '==', documentSnapshot.data().id)
+                    .get()
+                    .then((items) => {
+                      address.push(items.docs[0].data());
+                      setAddressList(address);
+                    });
                     // console.log('User data: ', s.data());
                     const isIt = activityTemp.filter(
-                      (a) => a.id === s.data().id
+                      (a) => a.id === documentSnapshot.data().id
                     );
 
                     if (isIt.length === 0) {
-                      activityTemp.push(s.data());
+                      activityTemp.push(documentSnapshot.data());
                     }
                   });
                   console.log('activityTemp 1', activityTemp);
@@ -106,14 +113,22 @@ const MyActivitiesScreen = () => {
                   .where('id', 'in', stackTen)
                   // .where('ime', '>', 1626820440000)
                   .onSnapshot((documentSnapshot) => {
-                    documentSnapshot.docs.forEach((s) => {
+                    documentSnapshot.docs.forEach((documentSnapshot) => {
+                      firestore()
+                      .collection('ActivityAddress')
+                      .where('activityId', '==', documentSnapshot.data().id)
+                      .get()
+                      .then((items) => {
+                        address.push(items.docs[0].data());
+                        setAddressList(address);
+                      });
                       // console.log('User data: ', s.data());
                       const isIt = activityTemp.filter(
-                        (a) => a.id === s.data().id
+                        (a) => a.id === documentSnapshot.data().id
                       );
 
                       if (isIt.length === 0) {
-                        activityTemp.push(s.data());
+                        activityTemp.push(documentSnapshot.data());
                       }
                     });
                     console.log('activityTemp 2', activityTemp);
@@ -126,16 +141,34 @@ const MyActivitiesScreen = () => {
             }
           }
         }
-      })
-      // .catch((e) => {
-      //   setSpinner(false);
-      //   setActivityMemberList(null);
-      // });
+      });
+    // .catch((e) => {
+    //   setSpinner(false);
+    //   setActivityMemberList(null);
+    // });
+  };
+
+  const getPlace = (activity: Object) => {
+    if (addressList != null) {
+      const place = addressList.filter(
+        (address) => address.activityId === activity.id
+      )[0];
+
+      if (place != null && place.city != null && place.district != null) {
+        return place.city + ', ' + place.district;
+      } else if (place != null && place.city != null) {
+        return place.city;
+      } else if (place != null && place.district != null) {
+        return place.district;
+      }
+    }
   };
 
   const showAsOwnerPage =
     activityOwnerList != null &&
-    activityOwnerList.map((item, index) => (
+    activityOwnerList.sort((a, b) => {
+      return b.startTime - a.startTime;
+    }).map((item, index) => (
       <TouchableOpacity
         key={item.id}
         style={
@@ -143,9 +176,17 @@ const MyActivitiesScreen = () => {
             ? [styles.viewContainer, { backgroundColor: '#E5E5E5' }]
             : styles.viewContainer
         }
-        onPress={() => navigation.navigate('Owner Old Activity Info', {
-          activity: item
-        })}
+        onPress={() =>
+          item.finishTime < new Date().getTime()
+            ? navigation.navigate('Owner Old Activity Info', {
+                activity: item,
+              })
+            : navigation.navigate('Activity Info', {
+                activity: item,
+                getPlace: getPlace,
+                addressList: addressList,
+              })
+        }
       >
         <View style={styles.viewLeft}>
           <Image
@@ -166,7 +207,7 @@ const MyActivitiesScreen = () => {
           />
         </View>
         <View style={styles.viewMiddle}>
-          <Text style={styles.textBold}>{item.name}</Text>
+          <Text style={item.finishTime < new Date().getTime() ? [styles.textBold, {color: 'gray'}] : styles.textBold}>{item.name}</Text>
           <View style={styles.viewDateTime}>
             <Icon size={20} name="calendar-outline" type="ionicon" />
             <Text style={styles.textDate}>
@@ -199,7 +240,9 @@ const MyActivitiesScreen = () => {
 
   const showAsMemberPage =
     activityMemberList != null &&
-    activityMemberList.map((item, index) => (
+    activityMemberList.sort((a, b) => {
+      return b.startTime - a.startTime;
+    }).map((item, index) => (
       <TouchableOpacity
         key={item.id}
         style={
@@ -207,9 +250,17 @@ const MyActivitiesScreen = () => {
             ? [styles.viewContainer, { backgroundColor: '#E5E5E5' }]
             : styles.viewContainer
         }
-        onPress={() => navigation.navigate('Member Old Activity Info', {
-          activity: item
-        })}
+        onPress={() =>
+          item.finishTime < new Date().getTime()
+          ? navigation.navigate('Member Old Activity Info', {
+              activity: item,
+            })
+          : navigation.navigate('Activity Info', {
+              activity: item,
+              getPlace: getPlace,
+              addressList: addressList,
+            })
+        }
       >
         <View style={styles.viewLeft}>
           <Image
@@ -230,7 +281,7 @@ const MyActivitiesScreen = () => {
           />
         </View>
         <View style={styles.viewMiddle}>
-          <Text style={styles.textBold}>{item.name}</Text>
+        <Text style={item.finishTime < new Date().getTime() ? [styles.textBold, {color: 'gray'}] : styles.textBold}>{item.name}</Text>
           <View style={styles.viewDateTime}>
             <Icon size={20} name="calendar-outline" type="ionicon" />
             <Text style={styles.textDate}>
@@ -383,6 +434,7 @@ const styles = StyleSheet.create({
   textBold: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: 'black'
   },
   viewDateTime: {
     marginTop: 10,

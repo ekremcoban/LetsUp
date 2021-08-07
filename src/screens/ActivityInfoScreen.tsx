@@ -73,10 +73,13 @@ class ActivityInfoScreen extends Component {
 
     this.getMembers();
 
+    console.log('selectedAddress', this.props.route.params.addressList)
+    console.log('this.props.route.params.activity.id', this.props.route.params.activity.id)
+
     const selectedAddress = this.props.route.params.addressList.filter(
       (x) => x.activityId === this.props.route.params.activity.id
     );
-
+    console.log('selectedAddress', selectedAddress)
     this.setState({
       selectedAddress: selectedAddress,
       showPageToOwner:
@@ -84,11 +87,10 @@ class ActivityInfoScreen extends Component {
         this.props.route.params.activity.owner.email,
     });
 
-    if (
-      this.context.user.email === this.props.route.params.activity.owner.email
-    ) {
+    if ( this.context.user.email === this.props.route.params.activity.owner.email) {
       this.showMap(selectedAddress);
     }
+
   }
 
   showMap = (selectedAddress: Object) => {
