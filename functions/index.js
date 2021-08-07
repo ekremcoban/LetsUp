@@ -177,7 +177,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
     }
 
     // Member ownerdan onayli iken geri donerse
-    else if (beforeOwnerState && afterOwnerState && memberState) {
+    else if (beforeOwnerState !== afterOwnerState && memberState) {
         message = {
             data: {
                 activityId: activities.docs[0].data().id

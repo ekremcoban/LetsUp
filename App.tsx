@@ -27,6 +27,8 @@ import ProfileInfoScreen from 'screens/ProfileInfoScreen';
 import MyActivitiesScreen from 'screens/MyActivitiesScreen';
 import NotificationScreen from 'screens/NotificationScreen';
 import ActivityInfoScreen from 'screens/ActivityInfoScreen';
+import OwnerOldActivityInfoScreen from 'screens/OwnerOldActivityInfoScreen';
+import MemberOldActivityInfoScreen from 'screens/MemberOldActivityInfoScreen';
 import MoreScreen from 'screens/MoreScreen';
 import LoginScreen from 'screens/LoginScreen';
 import ContextApi from 'context/ContextApi';
@@ -318,6 +320,34 @@ let App = () => {
                 component={ActivityInfoScreen}
                 options={{
                   title: 'Activity Info',
+                  headerStyle: {
+                    backgroundColor: colors.bar,
+                  },
+                  headerTintColor: '#fff',
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                  },
+                }}
+              />
+              <Stack.Screen
+                name="Owner Old Activity Info"
+                component={OwnerOldActivityInfoScreen}
+                options={{
+                  title: 'Activity Feedback',
+                  headerStyle: {
+                    backgroundColor: colors.bar,
+                  },
+                  headerTintColor: '#fff',
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                  },
+                }}
+              />
+              <Stack.Screen
+                name="Member Old Activity Info"
+                component={MemberOldActivityInfoScreen}
+                options={{
+                  title: 'Activity Feedback',
                   headerStyle: {
                     backgroundColor: colors.bar,
                   },

@@ -80,7 +80,7 @@ class MemberOldActivityInfoScreen extends Component {
   // Aktiviteye katilmadi
   joinNo = async (member: Object) => {
     member.ownerJoin = false;
-    member.ownererRating = null;
+    member.ownerRating = null;
 
     this.fireStoreUpdateFunction('Members', member.id, member);
 
