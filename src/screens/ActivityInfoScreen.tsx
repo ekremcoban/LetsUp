@@ -468,6 +468,7 @@ class ActivityInfoScreen extends Component {
   };
 
   deleteAlert = (title: string, content: string, type: number) => {
+    console.log('uyeler', this.state.members)
     Alert.alert(title, content, [
       {
         text: 'No',
@@ -487,12 +488,12 @@ class ActivityInfoScreen extends Component {
 
           let request = memberCollection?.docs[0].data();
           if (
-            this.props.route.params.activity.startTime >
-            new Date().getTime() + 7200000
+            this.props.route.params.activity.startTime <
+            new Date().getTime() + 7200000 && this.state.members.length > 0
           ) {
-            request.isDeleted = true;
-          } else {
             request.isCanceled = true;
+          } else {
+            request.isDeleted = true;
           }
 
           request.state = false;
