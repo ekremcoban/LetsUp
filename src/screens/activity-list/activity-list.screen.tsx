@@ -169,8 +169,12 @@ export const ActivityListScreen = () => {
                     .where('id', 'in', stackTen)
                     // .where('ime', '>', 1626820440000)
                     .onSnapshot((documentSnapshot) => {
+                      let activityUpdate = null;
+                      console.log('aktiviteler: ', documentSnapshot.docs);
                       documentSnapshot.docs.forEach((s) => {
                         // console.log('User data: ', s.data());
+
+                        //Aktivite var mı bakar
                         const isIt = activityTemp.filter(
                           (a) => a.id === s.data().id
                         );
@@ -178,8 +182,14 @@ export const ActivityListScreen = () => {
                         if (isIt.length === 0) {
                           activityTemp.push(s.data());
                         }
+                        else {
+                            activityTemp = activityTemp.filter(item => item.id !== s.data().id);
+                            activityTemp.push(s.data());
+                        }
                       });
-                      // console.log('activityTemp 2', activityTemp);
+
+                      console.log('activityTemp 2', activityTemp);
+                      // console.log('Listelenen', activityTemp.filter(item => item.state));
                       setActivityList([...activityTemp]);
                       activityListTemp = [...activityTemp];
                       setSpinner(false);

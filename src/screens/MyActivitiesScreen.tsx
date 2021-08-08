@@ -38,6 +38,7 @@ const MyActivitiesScreen = () => {
       await firestore()
       .collection('Activities')
       .where('owner.email', '==', user.email)
+      .where('isDeleted', '==', null)
       .onSnapshot((querySnapshot) => {
         ownerActivity = [];
         querySnapshot.forEach((documentSnapshot) => {

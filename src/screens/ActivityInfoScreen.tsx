@@ -73,13 +73,10 @@ class ActivityInfoScreen extends Component {
 
     this.getMembers();
 
-    console.log('-------adres list', this.props.route.params.addressList);
-
     const selectedAddress = this.props.route.params.addressList.filter(
       (x) => x.activityId === this.props.route.params.activity.id
     );
 
-    console.log('------s', selectedAddress)
     this.setState({
       selectedAddress: selectedAddress,
       showPageToOwner:
@@ -690,6 +687,12 @@ class ActivityInfoScreen extends Component {
       </View>
     );
 
+    const canceledView = (
+      <View style={[styles.viewbuttonAction, styles.viewButtonActionDelete]}>
+        <Text style={styles.textButtonAction}>Canceled</Text>
+      </View>
+    );
+
     const popUp = (
       <Popup
         isVisible={true}
@@ -974,8 +977,8 @@ class ActivityInfoScreen extends Component {
               </Text>
             </TouchableNativeFeedback>
           </View>
-          {this.state.showPageToOwner && showEmailIcon(member)}
-          {this.state.showPageToOwner && showApproval(member)}
+          {this.state.showPageToOwner && this.props.route.params.activity.isCanceled == null && showEmailIcon(member)}
+          {this.state.showPageToOwner && this.props.route.params.activity.isCanceled == null && showApproval(member)}
         </View>
       ));
 
@@ -1029,75 +1032,81 @@ class ActivityInfoScreen extends Component {
         this.props.route.params.activity
       );
     
-      if (!this.state.showPageToOwner && selectedMembers.ownerState == false) {
-        return deniedView;
-      } else if (this.state.showPageToOwner) {
-        return deleteView;
-      } else if (
-        selectedMembers.ownerState == true &&
-        !this.state.showPageToOwner &&
-        !this.state.isJoin
-      ) {
-        return leaveButton;
-      } else if (selectedMembers.ownerState == true) {
-        return joinButton;
-      } else if (selectedMembers.length === 0 && this.state.showPageToOwner) {
-        return deleteView;
-      } else if (
-        selectedMembers.length === 0 &&
-        !this.state.showPageToOwner &&
-        !this.state.isJoin
-      ) {
-        return leaveButton;
-      } else if (selectedMembers.length === 0) {
-        return joinButton;
-      } else if (!this.state.isJoin) {
-        return leaveButton;
-      } else if (this.state.isJoin) {
-        return joinButton;
+      if (this.props.route.params.activity.isCanceled == null) {
+        if (!this.state.showPageToOwner && selectedMembers.ownerState == false) {
+          return deniedView;
+        } else if (this.state.showPageToOwner) {
+          return deleteView;
+        } else if (
+          selectedMembers.ownerState == true &&
+          !this.state.showPageToOwner &&
+          !this.state.isJoin
+        ) {
+          return leaveButton;
+        } else if (selectedMembers.ownerState == true) {
+          return joinButton;
+        } else if (selectedMembers.length === 0 && this.state.showPageToOwner) {
+          return deleteView;
+        } else if (
+          selectedMembers.length === 0 &&
+          !this.state.showPageToOwner &&
+          !this.state.isJoin
+        ) {
+          return leaveButton;
+        } else if (selectedMembers.length === 0) {
+          return joinButton;
+        } else if (!this.state.isJoin) {
+          return leaveButton;
+        } else if (this.state.isJoin) {
+          return joinButton;
+        }
       }
+      else 
+        return canceledView;
       // console.log('10')
     };
 
     const showActionButton = () => {
       let selectedMembers = [];
-      if (this.state.members != null && this.state.members.length > 0) {
-        selectedMembers = this.state.members.filter(
-          (item) =>
-            item._data.activityId === this.props.route.params.activity.id
-        )[0]._data;
-      }
-
-      if (this.context.user == null) {
-        Alert.alert('Warning', 'You have to login first', [
-          {
-            text: 'Ok',
-            onPress: async () => {
-              this.props.navigation.navigate('Login');
+      if (this.props.route.params.activity.isCanceled == null) {
+        if (this.state.members != null && this.state.members.length > 0) {
+          selectedMembers = this.state.members.filter(
+            (item) =>
+              item._data.activityId === this.props.route.params.activity.id
+          )[0]._data;
+        }
+  
+        if (this.context.user == null) {
+          Alert.alert('Warning', 'You have to login first', [
+            {
+              text: 'Ok',
+              onPress: async () => {
+                this.props.navigation.navigate('Login');
+              },
             },
-          },
-        ]);
-      } else if (
-        selectedMembers.ownerState == true &&
-        this.props.route.params.activity.owner.email !== this.context.user.email
-      ) {
-        return this.requestAlert();
-      } else if (this.state.showPageToOwner) {
-        return this.deleteActivity();
-      } else if (
-        selectedMembers.length === 0 &&
-        this.props.route.params.activity.owner.email !== this.context.user.email
-      ) {
-        return this.requestAlert();
-      } else if (selectedMembers.length === 0) {
-        return this.deleteActivity();
-      } else if (
-        this.props.route.params.activity.owner.email !==
-          this.context.user.email &&
-        (selectedMembers.ownerState == null ||
-          selectedMembers.ownerState == true)
-      ) {
-        return this.requestAlert();
+          ]);
+        } else if (
+          selectedMembers.ownerState == true &&
+          this.props.route.params.activity.owner.email !== this.context.user.email
+        ) {
+          return this.requestAlert();
+        } else if (this.state.showPageToOwner) {
+          return this.deleteActivity();
+        } else if (
+          selectedMembers.length === 0 &&
+          this.props.route.params.activity.owner.email !== this.context.user.email
+        ) {
+          return this.requestAlert();
+        } else if (selectedMembers.length === 0) {
+          return this.deleteActivity();
+        } else if (
+          this.props.route.params.activity.owner.email !==
+            this.context.user.email &&
+          (selectedMembers.ownerState == null ||
+            selectedMembers.ownerState == true)
+        ) {
+          return this.requestAlert();
+        }
       }
     };
 
