@@ -33,6 +33,7 @@ import { useNavigation } from '@react-navigation/native';
 import { getData } from 'db/localDb';
 import { convertLowerString } from 'components/functions/common';
 import ContextApi from 'context/ContextApi';
+import { useEffect } from 'react';
 
 const activityNameActionSheetRef = createRef<IActionSheet>();
 const ageRangeActionSheetRef = createRef<IActionSheet>();
@@ -99,6 +100,17 @@ const CreateActivityScreen2 = () => {
     startTime: false,
     finishTime: false,
   });
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setIsMounted(false)
+      // The screen is focused
+      // Call any action
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation]);
 
   const convertLocation = (
     location: any,

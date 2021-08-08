@@ -103,7 +103,7 @@ export const ActivityListScreen = () => {
         .collection('ActivityAddress')
         // .where('country', '==', location.country_name)
         // .where('cityEng', '==', convertLowerString(location.city))
-        .where('time', '>=', new Date().getTime())
+        .where('time', '>=', new Date().getTime() + 7200000)
         // .where('time', '<=', new Date().getTime() + 30 * 86400000)
         .orderBy('time')
 
@@ -169,8 +169,6 @@ export const ActivityListScreen = () => {
                     .where('id', 'in', stackTen)
                     // .where('ime', '>', 1626820440000)
                     .onSnapshot((documentSnapshot) => {
-                      let activityUpdate = null;
-                      console.log('aktiviteler: ', documentSnapshot.docs);
                       documentSnapshot.docs.forEach((s) => {
                         // console.log('User data: ', s.data());
 
@@ -188,7 +186,7 @@ export const ActivityListScreen = () => {
                         }
                       });
 
-                      console.log('activityTemp 2', activityTemp);
+                      // console.log('activityTemp 2', activityTemp);
                       // console.log('Listelenen', activityTemp.filter(item => item.state));
                       setActivityList([...activityTemp]);
                       activityListTemp = [...activityTemp];
