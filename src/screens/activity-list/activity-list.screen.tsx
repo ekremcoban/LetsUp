@@ -36,9 +36,7 @@ const ageActionSheetRef = createRef<IActionSheet>();
 let activityListTemp;
 
 export const ActivityListScreen = () => {
-  const { location } = useContext(
-    ContextApi
-  );
+  const { location, user } = useContext(ContextApi);
   const navigation = useNavigation();
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
   const [spinner, setSpinner] = useState<boolean>(true);
@@ -95,7 +93,7 @@ export const ActivityListScreen = () => {
       //   }
       // }
     });
-  }
+  };
 
   const getFirebase = () => {
     if (location != null) {
@@ -179,14 +177,15 @@ export const ActivityListScreen = () => {
 
                         if (isIt.length === 0) {
                           activityTemp.push(s.data());
-                        }
-                        else {
-                            activityTemp = activityTemp.filter(item => item.id !== s.data().id);
-                            activityTemp.push(s.data());
+                        } else {
+                          activityTemp = activityTemp.filter(
+                            (item) => item.id !== s.data().id
+                          );
+                          activityTemp.push(s.data());
                         }
                       });
 
-                      // console.log('activityTemp 2', activityTemp);
+                      console.log('activityTemp 2', activityTemp);
                       // console.log('Listelenen', activityTemp.filter(item => item.state));
                       setActivityList([...activityTemp]);
                       activityListTemp = [...activityTemp];
@@ -198,11 +197,11 @@ export const ActivityListScreen = () => {
               }
             }
           }
-        })
-        // .catch((e) => {
-        //   setSpinner(false);
-        //   setActivityList(null);
-        // });
+        });
+      // .catch((e) => {
+      //   setSpinner(false);
+      //   setActivityList(null);
+      // });
     }
   };
 
@@ -228,32 +227,36 @@ export const ActivityListScreen = () => {
     console.log('bende 2', activityListTemp);
     let filteredActivityList;
     if (activityListTemp != null && selectedActivityTypes.length === 0) {
-      console.log('hepsi', activityListTemp)
+      console.log('hepsi', activityListTemp);
       filteredActivityList = [...activityListTemp];
+    } else if (activityListTemp != null && selectedActivityTypes.length === 1) {
+      filteredActivityList = activityListTemp.filter(
+        (item) => item.type === activityTypes[selectedActivityTypes[0]].image
+      );
+    } else if (activityListTemp != null && selectedActivityTypes.length === 2) {
+      filteredActivityList = activityListTemp.filter(
+        (item) =>
+          item.type === activityTypes[selectedActivityTypes[0]].image ||
+          item.type === activityTypes[selectedActivityTypes[1]].image
+      );
+    } else if (activityListTemp != null && selectedActivityTypes.length === 3) {
+      filteredActivityList = activityListTemp.filter(
+        (item) =>
+          item.type === activityTypes[selectedActivityTypes[0]].image ||
+          item.type === activityTypes[selectedActivityTypes[1]].image ||
+          item.type === activityTypes[selectedActivityTypes[2]].image
+      );
+    } else if (activityListTemp != null && selectedActivityTypes.length === 4) {
+      filteredActivityList = activityListTemp.filter(
+        (item) =>
+          item.type === activityTypes[selectedActivityTypes[0]].image ||
+          item.type === activityTypes[selectedActivityTypes[1]].image ||
+          item.type === activityTypes[selectedActivityTypes[2]].image ||
+          item.type === activityTypes[selectedActivityTypes[3]].image
+      );
     }
-    else if (activityListTemp != null && selectedActivityTypes.length === 1) {
-      filteredActivityList = activityListTemp.filter(item => item.type === activityTypes[selectedActivityTypes[0]].image)
-    }
-    else if (activityListTemp != null && selectedActivityTypes.length === 2) {
-      filteredActivityList = activityListTemp
-      .filter(item => item.type === activityTypes[selectedActivityTypes[0]].image
-        || item.type === activityTypes[selectedActivityTypes[1]].image)
-    }
-    else if (activityListTemp != null && selectedActivityTypes.length === 3) {
-      filteredActivityList = activityListTemp
-      .filter(item => item.type === activityTypes[selectedActivityTypes[0]].image
-        || item.type === activityTypes[selectedActivityTypes[1]].image
-        || item.type === activityTypes[selectedActivityTypes[2]].image)
-    }
-    else if (activityListTemp != null && selectedActivityTypes.length === 4) {
-      filteredActivityList = activityListTemp
-      .filter(item => item.type === activityTypes[selectedActivityTypes[0]].image
-        || item.type === activityTypes[selectedActivityTypes[1]].image
-        || item.type === activityTypes[selectedActivityTypes[2]].image
-        || item.type === activityTypes[selectedActivityTypes[3]].image)
-    }
-    setActivityList(filteredActivityList)
-  }
+    setActivityList(filteredActivityList);
+  };
 
   const _activityTypes = activityTypes.map(
     (activityType: IActivityType, index: number) => (
@@ -297,7 +300,12 @@ export const ActivityListScreen = () => {
               {activityList != null &&
                 activityList != undefined &&
                 activityList
-                  .filter((x) => x.state === true)
+                  .filter(
+                    (x) =>
+                      x.state === true
+                      && (x.gender == user.gender || x.gender == null) 
+                      && ((x.minAge < user.age && x.maxAge > user.age) || x.minAge == null)
+                  )
                   .sort((a, b) => {
                     return a.startTime - b.startTime;
                   })

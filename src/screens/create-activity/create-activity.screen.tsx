@@ -431,10 +431,10 @@ const CreateActivityScreen2 = () => {
             finishTime:
               activityFinishTime != null && finishActivityTime.getTime(),
             gender:
-              selectedGenderValue === 2
-                ? 'Man'
-                : selectedGenderValue === 2
-                ? 'Woman'
+              selectedGenderValue == 2
+                ? 'Male'
+                : selectedGenderValue == 1
+                ? 'Female'
                 : null,
             minAge: selectedAgeRange[0],
             maxAge: selectedAgeRange[1],
