@@ -977,8 +977,8 @@ class ActivityInfoScreen extends Component {
               </Text>
             </TouchableNativeFeedback>
           </View>
-          {this.state.showPageToOwner && this.props.route.params.activity.isCanceled == null && showEmailIcon(member)}
-          {this.state.showPageToOwner && this.props.route.params.activity.isCanceled == null && showApproval(member)}
+          {this.state.showPageToOwner && this.props.route.params.activity.isCanceled != true && showEmailIcon(member)}
+          {this.state.showPageToOwner && this.props.route.params.activity.isCanceled != true && showApproval(member)}
         </View>
       ));
 
@@ -1032,7 +1032,7 @@ class ActivityInfoScreen extends Component {
         this.props.route.params.activity
       );
     
-      if (this.props.route.params.activity.isCanceled == null) {
+      if (this.props.route.params.activity.isCanceled != true) {
         if (!this.state.showPageToOwner && selectedMembers.ownerState == false) {
           return deniedView;
         } else if (this.state.showPageToOwner) {
@@ -1068,7 +1068,7 @@ class ActivityInfoScreen extends Component {
 
     const showActionButton = () => {
       let selectedMembers = [];
-      if (this.props.route.params.activity.isCanceled == null) {
+      if (this.props.route.params.activity.isCanceled != true) {
         if (this.state.members != null && this.state.members.length > 0) {
           selectedMembers = this.state.members.filter(
             (item) =>
