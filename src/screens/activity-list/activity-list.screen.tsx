@@ -303,8 +303,10 @@ export const ActivityListScreen = () => {
                   .filter(
                     (x) =>
                       x.state === true
-                      && (x.gender == user.gender || x.gender == null) 
-                      && ((x.minAge < user.age && x.maxAge > user.age) || x.minAge == null)
+                      && ((x.owner.email !== user.email && (x.gender == user.gender || x.gender == null))
+                      || x.owner.email === user.email)
+                      && ((x.owner.email !== user.email && ((x.minAge < user.age && x.maxAge > user.age) || x.minAge == null))
+                      || x.owner.email === user.email)
                   )
                   .sort((a, b) => {
                     return a.startTime - b.startTime;
