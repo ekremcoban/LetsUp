@@ -50,7 +50,7 @@ export const ActivityListScreen = () => {
   useEffect(() => {
     getFirebase();
     getNotifications();
-
+    
     // const unsubscribe = navigation.addListener('focus', () => {
     //   if (isCreateActivity) {
     //     console.log('İÇERDE');
@@ -302,11 +302,12 @@ export const ActivityListScreen = () => {
                 activityList
                   .filter(
                     (x) =>
-                      x.state === true
-                      && ((x.owner.email !== user.email && (x.gender == user.gender || x.gender == null))
+                      (x.state === true
+                      && (user != undefined && ((x.owner.email !== user.email && (x.gender == user.gender || x.gender == null))
                       || x.owner.email === user.email)
                       && ((x.owner.email !== user.email && ((x.minAge < user.age && x.maxAge > user.age) || x.minAge == null))
-                      || x.owner.email === user.email)
+                      || x.owner.email === user.email))
+                      || x.state)
                   )
                   .sort((a, b) => {
                     return a.startTime - b.startTime;

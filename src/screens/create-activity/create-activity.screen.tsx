@@ -42,7 +42,7 @@ const genderActionSheetRef = createRef<IActionSheet>();
 
 const CreateActivityScreen2 = () => {
   const navigation = useNavigation();
-  const { user } = useContext(ContextApi);
+  const { user, suspendActivity, setSuspendActivity } = useContext(ContextApi);
   const [branchName, setBranchName] = useState<string>(String || undefined);
 
   const [location0, setLocation0] = useState(null);
@@ -103,7 +103,9 @@ const CreateActivityScreen2 = () => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      setIsMounted(false)
+      setIsMounted(false);
+      console.log('ingo', suspendActivity);
+      
       // The screen is focused
       // Call any action
     });
@@ -380,6 +382,31 @@ const CreateActivityScreen2 = () => {
         {
           text: 'Yes',
           onPress: () => {
+            const suspendActivityTemp = {
+              type: branchName,
+              name: polyglot.t(
+                activityNames.filter(
+                  (a) => a.value === selectedActivityNameValue
+                )[0].text
+              ),
+              date: activityDate.getTime(),
+              startTime:
+                activityStartTime != null && startActivityTime.getTime(),
+              finishTime:
+                activityFinishTime != null && finishActivityTime.getTime(),
+              gender:
+                selectedGenderValue == 2
+                  ? 'Male'
+                  : selectedGenderValue == 1
+                  ? 'Female'
+                  : null,
+              minAge: selectedAgeRange[0],
+              maxAge: selectedAgeRange[1],
+              minQuota: selectedQuotaRange[0],
+              maxQuota: selectedQuotaRange[1],
+            };
+            setSuspendActivity(suspendActivityTemp);
+
             navigation.navigate('Login');
           },
         },

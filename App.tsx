@@ -44,6 +44,7 @@ let App = () => {
   const [userPhoto, setUserPhoto] = useState();
   const [location, setLocation] = useState();
   const [isCreateActivity, setIsCreateActivity] = useState();
+  const [suspendActivity, setSuspendActivity] = useState();
   const value = {
     user,
     setUser,
@@ -53,6 +54,8 @@ let App = () => {
     setLocation,
     isCreateActivity,
     setIsCreateActivity,
+    suspendActivity, 
+    setSuspendActivity,
   };
 
   const scheme = useColorScheme();
