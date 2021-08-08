@@ -181,6 +181,7 @@ let App = () => {
 
   const exitAccount = (navigation: any) => {
     setUser(null);
+    setUserPhoto(null);
     removeItem('Photo');
     removeItem('Users');
     GoogleSignin.signOut();
