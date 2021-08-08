@@ -73,12 +73,13 @@ class ActivityInfoScreen extends Component {
 
     this.getMembers();
 
-    console.log('-------photo', this.props.route.params.activity.owner.photo);
+    console.log('-------adres list', this.props.route.params.addressList);
 
     const selectedAddress = this.props.route.params.addressList.filter(
       (x) => x.activityId === this.props.route.params.activity.id
     );
 
+    console.log('------s', selectedAddress)
     this.setState({
       selectedAddress: selectedAddress,
       showPageToOwner:
@@ -1027,7 +1028,7 @@ class ActivityInfoScreen extends Component {
         'this.props.route.params.activity',
         this.props.route.params.activity
       );
-      console.log('selectedMembers', selectedMembers);
+    
       if (!this.state.showPageToOwner && selectedMembers.ownerState == false) {
         return deniedView;
       } else if (this.state.showPageToOwner) {

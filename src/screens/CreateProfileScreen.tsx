@@ -262,8 +262,7 @@ const CreateProfilScreen = () => {
       .getDownloadURL()
       .then((url) => {
         //from url you can fetched the uploaded image easily
-        console.log('burda', url);
-        console.log('temp', url);
+        console.log('foto', url);
         setUserPhoto(url);
         setPhoto(url);
         storeData('Photo', url);
@@ -286,7 +285,7 @@ const CreateProfilScreen = () => {
           </TouchableOpacity>
           <View style={styles.viewImg}>
             <Image
-              source={photo != '' ? { uri: photo } : null}
+              source={photo != null ? { uri: photo } : null}
               // source={require(photoPath)}
               style={styles.image}
             />

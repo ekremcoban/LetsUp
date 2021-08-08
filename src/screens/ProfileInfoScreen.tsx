@@ -17,7 +17,7 @@ import { getData } from 'db/localDb';
 const ProfileInfoScreen = () => {
   const navigation = useNavigation();
   const { user, userPhoto } = useContext(ContextApi);
-  const [photoPath, setPhotoPath] = useState<string>('');
+  const [photoPath, setPhotoPath] = useState<string>(null);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -70,11 +70,11 @@ const ProfileInfoScreen = () => {
         </TouchableOpacity>
         <View style={styles.viewImg}>
           {/* <View style={{ flex: 1}} /> */}
-          <Image
+          {photoPath != null && <Image
             source={{ uri: photoPath }}
             // source={require(photoPath)}
             style={styles.image}
-          />
+          />}
           {/* <View style={styles.viewIcon}>
                         <Icon size={30} name="camera-outline" type="ionicon" onPress={() => photo()} />
                     </View> */}
