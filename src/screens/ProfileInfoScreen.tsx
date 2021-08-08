@@ -21,11 +21,11 @@ const ProfileInfoScreen = () => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-        console.log('user', user);
+      console.log('profil info')
 
-        getData('Photo').then(res => {
+          getData('Photo').then(res => {
             setPhotoPath(res)
-            console.log('res', res)
+            console.log('profil photo db', res)
             if (res == null) {
               getData('Users').then(res => {
                 setPhotoPath(res.photo)

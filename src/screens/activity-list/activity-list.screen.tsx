@@ -121,8 +121,8 @@ export const ActivityListScreen = () => {
               addressTemp.push(documentSnapshot.data());
             }
           });
-          console.log('addressTemp', addressTemp);
-          console.log('activityId 1', activityId);
+          // console.log('addressTemp', addressTemp);
+          // console.log('activityId 1', activityId);
           setAddressList([...addressTemp]);
 
           console.log('sayı', Math.ceil(activityId.length / 10));
@@ -154,7 +154,7 @@ export const ActivityListScreen = () => {
                         activityTemp.push(s.data());
                       }
                     });
-                    console.log('activityTemp 1', activityTemp);
+                    // console.log('activityTemp 1', activityTemp);
                     setActivityList([...activityTemp]);
                     activityListTemp = [...activityTemp];
                     setSpinner(false);
@@ -179,7 +179,7 @@ export const ActivityListScreen = () => {
                           activityTemp.push(s.data());
                         }
                       });
-                      console.log('activityTemp 2', activityTemp);
+                      // console.log('activityTemp 2', activityTemp);
                       setActivityList([...activityTemp]);
                       activityListTemp = [...activityTemp];
                       setSpinner(false);

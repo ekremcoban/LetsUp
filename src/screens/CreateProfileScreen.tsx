@@ -61,7 +61,7 @@ const CreateProfilScreen = () => {
   const [branchNo, setBranchNo] = useState<number | null>(null);
   const [uploadUri, setUploadUri] = useState();
   const [imageName, setImageName] = useState(null);
-  const [spinner, setSpinner] = useState<boolean>(false);
+  const [spinner, setSpinner] = useState<boolean>(true);
   const [warning, setWarning] = useState<number>(0);
   const navigation = useNavigation();
   const route = useRoute();
@@ -71,13 +71,14 @@ const CreateProfilScreen = () => {
     if (from !== 'Profile Info') {
       getCurrentUser();
     }
-  
+
     console.log('Girdi', location);
     // Kullanici resim eklemediyse
     getData('Users').then((user) => {
       console.log('user create', user);
-      from === 'Profile Info' && onChangeFullName(user.name + ' ' + user.surname)
-      from === 'Profile Info' && setEmail(user.email)
+      from === 'Profile Info' &&
+        onChangeFullName(user.name + ' ' + user.surname);
+      from === 'Profile Info' && setEmail(user.email);
       setUser(user);
       user.age != null && setSelectedAge(user.age);
       user.gender != null &&
@@ -97,11 +98,14 @@ const CreateProfilScreen = () => {
             setPhoto(res);
           }
         });
-      } else {
+      } else if (from !== 'Profile Info') {
         console.log('Burda 4');
         setPhoto(user.photo);
+      } else {
+        console.log('girmedi', photo);
+        setPhoto(user.photo);
       }
-
+      setSpinner(false);
       // getImage(user.email, user.photo);
     });
   }, []);
@@ -133,7 +137,8 @@ const CreateProfilScreen = () => {
       },
       city: location.city,
       country: location.country_name,
-      postal: location.zip_code != undefined ? location.zip_code : location.postal,
+      postal:
+        location.zip_code != undefined ? location.zip_code : location.postal,
       type: 0,
       createdTime: user.createdTime,
     };
@@ -147,19 +152,34 @@ const CreateProfilScreen = () => {
     } else {
       setSpinner(true);
       setWarning(0);
+
+      // Resim sunucuya gonderildi
+      console.log('Upload', uploadUri);
+      await sendImage(imageName, uploadUri);
+      storeData('Photo', photo);
+      setUserPhoto(photo);
+
       // Kullanici kayitli mi bilgisi
       const usersCollection = await firestore()
         .collection('Users')
         .doc(email)
         .get();
 
-        console.log('data 1', data)
-      // Veriler sunucuya gonderildi
-      sendData(usersCollection, data);
+      await storage()
+        .ref(user.email + '.jpeg')
+        .getDownloadURL()
+        .then((photoUrl) => {
+          data.photo = photoUrl;
 
-      // Veri lokalde kayit edildi.
-      storeData('Users', data);
-      setUser(data);
+          // Veriler sunucuya gonderildi
+          sendData(usersCollection, data);
+
+          // Veri lokalde kayit edildi.
+          storeData('Users', data);
+          setUser(data);
+        });
+
+      // console.log('data 1', data);
 
       setSpinner(false);
       if (from === 'Login') {
@@ -189,22 +209,29 @@ const CreateProfilScreen = () => {
       .then((image) => {
         let uri = image.path;
         //generating image name
-        let imageName = `${email}.jpeg`;
+        let imageNameTemp = `${email}.jpeg`;
         //to resolve file path issue on different platforms
-        let uploadUri = uri.replace('file://', '');
+        let uploadUriTemp = uri.replace('file://', '');
         // let uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
         //setting the image name and image uri in the state
 
-        setUploadUri(uploadUri);
-        setImageName(imageName);
+        // storage().ref(user.email + '.jpeg')
+        // .getDownloadURL()
+        // .then(result => {
+        //   console.log('url', result)
+        //   setUploadUri(result);
+        // })
+
+        setUploadUri(uploadUriTemp);
+        setImageName(imageNameTemp);
         // setPhoto(image.path);
 
-        // Resim sunucuya gonderildi
-        sendImage(imageName, uploadUri);
+        setPhoto(uri);
+        console.log('uri', uri);
       })
-      .then((x) => {
-        getImage();
-      })
+      // .then((x) => {
+      //   getImage();
+      // })
       .catch((e) => {
         if (e.code === 'E_NO_IMAGE_DATA_FOUND') {
           Alert.alert('Warning', 'Selected photo must be png or jpeg format');
@@ -315,7 +342,13 @@ const CreateProfilScreen = () => {
 
             <View style={styles.viewAgeGender}>
               <View style={styles.viewAge}>
-                <Text style={warning === 1 || warning === 2 ? [styles.textAge, {color: 'red'}] : styles.textAge}>
+                <Text
+                  style={
+                    warning === 1 || warning === 2
+                      ? [styles.textAge, { color: 'red' }]
+                      : styles.textAge
+                  }
+                >
                   {polyglot.t('screens.create_profile.label.age')}
                 </Text>
                 <Selector
@@ -323,10 +356,9 @@ const CreateProfilScreen = () => {
                   onPress={() => {
                     ageActionSheetRef.current?.open();
                     if (warning === 1) {
-                      setWarning(3)
-                    }
-                    else {
-                      setWarning(0)
+                      setWarning(3);
+                    } else {
+                      setWarning(0);
                     }
                   }}
                   // label={polyglot.t(
@@ -336,7 +368,13 @@ const CreateProfilScreen = () => {
                 />
               </View>
               <View style={styles.viewGender}>
-                <Text style={warning === 1 || warning === 3 ? [styles.textGender, {color: 'red'}] : styles.textGender}>
+                <Text
+                  style={
+                    warning === 1 || warning === 3
+                      ? [styles.textGender, { color: 'red' }]
+                      : styles.textGender
+                  }
+                >
                   {polyglot.t('screens.create_profile.label.gender')}
                 </Text>
                 <Selector
@@ -344,10 +382,9 @@ const CreateProfilScreen = () => {
                   onPress={() => {
                     genderActionSheetRef.current?.open();
                     if (warning === 1) {
-                      setWarning(2)
-                    }
-                    else {
-                      setWarning(0)
+                      setWarning(2);
+                    } else {
+                      setWarning(0);
                     }
                   }}
                   // label={polyglot.t(

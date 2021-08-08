@@ -95,7 +95,7 @@ let App = () => {
 
     const subscriber2 = getData('Users').then((res) => {
       if (res != null) {
-        console.log('user', res);
+        console.log('user app.tsx', res);
         setUser(res);
         if (res.photo == null) {
           getData('Photo').then((res) => {
@@ -166,7 +166,7 @@ let App = () => {
     <TouchableOpacity onPress={() => navigation.navigate('Profile Info')}>
       <Image
         source={{
-          uri: user != null && user.photo != null ? user.photo : photo,
+          uri: photo != null ? photo : user != null && user.photo != null ? user.photo : '',
         }}
         style={{ width: 25, height: 25, borderRadius: 20 }}
       />
