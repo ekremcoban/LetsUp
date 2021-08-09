@@ -45,7 +45,6 @@ const weightActionSheetRef = createRef<IActionSheet>();
 
 const CreateProfilScreen = () => {
   const { user, setUser, location, setUserPhoto } = useContext(ContextApi);
-  const [email, setEmail] = useState();
   const [photo, setPhoto] = useState(null);
   const [fullName, onChangeFullName] = useState('');
   const [selectedGenderValue, setSelectedGenderValue] = useState<string | null>(
@@ -59,7 +58,7 @@ const CreateProfilScreen = () => {
     [number | null, number | null]
   >([null, null]);
   const [branchNo, setBranchNo] = useState<number | null>(null);
-  const [uploadUri, setUploadUri] = useState();
+  const [uploadUri, setUploadUri] = useState(null);
   const [imageName, setImageName] = useState(null);
   const [spinner, setSpinner] = useState<boolean>(true);
   const [warning, setWarning] = useState<number>(0);
@@ -68,46 +67,57 @@ const CreateProfilScreen = () => {
   const { from } = route.params;
 
   useEffect(() => {
-    if (from !== 'Profile Info') {
-      getCurrentUser();
-    }
+    // if (from !== 'Profile Info') {
+    //   getCurrentUser();
+    // }
 
     console.log('Girdi', location);
     // Kullanici resim eklemediyse
-    getData('Users').then((user) => {
-      console.log('user create', user);
-      from === 'Profile Info' &&
+    console.log('-----user', user);
+    if (user == null) {
+      getData('Users').then((user) => {
         onChangeFullName(user.name + ' ' + user.surname);
-      from === 'Profile Info' && setEmail(user.email);
-      setUser(user);
+
+        setUser(user);
+        user.age != null && setSelectedAge(user.age);
+        user.gender != null &&
+          setSelectedGenderValue(
+            user.gender === 'Male' ? 2 : user.gender === 'Female' ? 1 : 0
+          );
+        user.height != null && setSelectedHeight(user.height);
+        user.weight != null && setSelectedWeight(user.weight);
+        if (user.photo == null) {
+          // Kullanici resim eklediyse
+          getData('Photo').then((res) => {
+            if (res == null) {
+              console.log('Burda 2', res);
+              getImage();
+            } else {
+              console.log('Burda 3');
+              setPhoto(res);
+            }
+          });
+        } else {
+          console.log('girmedi', photo);
+          setPhoto(user.photo);
+        }
+        setSpinner(false);
+        // getImage(user.email, user.photo);
+      });
+    } else {
+      onChangeFullName(user.name + ' ' + user.surname);
+      setPhoto(user.photo);
       user.age != null && setSelectedAge(user.age);
-      user.gender != null &&
-        setSelectedGenderValue(
-          user.gender === 'Male' ? 2 : user.gender === 'Female' ? 1 : 0
-        );
-      user.height != null && setSelectedHeight(user.height);
-      user.weight != null && setSelectedWeight(user.weight);
-      if (user.photo == null) {
-        // Kullanici resim eklediyse
-        getData('Photo').then((res) => {
-          if (res == null) {
-            console.log('Burda 2', res);
-            getImage();
-          } else {
-            console.log('Burda 3');
-            setPhoto(res);
-          }
-        });
-      } else if (from !== 'Profile Info') {
-        console.log('Burda 4');
-        setPhoto(user.photo);
-      } else {
-        console.log('girmedi', photo);
-        setPhoto(user.photo);
-      }
+        user.gender != null &&
+          setSelectedGenderValue(
+            user.gender === 'Male' ? 2 : user.gender === 'Female' ? 1 : 0
+          );
+        user.height != null && setSelectedHeight(user.height);
+        user.weight != null && setSelectedWeight(user.weight);
+        storeData('Users', user);
       setSpinner(false);
       // getImage(user.email, user.photo);
-    });
+    }
   }, []);
 
   const create = async () => {
@@ -153,31 +163,30 @@ const CreateProfilScreen = () => {
       setSpinner(true);
       setWarning(0);
 
-      // Resim sunucuya gonderildi
-      console.log('Upload', uploadUri);
-      await sendImage(imageName, uploadUri);
-      storeData('Photo', photo);
-      setUserPhoto(photo);
-
       // Kullanici kayitli mi bilgisi
       const usersCollection = await firestore()
         .collection('Users')
-        .doc(email)
+        .doc(user.email)
         .get();
 
-      await storage()
-        .ref(user.email + '.jpeg')
-        .getDownloadURL()
-        .then((photoUrl) => {
-          data.photo = photoUrl;
+      // Resim değiştiyse sunucuya gonderx
+      if (uploadUri != null) {
+        // Resim sunucuya gonderildi
+        await sendImage(user.email + '.jpeg', uploadUri, usersCollection, data);
+      }
+      else {
+           // Veriler sunucuya gonderildi
+           sendData(usersCollection, data);
 
-          // Veriler sunucuya gonderildi
-          sendData(usersCollection, data);
+           // Veri lokalde kayit edildi.
+           storeData('Users', data);
+           setUser(data);
+      }
 
-          // Veri lokalde kayit edildi.
-          storeData('Users', data);
-          setUser(data);
-        });
+      storeData('Photo', photo);
+      setUserPhoto(photo);
+
+      //   console.log('----usersCollection00000', usersCollection)
 
       // console.log('data 1', data);
 
@@ -193,7 +202,7 @@ const CreateProfilScreen = () => {
 
   const getCurrentUser = async () => {
     const currentUser = await GoogleSignin.getCurrentUser();
-    setEmail(currentUser?.user.email);
+
     onChangeFullName(
       currentUser?.user.givenName + ' ' + currentUser?.user.familyName
     );
@@ -209,7 +218,7 @@ const CreateProfilScreen = () => {
       .then((image) => {
         let uri = image.path;
         //generating image name
-        let imageNameTemp = `${email}.jpeg`;
+        let imageNameTemp = `${user.email}.jpeg`;
         //to resolve file path issue on different platforms
         let uploadUriTemp = uri.replace('file://', '');
         // let uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
@@ -241,11 +250,11 @@ const CreateProfilScreen = () => {
   };
 
   const sendData = (usersCollection: any, data: Object) => {
-    console.log(data, usersCollection);
+    console.log('-------usersCollection ', usersCollection);
     if (usersCollection.exists) {
       firestore()
         .collection('Users')
-        .doc(email)
+        .doc(user.email)
         .update(data)
         .then(() => {
           console.log('User updated!');
@@ -256,7 +265,7 @@ const CreateProfilScreen = () => {
     } else {
       firestore()
         .collection('Users')
-        .doc(email)
+        .doc(user.email)
         .set(data)
         .then(() => {
           console.log('User insert!');
@@ -267,7 +276,7 @@ const CreateProfilScreen = () => {
     }
   };
 
-  const sendImage = (imageName: any, uploadUri: any) => {
+  const sendImage = (imageName: any, uploadUri: any, usersCollection: any, data: Object) => {
     console.log('image', imageName);
     if (imageName != null) {
       storage()
@@ -276,15 +285,32 @@ const CreateProfilScreen = () => {
         .then((snapshot) => {
           //You can check the image is now uploaded in the storage bucket
           console.log(`${imageName} has been successfully uploaded.`);
+
+          storage()
+            .ref(user.email + '.jpeg')
+            .getDownloadURL()
+            .then((photoUrl) => {
+              data.photo = photoUrl;
+              console.log('------phtotos', photoUrl);
+              // Veriler sunucuya gonderildi
+              sendData(usersCollection, data);
+
+              // Veri lokalde kayit edildi.
+              storeData('Users', data);
+              setUser(data);
+            })
+            .catch((e) => {
+              console.error('photo adres alinamadi', e);
+            });
         })
         .catch((e) => console.log('uploading image error => ', e));
     }
   };
 
   const getImage = async () => {
-    const currentUser = await GoogleSignin.getCurrentUser();
+    // const currentUser = await GoogleSignin.getCurrentUser();
 
-    let imageRef = storage().ref(currentUser?.user.email + '.jpeg');
+    let imageRef = storage().ref(user.email + '.jpeg');
     await imageRef
       .getDownloadURL()
       .then((url) => {

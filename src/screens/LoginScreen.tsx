@@ -99,6 +99,8 @@ const LoginScreen = ({ navigation }: any) => {
           country: _data.country,
           createdTime: _data.createdTime,
         };
+        storeData('Users', userTemp);
+        setUser(userTemp)
       } else {
         userTemp = {
           id: userInfo.user.id,
@@ -119,23 +121,13 @@ const LoginScreen = ({ navigation }: any) => {
           city: data.city,
           createdTime: new Date().getTime()
         };
-        
-        // console.log('login', profile)
-        // firestore()
-        //   .collection('Users')
-        //   .doc(userInfo.user.email)
-        //   .set(profile)
-        //   .then(() => {
-        //     console.log('User added!');
-        //   });
+
+        setUser(userTemp);
       }
 
       if (userTemp.photo == null) {
         getImage()
       }
-
-      storeData('Users', userTemp);
-      setUser(userTemp);
 
       if (userTemp.age == null) {
         navigation.navigate('Create Profile', {from: 'Login'})
