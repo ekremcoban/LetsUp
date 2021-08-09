@@ -76,7 +76,13 @@ const CreateProfilScreen = () => {
     console.log('-----user', user);
     if (user == null) {
       getData('Users').then((user) => {
-        onChangeFullName(user.name + ' ' + user.surname);
+        if (user.surname != null) {
+          onChangeFullName(user.name + ' ' + user.surname);
+        }
+        else {
+          onChangeFullName(user.name);
+        }
+        
 
         setUser(user);
         user.age != null && setSelectedAge(user.age);
@@ -105,7 +111,12 @@ const CreateProfilScreen = () => {
         // getImage(user.email, user.photo);
       });
     } else {
-      onChangeFullName(user.name + ' ' + user.surname);
+      if (user.surname != null) {
+        onChangeFullName(user.name + ' ' + user.surname);
+      }
+      else {
+        onChangeFullName(user.name);
+      }
       setPhoto(user.photo);
       user.age != null && setSelectedAge(user.age);
         user.gender != null &&
