@@ -38,6 +38,7 @@ import { convertLowerString } from 'components/functions/common';
 import messaging from '@react-native-firebase/messaging';
 import MemberInfoScreen from 'screens/MemberInfoScreen';
 import OwnerInfoScreen from 'screens/OwnerInfoScreen';
+import { Alert } from 'react-native';
 
 let App = () => {
   const [user, setUser] = useState();
@@ -109,9 +110,14 @@ let App = () => {
       }
     });
 
+    const subscriber3 = messaging().onMessage(async remoteMessage => {
+      Alert.alert(remoteMessage.notification.title, remoteMessage.notification.body);
+    });
+
     return {
       subscriber1,
       subscriber2,
+      subscriber3,
     };
   }, []);
 
