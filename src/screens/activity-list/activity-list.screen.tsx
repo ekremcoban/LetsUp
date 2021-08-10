@@ -302,7 +302,7 @@ export const ActivityListScreen = () => {
                 activityList
                   .filter(
                     (x) =>
-                      (x.state === true
+                      (x.state
                       && user != undefined ? (((x.owner.email !== user.email && (x.gender == user.gender || x.gender == null))
                       || x.owner.email === user.email)
                       && ((x.owner.email !== user.email && ((x.minAge <= user.age && x.maxAge >= user.age) || x.minAge == null))

@@ -17,11 +17,6 @@ import { GenderActionSheet } from './create-activity/action-sheets/gender.action
 import { AgeActionSheet } from './create-activity/action-sheets/age.action-sheet';
 import { HeightActionSheet } from './create-activity/action-sheets/height.action-sheet';
 import { WeightActionSheet } from './create-activity/action-sheets/weight.action-sheet';
-import { ActivityTypeSelector } from 'components/activity-type-selector/activity-type-selector';
-import {
-  activityTypes,
-  IActivityType,
-} from 'components/activity-type-selector/models';
 import firestore from '@react-native-firebase/firestore';
 import { useEffect } from 'react';
 import { getData, storeData } from 'db/localDb';
@@ -32,7 +27,6 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import ImagePickerCropper from 'react-native-image-crop-picker';
 import DisplaySpinner from '../components/spinner';
-import { utils } from '@react-native-firebase/app';
 import storage from '@react-native-firebase/storage';
 import ContextApi from 'context/ContextApi';
 import { useNavigation, useRoute } from '@react-navigation/native';

@@ -111,6 +111,7 @@ let App = () => {
     });
 
     const subscriber3 = messaging().onMessage(async remoteMessage => {
+      console.log(remoteMessage)
       Alert.alert(remoteMessage.notification.title, remoteMessage.notification.body);
     });
 
