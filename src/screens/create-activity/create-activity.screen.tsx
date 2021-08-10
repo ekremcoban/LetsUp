@@ -246,6 +246,7 @@ const CreateActivityScreen2 = () => {
       fullAddress: location.address,
       nodeNumber: nodeNumber,
       nodeCount: numberShowLocation,
+      state: true,
       time: activity.startTime,
       createdTime: new Date().getTime(),
     };
@@ -453,7 +454,7 @@ const CreateActivityScreen2 = () => {
             state: true,
             isCanceled: null,
             isDeleted: null,
-            date: activityDate.getTime(),
+            date: activityDate.getTime(), //Aktivite gunu
             startTime: activityStartTime != null && startActivityTime.getTime(),
             finishTime:
               activityFinishTime != null && finishActivityTime.getTime(),
@@ -469,7 +470,7 @@ const CreateActivityScreen2 = () => {
             maxQuota: selectedQuotaRange[1],
             createdTime: new Date().getTime(),
           };
-          console.log('activity', activity);
+          
           if (activity.owner.photo == null) {
             getData('Photo').then((p) => {
               if (p != null) {

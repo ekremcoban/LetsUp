@@ -4,6 +4,54 @@ const admin = require('firebase-admin');
 admin.initializeApp(functions.config());
 const db = admin.firestore();
 
+// Servis her 10 dk da 1 aktivitelerin ve adreslerinin baslangic zamanini kontrol eder. 2 saatten az kaldiya state false yapar.
+exports.scheduledFunction = functions.pubsub.schedule('*/10 * * * *').onRun(async (context) => {
+    db.collection('Timers').doc('Timer').set({time: admin.firestore.Timestamp.now()});
+
+    const activeActivities = await db.collection('Activities')
+    // .where('startTime', '<', admin.firestore.Timestamp.now().toMillis() + 7200000)
+    .where('state', '==', true)
+    .get();
+
+    activeActivities.docs.forEach(async item => {
+        if (item.data().startTime < admin.firestore.Timestamp.now().toMillis() + 7200000) {
+            const inactiveActivity = item.data();
+            inactiveActivity.state = false;
+
+            db.collection('Activities')
+            .doc(inactiveActivity.id)
+            .set(inactiveActivity)
+            .then(() => {
+                console.log('activeActivities', ' Update');
+            })
+            .catch((e) => {
+              console.log('activeActivities', ' Update error: ', e);
+            });
+
+            const address = await db.collection('ActivityAddress')
+            .where('activityId', '==', inactiveActivity.id)
+            .get();
+
+            address.docs.forEach(item => {
+                const inactiveAddress = item.data();
+                inactiveAddress.state = false;
+
+                db.collection('ActivityAddress')
+                .doc(inactiveAddress.id)
+                .set(inactiveAddress)
+                .then(() => {
+                    console.log('activeAddress', ' Update');
+                })
+                .catch((e) => {
+                  console.log('activeAddress', ' Update error: ', e);
+                });
+            })
+        }
+    })
+
+    return console.log('Timer çalıştı')
+  });
+
 // Profil guncellendiginde
 exports.usersUpdate=functions.firestore.document('Users/{id}').onUpdate(async event => {
     const id = event.after.get('id');

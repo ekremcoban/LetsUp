@@ -31,6 +31,10 @@ import storage from '@react-native-firebase/storage';
 import ContextApi from 'context/ContextApi';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import messaging from '@react-native-firebase/messaging';
+import Geolocation from '@react-native-community/geolocation';
+import Geocoder from 'react-native-geocoding';
+
+Geocoder.init("AIzaSyAokz8FcAIgsV0JbJZijJ5ypH-2bvQgC0U");
 
 const genderActionSheetRef = createRef<IActionSheet>();
 const ageActionSheetRef = createRef<IActionSheet>();
@@ -66,17 +70,28 @@ const CreateProfilScreen = () => {
     // }
 
     console.log('Girdi', location);
+    Geocoder.from(37.19524694578257, 37.34132821719594)
+    .then((json) => {
+      var basic = json.results[json.results.length - 1].address_components
+      const country = basic[basic.length - 1].long_name;
+      const city = basic[basic.length - 2].long_name;
+      console.log('addressComponent', city, country);
+    })
+    .catch((error) => console.warn(error));
+
+    Geolocation.getCurrentPosition((info) => {
+
+      console.log('loc', info);
+    });
+
     // Kullanici resim eklemediyse
-    console.log('-----user', user);
     if (user == null) {
       getData('Users').then((user) => {
         if (user.surname != null) {
           onChangeFullName(user.name + ' ' + user.surname);
-        }
-        else {
+        } else {
           onChangeFullName(user.name);
         }
-        
 
         setUser(user);
         user.age != null && setSelectedAge(user.age);
@@ -107,19 +122,18 @@ const CreateProfilScreen = () => {
     } else {
       if (user.surname != null) {
         onChangeFullName(user.name + ' ' + user.surname);
-      }
-      else {
+      } else {
         onChangeFullName(user.name);
       }
       setPhoto(user.photo);
       user.age != null && setSelectedAge(user.age);
-        user.gender != null &&
-          setSelectedGenderValue(
-            user.gender === 'Male' ? 2 : user.gender === 'Female' ? 1 : 0
-          );
-        user.height != null && setSelectedHeight(user.height);
-        user.weight != null && setSelectedWeight(user.weight);
-        storeData('Users', user);
+      user.gender != null &&
+        setSelectedGenderValue(
+          user.gender === 'Male' ? 2 : user.gender === 'Female' ? 1 : 0
+        );
+      user.height != null && setSelectedHeight(user.height);
+      user.weight != null && setSelectedWeight(user.weight);
+      storeData('Users', user);
       setSpinner(false);
       // getImage(user.email, user.photo);
     }
@@ -178,14 +192,13 @@ const CreateProfilScreen = () => {
       if (uploadUri != null) {
         // Resim sunucuya gonderildi
         await sendImage(user.email + '.jpeg', uploadUri, usersCollection, data);
-      }
-      else {
-           // Veriler sunucuya gonderildi
-           sendData(usersCollection, data);
+      } else {
+        // Veriler sunucuya gonderildi
+        sendData(usersCollection, data);
 
-           // Veri lokalde kayit edildi.
-           storeData('Users', data);
-           setUser(data);
+        // Veri lokalde kayit edildi.
+        storeData('Users', data);
+        setUser(data);
       }
 
       storeData('Photo', photo);
@@ -281,7 +294,12 @@ const CreateProfilScreen = () => {
     }
   };
 
-  const sendImage = (imageName: any, uploadUri: any, usersCollection: any, data: Object) => {
+  const sendImage = (
+    imageName: any,
+    uploadUri: any,
+    usersCollection: any,
+    data: Object
+  ) => {
     console.log('image', imageName);
     if (imageName != null) {
       storage()

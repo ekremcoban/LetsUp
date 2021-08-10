@@ -1,6 +1,6 @@
 {
   "name": "LetsUp",
-  "version": "0.23.15",
+  "version": "0.24.0",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -37,6 +37,7 @@
     "react-native-bouncy-checkbox": "^2.0.0-beta.1",
     "react-native-code-push": "^7.0.1",
     "react-native-elements": "^3.2.0",
+    "react-native-geocoding": "^0.5.0",
     "react-native-gesture-handler": "^1.10.1",
     "react-native-get-random-values": "^1.5.1",
     "react-native-google-places": "^3.1.2",

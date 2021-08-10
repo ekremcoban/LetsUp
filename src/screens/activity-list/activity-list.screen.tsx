@@ -50,7 +50,7 @@ export const ActivityListScreen = () => {
   useEffect(() => {
     getFirebase();
     getNotifications();
-    
+
     // const unsubscribe = navigation.addListener('focus', () => {
     //   if (isCreateActivity) {
     //     console.log('İÇERDE');
@@ -69,61 +69,34 @@ export const ActivityListScreen = () => {
 
   const getNotifications = () => {
     messaging().onNotificationOpenedApp((remoteMessage) => {
-      // console.log('remote', remoteMessage);
       navigation.navigate('Notification');
-
-      // if (activityTemp != [] && addressTemp != []) {
-      //   console.log('2222', activityTemp);
-      //   const selectedActivity = activityTemp.filter(
-      //     (activity) => activity.id === remoteMessage.data.activityId
-      //   );
-      //   console.log('11', selectedActivity);
-      //   const selectedAddress = addressTemp.filter(
-      //     (address) => address.activityId === selectedActivity[0].id
-      //   );
-
-      //   console.log('22', selectedAddress);
-      //   if (selectedActivity != [] && selectedAddress != []) {
-      //     navigation.navigate('Activity Info', {
-      //       activity: selectedActivity[0],
-      //       getPlace: getPlace,
-      //       addressList: selectedAddress,
-      //       from: remoteMessage.notification.title,
-      //     });
-      //   }
-      // }
     });
   };
 
-  const getFirebase = () => {
+  const getFirebase = async () => {
+    console.log('location', location);
+    const cityEng = convertLowerString(location.city).toLowerCase();
+    console.log('------', cityEng);
     if (location != null) {
-      firestore()
+      await firestore()
         .collection('ActivityAddress')
-        // .where('country', '==', location.country_name)
-        // .where('cityEng', '==', convertLowerString(location.city))
-        .where('time', '>=', new Date().getTime() + 7200000)
-        // .where('time', '<=', new Date().getTime() + 30 * 86400000)
-        .orderBy('time')
+        .where('state', '==', true)
+        .where('country', '==', location.country_name)
+        .where('cityEng', '==', cityEng)
 
         .onSnapshot((querySnapshot) => {
-          // console.log('Total users: ', querySnapshot.size);
+          console.log('querySnapshot', querySnapshot);
           addressTemp = [];
 
-          querySnapshot.forEach((documentSnapshot) => {
-            // Sadece bulundugu sehirdeki aktiviteleri aldik
-            if (
-              documentSnapshot.data().cityEng ===
-              convertLowerString(location.city)
-            ) {
+          querySnapshot != null &&
+            querySnapshot.docs.forEach((documentSnapshot) => {
+              // Sadece bulundugu sehirdeki aktiviteleri aldik
               activityId.push(documentSnapshot.data().activityId);
               addressTemp.push(documentSnapshot.data());
-            }
-          });
-          // console.log('addressTemp', addressTemp);
-          // console.log('activityId 1', activityId);
+            });
           setAddressList([...addressTemp]);
+          console.log('addressTemp', addressTemp);
 
-          console.log('sayı', Math.ceil(activityId.length / 10));
           let index = 0;
           const partion = Math.ceil(activityId.length / 10);
 
@@ -140,10 +113,8 @@ export const ActivityListScreen = () => {
                 firestore()
                   .collection('Activities')
                   .where('id', 'in', stackTen)
-                  // .where('ime', '>', 1626820440000)
                   .onSnapshot((documentSnapshot) => {
                     documentSnapshot.docs.forEach((s) => {
-                      // console.log('User data: ', s.data());
                       const isIt = activityTemp.filter(
                         (a) => a.id === s.data().id
                       );
@@ -152,7 +123,7 @@ export const ActivityListScreen = () => {
                         activityTemp.push(s.data());
                       }
                     });
-                    // console.log('activityTemp 1', activityTemp);
+
                     setActivityList([...activityTemp]);
                     activityListTemp = [...activityTemp];
                     setSpinner(false);
@@ -165,11 +136,8 @@ export const ActivityListScreen = () => {
                   firestore()
                     .collection('Activities')
                     .where('id', 'in', stackTen)
-                    // .where('ime', '>', 1626820440000)
                     .onSnapshot((documentSnapshot) => {
                       documentSnapshot.docs.forEach((s) => {
-                        // console.log('User data: ', s.data());
-
                         //Aktivite var mı bakar
                         const isIt = activityTemp.filter(
                           (a) => a.id === s.data().id
@@ -185,8 +153,6 @@ export const ActivityListScreen = () => {
                         }
                       });
 
-                      console.log('activityTemp 2', activityTemp);
-                      // console.log('Listelenen', activityTemp.filter(item => item.state));
                       setActivityList([...activityTemp]);
                       activityListTemp = [...activityTemp];
                       setSpinner(false);
@@ -198,10 +164,6 @@ export const ActivityListScreen = () => {
             }
           }
         });
-      // .catch((e) => {
-      //   setSpinner(false);
-      //   setActivityList(null);
-      // });
     }
   };
 
@@ -223,11 +185,8 @@ export const ActivityListScreen = () => {
 
   // Bransa gore
   const filterActive = (selectedActivityTypes: number[]) => {
-    console.log('bende', selectedActivityTypes);
-    console.log('bende 2', activityListTemp);
     let filteredActivityList;
     if (activityListTemp != null && selectedActivityTypes.length === 0) {
-      console.log('hepsi', activityListTemp);
       filteredActivityList = [...activityListTemp];
     } else if (activityListTemp != null && selectedActivityTypes.length === 1) {
       filteredActivityList = activityListTemp.filter(
@@ -302,13 +261,25 @@ export const ActivityListScreen = () => {
                 activityList
                   .filter(
                     (x) =>
-                      (x.state
-                      && user != undefined ? (((x.owner.email !== user.email && (x.gender == user.gender || x.gender == null))
-                      || x.owner.email === user.email)
-                      && ((x.owner.email !== user.email && ((x.minAge <= user.age && x.maxAge >= user.age) || x.minAge == null))
-                      || x.owner.email === user.email))
-                      : x.state)
+                      (user != undefined &&
+                        x.owner.email !== user.email &&
+                        (x.gender == user.gender || x.gender == null) &&
+                        ((x.minAge <= user.age && x.maxAge >= user.age) ||
+                          x.minAge == null)) ||
+                      (user != undefined && x.owner.email === user.email) ||
+                      user == undefined
                   )
+
+                  // x.state && user != undefined
+                  //   ? ((x.owner.email !== user.email &&
+                  //       (x.gender == user.gender || x.gender == null)) ||
+                  //       x.owner.email === user.email) &&
+                  //     ((x.owner.email !== user.email &&
+                  //       ((x.minAge <= user.age && x.maxAge >= user.age) ||
+                  //         x.minAge == null)) ||
+                  //       x.owner.email === user.email)
+                  //   : x.state
+                  // )
                   .sort((a, b) => {
                     return a.startTime - b.startTime;
                   })
