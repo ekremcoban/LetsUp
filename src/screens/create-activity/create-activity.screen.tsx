@@ -237,6 +237,7 @@ const CreateActivityScreen2 = () => {
       id: uuidv4(),
       activityId: activity.id,
       country: country,
+      countryEng: country != null ? convertLowerString(country) : null,
       city: city,
       cityEng: city != null ? convertLowerString(city) : null,
       district: district,

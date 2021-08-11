@@ -31,6 +31,11 @@ import ContextApi from 'context/ContextApi';
 import { convertLowerString } from 'components/functions/common';
 import DisplaySpinner from '../../components/spinner';
 import messaging from '@react-native-firebase/messaging';
+import RNGooglePlaces from 'react-native-google-places';
+import { Selector } from '../../components/selector/selector';
+import Icon from 'react-native-vector-icons/Ionicons';
+import Geolocation from '@react-native-community/geolocation';
+import Geocoder from 'react-native-geocoding';
 
 const ageActionSheetRef = createRef<IActionSheet>();
 let activityListTemp;
@@ -42,13 +47,15 @@ export const ActivityListScreen = () => {
   const [spinner, setSpinner] = useState<boolean>(true);
   const [activityList, setActivityList] = useState(null);
   const [addressList, setAddressList] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(null);
+  const [inCountry, setInCountry] = useState<boolean>(true);
 
   let activityId = [];
   let addressTemp = [];
   let activityTemp = [];
 
   useEffect(() => {
-    getFirebase();
+    getFirebase(location.city);
     getNotifications();
 
     // const unsubscribe = navigation.addListener('focus', () => {
@@ -73,15 +80,16 @@ export const ActivityListScreen = () => {
     });
   };
 
-  const getFirebase = async () => {
+  const getFirebase = async (city: string) => {
     console.log('location', location);
-    const cityEng = convertLowerString(location.city).toLowerCase();
-    console.log('------', cityEng);
+    const countryEng = convertLowerString(location.country_name).toLowerCase();
+    const cityEng = convertLowerString(city).toLowerCase();
+
     if (location != null) {
       await firestore()
         .collection('ActivityAddress')
         .where('state', '==', true)
-        .where('country', '==', location.country_name)
+        .where('countryEng', '==', countryEng)
         .where('cityEng', '==', cityEng)
 
         .onSnapshot((querySnapshot) => {
@@ -102,6 +110,7 @@ export const ActivityListScreen = () => {
 
           if (partion === 0) {
             setSpinner(false);
+            setActivityList(null)
           }
 
           for (let i = 0; i < partion; i++) {
@@ -183,6 +192,159 @@ export const ActivityListScreen = () => {
     }
   };
 
+  const openLocationModal = () => {
+    RNGooglePlaces.openAutocompleteModal()
+      .then((place) => {
+        console.log('place', place);
+
+        // TEST ICIN
+        let country = null;
+        let city = null;
+        let district = null;
+        let indexAddress = place.addressComponents.length - 1;
+        let findCOuntry = false;
+
+        while (0 <= indexAddress && !findCOuntry) {
+          if (place.addressComponents[indexAddress].types[0] === 'country') {
+            findCOuntry = true;
+            country = place.addressComponents[indexAddress].name;
+          }
+          indexAddress--;
+        }
+
+        indexAddress = place.addressComponents.length - 1;
+
+        switch (country) {
+          case 'Turkey':
+            for (let i = 0; i <= indexAddress; i++) {
+              if (
+                place.addressComponents[i].types[0] ===
+                'administrative_area_level_1'
+              ) {
+                city = place.addressComponents[i].name;
+              } else if (
+                place.addressComponents[i].types[0] ===
+                'administrative_area_level_2'
+              ) {
+                district = place.addressComponents[i].name;
+              }
+            }
+            break;
+          default:
+            break;
+        }
+
+        if (
+          convertLowerString(location.country_name) !==
+          convertLowerString(country)
+        ) {
+          const result = `The city is not in ${location.country_name}`;
+          console.log('sonuc', result);
+          setSelectedCity(result);
+          setInCountry(false);
+          getFirebase('')
+        } else {
+          setSelectedCity(city);
+          getFirebase(city);
+        }
+
+        // console.log('country', convertLowerString(location.country_name));
+        // console.log('country', convertLowerString(country));
+        // console.log('city', convertLowerString(location.city));
+        // console.log('district', district);
+      })
+      .catch((error) => console.log(error.message)); // error is a Javascript Error object
+  };
+
+  const updateLocation = () => {
+    let country: any = null;
+    let city: any = null;
+    let district: any = null;
+    let latitude: any = null;
+    let longitude: any = null;
+
+    Geolocation.getCurrentPosition((info) => {
+      latitude = info.coords.latitude;
+      longitude = info.coords.longitude;
+
+      Geocoder.from(info.coords.latitude, info.coords.longitude)
+        .then((place) => {
+          // var basic = json.results[json.results.length - 1].address_components;
+          console.log('-----location', place);
+
+          let indexAddress = place.results.length - 1;
+          let findCOuntry = false;
+
+          // Ulkeye gore filtrelemek icin once ulke bulunur
+          while (0 <= indexAddress && !findCOuntry) {
+            if (place.results[indexAddress].types[0] === 'country') {
+              findCOuntry = true;
+              country =
+              place.results[indexAddress].address_components[0].long_name;
+            }
+            indexAddress--;
+          }
+
+          indexAddress = place.results.length - 1;
+
+          switch (country) {
+            case 'Turkey':
+              for (let i = 0; i <= indexAddress; i++) {
+                if (
+                  place.results[i].types[0] === 'administrative_area_level_1'
+                ) {
+                  city = place.results[i].address_components[0].long_name;
+                } else if (
+                  place.results[i].types[0] === 'administrative_area_level_2'
+                ) {
+                  district =
+                  place.results[i].address_components[0].long_name;
+                }
+              }
+              break;
+
+            default:
+              for (let i = 0; i <= indexAddress; i++) {
+                if (
+                  place.results[i].types[0] === 'administrative_area_level_1'
+                ) {
+                  city = place.results[i].address_components[0].long_name;
+                } else if (
+                  place.results[i].types[0] === 'administrative_area_level_2'
+                ) {
+                  district =
+                  place.results[i].address_components[0].long_name;
+                }
+              }
+              break;
+          }
+
+          console.log('country', country);
+          console.log('city', city);
+          console.log('district', district);
+          // const city = 'Ekrem'; //basic[basic.length - 2].long_name;
+          // const latitude = info.coords.latitude;
+          // const longitude = info.coords.longitude;
+
+          setSelectedCity(city);
+          console.log('-------', selectedCity)
+          console.log('-------',city )
+          if (convertLowerString(selectedCity) !==
+          convertLowerString(city)) {
+            getFirebase(city);
+            console.log('Sorguda')
+          }
+          else {
+            console.log('Sorgu yok')
+          }
+          
+        })
+        .catch((error) => console.warn(error));
+
+      console.log('loc', info);
+    });
+  };
+
   // Bransa gore
   const filterActive = (selectedActivityTypes: number[]) => {
     let filteredActivityList;
@@ -249,6 +411,23 @@ export const ActivityListScreen = () => {
     <SafeAreaView style={styles.wrapper}>
       {spinner && <DisplaySpinner />}
       <ActivityTypeSelector multiple>{_activityTypes}</ActivityTypeSelector>
+      <View style={{ flexDirection: 'row' }}>
+        <View style={{ flex: 5, marginStart: 15}}>
+          <Selector
+            warning={false}
+            onPress={() => openLocationModal()}
+            text={selectedCity == null ? location.city : selectedCity}
+          />
+        </View>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginEnd: 15  }}>
+          <Icon
+            size={25}
+            name="location-outline"
+            type="ionicon"
+            onPress={() =>  updateLocation()}
+          />
+        </View>
+      </View>
 
       <Divider style={styles.divider} />
       {activityList != null &&
@@ -317,7 +496,7 @@ export const ActivityListScreen = () => {
         <View
           style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
         >
-          <Text>There is not any activity in your city now</Text>
+          <Text>There is not any activity in the city now</Text>
           <Text></Text>
           <Text>Let's create first activity</Text>
         </View>

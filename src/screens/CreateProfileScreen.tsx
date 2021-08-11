@@ -33,8 +33,9 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import messaging from '@react-native-firebase/messaging';
 import Geolocation from '@react-native-community/geolocation';
 import Geocoder from 'react-native-geocoding';
+import { convertLowerString } from 'components/functions/common';
 
-Geocoder.init("AIzaSyAokz8FcAIgsV0JbJZijJ5ypH-2bvQgC0U");
+Geocoder.init('AIzaSyAokz8FcAIgsV0JbJZijJ5ypH-2bvQgC0U');
 
 const genderActionSheetRef = createRef<IActionSheet>();
 const ageActionSheetRef = createRef<IActionSheet>();
@@ -60,6 +61,11 @@ const CreateProfilScreen = () => {
   const [imageName, setImageName] = useState(null);
   const [spinner, setSpinner] = useState<boolean>(true);
   const [warning, setWarning] = useState<number>(0);
+  const [city, setCity] = useState(null);
+  const [country, setCountry] = useState(null);
+  const [district, setDistrict] = useState(null);
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
   const navigation = useNavigation();
   const route = useRoute();
   const { from } = route.params;
@@ -70,19 +76,6 @@ const CreateProfilScreen = () => {
     // }
 
     console.log('Girdi', location);
-    Geocoder.from(37.19524694578257, 37.34132821719594)
-    .then((json) => {
-      var basic = json.results[json.results.length - 1].address_components
-      const country = basic[basic.length - 1].long_name;
-      const city = basic[basic.length - 2].long_name;
-      console.log('addressComponent', city, country);
-    })
-    .catch((error) => console.warn(error));
-
-    Geolocation.getCurrentPosition((info) => {
-
-      console.log('loc', info);
-    });
 
     // Kullanici resim eklemediyse
     if (user == null) {
@@ -139,6 +132,93 @@ const CreateProfilScreen = () => {
     }
   }, []);
 
+  const updateLocation = () => {
+
+    let country: any = null;
+    let city: any = null;
+    let district: any = null;
+    let latitude: any = null;
+    let longitude: any = null;
+
+    Geolocation.getCurrentPosition((info) => {
+      latitude = info.coords.latitude;
+      longitude = info.coords.longitude;
+     
+      Geocoder.from(info.coords.latitude, info.coords.longitude)
+        .then((place) => {
+          // var basic = json.results[json.results.length - 1].address_components;
+          console.log('-----location', place);
+
+          let indexAddress = place.results.length - 1;
+          let findCOuntry = false;
+
+          // Ulkeye gore filtrelemek icin once ulke bulunur
+          while (0 <= indexAddress && !findCOuntry) {
+            if (
+              place.results[indexAddress].types[0] === 'country'
+            ) {
+              findCOuntry = true;
+              country = place.results[indexAddress].address_components[0].long_name;
+            }
+            indexAddress--;
+          }
+
+          indexAddress = place.results.length - 1;
+
+          switch (country) {
+            case 'Turkey':
+              for (let i = 0; i <= indexAddress; i++) {
+                if (
+                  place.results[i].types[0] ===
+                  'administrative_area_level_1'
+                ) {
+                  city = place.results[i].address_components[0].long_name;
+                } else if (
+                  place.results[i].types[0] ===
+                  'administrative_area_level_2'
+                ) {
+                  district = place.results[i].address_components[0].long_name;
+                }
+              }
+              break;
+      
+            default:
+              for (let i = 0; i <= indexAddress; i++) {
+                if (
+                  place.results[i].types[0] ===
+                  'administrative_area_level_1'
+                ) {
+                  city = place.results[i].address_components[0].long_name;
+                } else if (
+                  place.results[i].types[0] ===
+                  'administrative_area_level_2'
+                ) {
+                  district = place.results[i].address_components[0].long_name;
+                }
+              }
+              break;
+          }
+          
+          console.log('country', country)
+          console.log('city', city)
+          console.log('district', district)
+          // const city = 'Ekrem'; //basic[basic.length - 2].long_name;
+          // const latitude = info.coords.latitude;
+          // const longitude = info.coords.longitude;
+
+          setCity(city);
+          setCountry(country);
+          setDistrict(district);
+          setLatitude(latitude);
+          setLongitude(longitude);
+
+        })
+        .catch((error) => console.warn(error));
+
+      console.log('loc', info);
+    });
+  };
+
   const create = async () => {
     const token = await messaging().getToken();
 
@@ -161,11 +241,23 @@ const CreateProfilScreen = () => {
       interestedIn: user.interestedIn,
       photo: photo,
       geoCode: {
-        latitude: location.latitude,
-        longitude: location.longitude,
+        latitude: latitude != null ? latitude : location.latitude,
+        longitude: longitude != null ? longitude : location.longitude,
       },
-      city: location.city,
-      country: location.country_name,
+      country: country != null ? country : location.country_name,
+      countryEng:
+        country != null
+          ? convertLowerString(country)
+          : convertLowerString(location.country_name),
+      city: city != null ? city : location.city,
+      cityEng:
+        city != null
+          ? convertLowerString(city)
+          : convertLowerString(location.city),
+      district: district != null ? district : null,
+      distinctEng: district != null
+      ? convertLowerString(district)
+      : null,
       postal:
         location.zip_code != undefined ? location.zip_code : location.postal,
       type: 0,
@@ -229,8 +321,8 @@ const CreateProfilScreen = () => {
   // Foto degistirilmek istendiginde
   const photoUpdate = () => {
     ImagePickerCropper.openPicker({
-      width: 140,
-      height: 140,
+      width: 200,
+      height: 200,
       cropping: true,
     })
       .then((image) => {
@@ -375,6 +467,26 @@ const CreateProfilScreen = () => {
             </View>
           </View>
           <View style={styles.viewInfo}>
+            <View
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexDirection: 'row',
+              }}
+            >
+              <Text>
+                {city == null ? location.city : city},{' '}
+                {country == null ? location.country_name : country}
+              </Text>
+              <View style={{ paddingStart: 5 }}>
+                <Icon
+                  size={20}
+                  name="location-outline"
+                  type="ionicon"
+                  onPress={() => updateLocation()}
+                />
+              </View>
+            </View>
             <View style={styles.viewFullName}>
               <Text style={styles.textFullName}>
                 {polyglot.t('screens.create_profile.label.full_name')}
