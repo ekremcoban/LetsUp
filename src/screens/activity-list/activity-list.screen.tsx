@@ -55,7 +55,7 @@ export const ActivityListScreen = () => {
   let activityTemp = [];
 
   useEffect(() => {
-    getFirebase(location.city);
+    location != undefined && getFirebase(location.city);
     getNotifications();
 
     // const unsubscribe = navigation.addListener('focus', () => {
@@ -110,7 +110,7 @@ export const ActivityListScreen = () => {
 
           if (partion === 0) {
             setSpinner(false);
-            setActivityList(null)
+            setActivityList(null);
           }
 
           for (let i = 0; i < partion; i++) {
@@ -193,7 +193,10 @@ export const ActivityListScreen = () => {
   };
 
   const openLocationModal = () => {
-    RNGooglePlaces.openAutocompleteModal()
+    RNGooglePlaces.openAutocompleteModal({
+      // country: 'TR',
+      // type: 'cities',
+    })
       .then((place) => {
         console.log('place', place);
 
@@ -207,7 +210,7 @@ export const ActivityListScreen = () => {
         while (0 <= indexAddress && !findCOuntry) {
           if (place.addressComponents[indexAddress].types[0] === 'country') {
             findCOuntry = true;
-            country = place.addressComponents[indexAddress].name;
+            country = place.addressComponents[indexAddress].shortName;
           }
           indexAddress--;
         }
@@ -215,7 +218,7 @@ export const ActivityListScreen = () => {
         indexAddress = place.addressComponents.length - 1;
 
         switch (country) {
-          case 'Turkey':
+          case 'TR':
             for (let i = 0; i <= indexAddress; i++) {
               if (
                 place.addressComponents[i].types[0] ===
@@ -235,15 +238,15 @@ export const ActivityListScreen = () => {
         }
 
         if (
-          convertLowerString(location.country_name) !==
-          convertLowerString(country)
+          country != 'TR'
         ) {
           const result = `The city is not in ${location.country_name}`;
           console.log('sonuc', result);
           setSelectedCity(result);
           setInCountry(false);
-          getFirebase('')
+          getFirebase('');
         } else {
+          console.log('burda city', city)
           setSelectedCity(city);
           getFirebase(city);
         }
@@ -253,7 +256,10 @@ export const ActivityListScreen = () => {
         // console.log('city', convertLowerString(location.city));
         // console.log('district', district);
       })
-      .catch((error) => console.log(error.message)); // error is a Javascript Error object
+      .catch((error) => {
+        console.log(error.message)
+        setSpinner(false);
+      }); // error is a Javascript Error object
   };
 
   const updateLocation = () => {
@@ -263,10 +269,14 @@ export const ActivityListScreen = () => {
     let latitude: any = null;
     let longitude: any = null;
 
+
     Geolocation.getCurrentPosition((info) => {
       latitude = info.coords.latitude;
       longitude = info.coords.longitude;
 
+      setSpinner(true);
+      
+      console.log('-----info', info);
       Geocoder.from(info.coords.latitude, info.coords.longitude)
         .then((place) => {
           // var basic = json.results[json.results.length - 1].address_components;
@@ -280,7 +290,7 @@ export const ActivityListScreen = () => {
             if (place.results[indexAddress].types[0] === 'country') {
               findCOuntry = true;
               country =
-              place.results[indexAddress].address_components[0].long_name;
+                place.results[indexAddress].address_components[0].long_name;
             }
             indexAddress--;
           }
@@ -289,6 +299,7 @@ export const ActivityListScreen = () => {
 
           switch (country) {
             case 'Turkey':
+            case 'Turkiye':
               for (let i = 0; i <= indexAddress; i++) {
                 if (
                   place.results[i].types[0] === 'administrative_area_level_1'
@@ -297,8 +308,7 @@ export const ActivityListScreen = () => {
                 } else if (
                   place.results[i].types[0] === 'administrative_area_level_2'
                 ) {
-                  district =
-                  place.results[i].address_components[0].long_name;
+                  district = place.results[i].address_components[0].long_name;
                 }
               }
               break;
@@ -312,8 +322,7 @@ export const ActivityListScreen = () => {
                 } else if (
                   place.results[i].types[0] === 'administrative_area_level_2'
                 ) {
-                  district =
-                  place.results[i].address_components[0].long_name;
+                  district = place.results[i].address_components[0].long_name;
                 }
               }
               break;
@@ -327,19 +336,22 @@ export const ActivityListScreen = () => {
           // const longitude = info.coords.longitude;
 
           setSelectedCity(city);
-          console.log('-------', selectedCity)
-          console.log('-------',city )
-          if (convertLowerString(selectedCity) !==
-          convertLowerString(city)) {
+          Alert.alert('selectedcity', convertLowerString(selectedCity));
+          Alert.alert('city', convertLowerString(city));
+          console.log('-------', selectedCity);
+          console.log('-------', city);
+          setSpinner(false);
+          if (convertLowerString(selectedCity) !== convertLowerString(city)) {
             getFirebase(city);
-            console.log('Sorguda')
+            console.log('Sorguda');
+          } else {
+            console.log('Sorgu yok');
           }
-          else {
-            console.log('Sorgu yok')
-          }
-          
         })
-        .catch((error) => console.warn(error));
+        .catch((error) => {
+          setSpinner(false);
+          console.warn('updateLocation', error)
+        });
 
       console.log('loc', info);
     });
@@ -412,19 +424,30 @@ export const ActivityListScreen = () => {
       {spinner && <DisplaySpinner />}
       <ActivityTypeSelector multiple>{_activityTypes}</ActivityTypeSelector>
       <View style={{ flexDirection: 'row' }}>
-        <View style={{ flex: 5, marginStart: 15}}>
+        <View style={{ flex: 5, marginStart: 15 }}>
           <Selector
             warning={false}
             onPress={() => openLocationModal()}
-            text={selectedCity == null ? location.city : selectedCity}
+            text={
+              selectedCity == null && location != undefined && location.city != undefined
+                ? location.city
+                : selectedCity
+            }
           />
         </View>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginEnd: 15  }}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginEnd: 15,
+          }}
+        >
           <Icon
             size={25}
             name="location-outline"
             type="ionicon"
-            onPress={() =>  updateLocation()}
+            onPress={() => updateLocation()}
           />
         </View>
       </View>

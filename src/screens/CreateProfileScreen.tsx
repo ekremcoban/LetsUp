@@ -143,6 +143,8 @@ const CreateProfilScreen = () => {
     Geolocation.getCurrentPosition((info) => {
       latitude = info.coords.latitude;
       longitude = info.coords.longitude;
+
+      setSpinner(true);
      
       Geocoder.from(info.coords.latitude, info.coords.longitude)
         .then((place) => {
@@ -167,6 +169,7 @@ const CreateProfilScreen = () => {
 
           switch (country) {
             case 'Turkey':
+              case 'Turkiye':
               for (let i = 0; i <= indexAddress; i++) {
                 if (
                   place.results[i].types[0] ===
@@ -211,6 +214,7 @@ const CreateProfilScreen = () => {
           setDistrict(district);
           setLatitude(latitude);
           setLongitude(longitude);
+          setSpinner(false);
 
         })
         .catch((error) => console.warn(error));
