@@ -1,6 +1,6 @@
 {
   "name": "LetsUp",
-  "version": "0.24.5",
+  "version": "0.25.0",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -55,6 +55,7 @@
     "react-native-svg-transformer": "^0.14.3",
     "react-native-vector-icons": "^8.0.0",
     "react-native-webview": "^11.4.0",
+    "translate-google-api": "^1.0.4",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

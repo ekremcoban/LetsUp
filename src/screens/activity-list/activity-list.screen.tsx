@@ -36,6 +36,7 @@ import { Selector } from '../../components/selector/selector';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Geolocation from '@react-native-community/geolocation';
 import Geocoder from 'react-native-geocoding';
+import translate from 'translate-google-api';
 
 const ageActionSheetRef = createRef<IActionSheet>();
 let activityListTemp;
@@ -93,7 +94,7 @@ export const ActivityListScreen = () => {
         .where('cityEng', '==', cityEng)
 
         .onSnapshot((querySnapshot) => {
-          console.log('querySnapshot', querySnapshot);
+          // console.log('querySnapshot', querySnapshot);
           addressTemp = [];
 
           querySnapshot != null &&
@@ -195,9 +196,9 @@ export const ActivityListScreen = () => {
   const openLocationModal = () => {
     RNGooglePlaces.openAutocompleteModal({
       // country: 'TR',
-      // type: 'cities',
+      type: 'cities',
     })
-      .then((place) => {
+      .then(async (place) => {
         console.log('place', place);
 
         // TEST ICIN
@@ -224,18 +225,34 @@ export const ActivityListScreen = () => {
                 place.addressComponents[i].types[0] ===
                 'administrative_area_level_1'
               ) {
-                city = place.addressComponents[i].name;
+                
+                const result = await translate([place.addressComponents[i].name, 'Türkiye'], {
+                  q: "tr",
+                  target: "en",
+                });
+
+                city = result[0];
+
               } else if (
                 place.addressComponents[i].types[0] ===
                 'administrative_area_level_2'
               ) {
-                district = place.addressComponents[i].name;
+                const result = await translate([place.addressComponents[i].name, 'Türkiye'], {
+                  q: "tr",
+                  target: "en",
+                });
+
+                district = result[0];
               }
             }
             break;
           default:
             break;
         }
+
+        console.log('country', convertLowerString(country));
+        console.log('city', city);
+        console.log('district', district);
 
         if (
           country != 'TR'
@@ -252,9 +269,6 @@ export const ActivityListScreen = () => {
         }
 
         // console.log('country', convertLowerString(location.country_name));
-        // console.log('country', convertLowerString(country));
-        // console.log('city', convertLowerString(location.city));
-        // console.log('district', district);
       })
       .catch((error) => {
         console.log(error.message)
