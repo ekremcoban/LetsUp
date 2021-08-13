@@ -100,6 +100,35 @@ export const ActivityListScreen = () => {
               activityId.push(documentSnapshot.data().activityId);
               addressTemp.push(documentSnapshot.data());
             });
+
+          addressTemp.forEach(item => {
+            const selectedAddress = addressTemp.filter(a => a.activityId === item.activityId);
+            if (item.nodeCount === 2 && item.nodeNumber === 2) {
+               if (selectedAddress != undefined && selectedAddress[0].city !== selectedCity) {
+                addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
+                activityId = activityId.filter(a => a !== item.activityId);
+               }               
+            }
+            else if (item.nodeCount === 3 && item.nodeNumber === 3) {
+               if (selectedAddress[0].city !== selectedCity && selectedAddress[0].nodeCount === 3) {
+                addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
+                activityId = activityId.filter(a => a !== item.activityId);
+               }   
+            }
+            else if (item.nodeCount === 4 && item.nodeNumber === 4) {
+              if (selectedAddress[0].city !== selectedCity && selectedAddress[0].nodeCount === 4) {
+                addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
+                activityId = activityId.filter(a => a !== item.activityId);
+               }   
+            }
+            else if (item.nodeCount === 5 && item.nodeNumber === 5) {
+              if (selectedAddress[0].city !== selectedCity && selectedAddress[0].nodeCount === 5) {
+                addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
+                activityId = activityId.filter(a => a !== item.activityId);
+               }   
+            }
+          });
+
           setAddressList([...addressTemp]);
           console.log('addressTemp', addressTemp);
 
@@ -223,11 +252,9 @@ export const ActivityListScreen = () => {
 
       setSpinner(true);
       
-      console.log('-----info', info);
       Geocoder.from(info.coords.latitude, info.coords.longitude)
         .then(async (place) => {
           // var basic = json.results[json.results.length - 1].address_components;
-          console.log('-----location', place);
 
           const result = await filteredGeoCoder(place);
 

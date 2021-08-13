@@ -77,22 +77,7 @@ class ActivityInfoScreen extends Component {
       (x) => x.activityId === this.props.route.params.activity.id
     );
 
-    if (selectedAddress.length !== selectedAddress.nodeCount) {
-      console.log('-------girdi', selectedAddress);
-      firestore()
-        .collection('ActivityAddress')
-        .where('activityId', '==', selectedAddress[0].activityId)
-        .get()
-        .then((res) => {
-          selectedAddress = [];
-          res.docs.forEach((item) => {
-            selectedAddress.push(item.data());
-            console.log(item.data());
-          });
-          this.setState({selectedAddress})
-          console.log('-------selectedAddress', selectedAddress);
-        });
-    }
+    this.getMoreThanOneAddress(selectedAddress);
 
     this.setState({
       selectedAddress: selectedAddress,
@@ -104,7 +89,8 @@ class ActivityInfoScreen extends Component {
 
     if (
       this.context.user != null &&
-      this.context.user.email === this.props.route.params.activity.owner.email
+      this.context.user.email === this.props.route.params.activity.owner.email &&
+      selectedAddress.length === selectedAddress.nodeCount
     ) {
       this.showMap(selectedAddress);
     }
@@ -268,6 +254,25 @@ class ActivityInfoScreen extends Component {
       }
     }, 1500);
   };
+
+  getMoreThanOneAddress = async (selectedAddress: any) => {
+    if (selectedAddress.length !== selectedAddress.nodeCount) {
+      await firestore()
+        .collection('ActivityAddress')
+        .where('activityId', '==', selectedAddress[0].activityId)
+        .get()
+        .then((res) => {
+          selectedAddress = [];
+          res.docs.forEach((item) => {
+            selectedAddress.push(item.data());
+            console.log(item.data());
+          });
+          
+          this.setState({selectedAddress})
+        });
+        this.showMap(selectedAddress);
+    }
+  }
 
   getMembers = async () => {
     const members = await firestore()

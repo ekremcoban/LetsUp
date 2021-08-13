@@ -22,7 +22,6 @@ const MemberInfoScreen = () => {
   const [photoPath, setPhotoPath] = useState<string>('');
 
   useEffect(() => {
-    console.log('-----', route.params.data.memberEmail)
     firestore()
     .collection('Users')
     .doc(route.params.data.memberEmail)

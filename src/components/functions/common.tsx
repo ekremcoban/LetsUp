@@ -38,7 +38,6 @@ export const filteredLocation = async (place: Object) => {
   let indexAddress = place.addressComponents.length - 1;
   let findCOuntry = false;
 
-  console.log('------burda', place);
   while (0 <= indexAddress && !findCOuntry) {
     if (place.addressComponents[indexAddress].types[0] === 'country') {
       findCOuntry = true;
@@ -65,14 +64,14 @@ export const filteredLocation = async (place: Object) => {
           place.addressComponents[i].types[0] === 'administrative_area_level_1'
         ) {
           const result = await translate(
-            [place.addressComponents[i].name, 'Türkiye'],
+            [`Şehir ${place.addressComponents[i].name}`, 'Türkiye'],
             {
               q: 'tr',
               target: 'en',
             }
           );
 
-          city = result[0];
+          city = result[0].replace('City', '').trim();
         } else if (
           place.addressComponents[i].types[0] === 'administrative_area_level_2'
         ) {
@@ -136,14 +135,14 @@ export const filteredGeoCoder = async (place: Object) => {
 
         } else if (place.results[indexAddress].address_components[i].types[0] === 'administrative_area_level_1') {
           const result = await translate(
-            [place.results[indexAddress].address_components[i].long_name, 'Türkiye'],
+            [`Şehir ${place.results[indexAddress].address_components[i].long_name}`, 'Türkiye'],
             {
               q: 'tr',
               target: 'en',
             }
           );
 
-          city = result[0];
+          city = result[0].replace('City', '').trim();
 
         } else if (
           place.results[indexAddress].address_components[i].types[0] === 'administrative_area_level_2'
