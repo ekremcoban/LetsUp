@@ -31,7 +31,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { colors } from 'styles/colors';
 import { useNavigation } from '@react-navigation/native';
 import { getData } from 'db/localDb';
-import { convertLowerString } from 'components/functions/common';
+import { convertLowerString, filteredLocation } from 'components/functions/common';
 import ContextApi from 'context/ContextApi';
 import { useEffect } from 'react';
 
@@ -42,7 +42,7 @@ const genderActionSheetRef = createRef<IActionSheet>();
 
 const CreateActivityScreen2 = () => {
   const navigation = useNavigation();
-  const { user, suspendActivity, setSuspendActivity } = useContext(ContextApi);
+  const { user, location, suspendActivity, setSuspendActivity } = useContext(ContextApi);
   const [branchName, setBranchName] = useState<string>(String || undefined);
 
   const [location0, setLocation0] = useState(null);
@@ -114,176 +114,121 @@ const CreateActivityScreen2 = () => {
     return unsubscribe;
   }, [navigation]);
 
-  const convertLocation = (
-    location: any,
+  const convertLocation = async (
+    place: any,
     activity: Object,
     nodeNumber: number
   ) => {
-    // let isState = false;
-    // let district1 = null;
+ 
+    // let country = null;
+    // let city = null;
+    // let district = null;
+    // let indexAddress = location.addressComponents.length - 1;
+    // let findCOuntry = false;
 
-    // for (let i = location.addressComponents.length - 1; 0 <= i; i--) {
-    //   if (location.addressComponents[i].types[0] === 'country') {
-    //     country = location.addressComponents[i].name;
+    // // Ulkeye gore filtrelemek icin once ulke bulunur
+    // while (0 <= indexAddress && !findCOuntry) {
+    //   if (location.addressComponents[indexAddress].types[0] === 'country') {
+    //     findCOuntry = true;
+    //     country = location.addressComponents[indexAddress].name;
     //   }
-    //   // Eyalet sistemi var mı bilgisi icin
-    //   else if (location.addressComponents[i].types[0] === 'sublocality_level_1') {
-    //     isState = true;
-    //   }
+    //   indexAddress--;
     // }
 
-    // for (let i = location.addressComponents.length - 1; i >= 0 ; i--) {
-    //   // Eyalet sistemi varsa sehir bilgisi
+    // indexAddress = location.addressComponents.length - 1;
 
-    //   if (isState) {
-    //     console.log('0')
-    //     if (location.addressComponents[i].types[0] === 'locality') {
-    //       city = location.addressComponents[i].name;
-    //       console.log('1')
+    // switch (country) {
+    //   case 'Turkey':
+    //     for (let i = 0; i <= indexAddress; i++) {
+    //       if (
+    //         location.addressComponents[i].types[0] ===
+    //         'administrative_area_level_1'
+    //       ) {
+    //         city = location.addressComponents[i].name;
+    //       } else if (
+    //         location.addressComponents[i].types[0] ===
+    //         'administrative_area_level_2'
+    //       ) {
+    //         district = location.addressComponents[i].name;
+    //       }
     //     }
-    //     else if (location.addressComponents[i].types[0] === 'administrative_area_level_1') {
-    //       city = location.addressComponents[i].name;
-    //       console.log('2')
-    //     }
+    //     break;
 
-    //     if (
-    //       location.addressComponents[i].types[0] === 'sublocality_level_1'
-    //     ) {
-    //       district1 = location.addressComponents[i].name;
+    //   default:
+    //     for (let i = 0; i <= indexAddress; i++) {
+    //       if (
+    //         location.addressComponents[i].types[0] ===
+    //         'administrative_area_level_1'
+    //       ) {
+    //         city = location.addressComponents[i].name;
+    //       } else if (
+    //         location.addressComponents[i].types[0] ===
+    //         'administrative_area_level_2'
+    //       ) {
+    //         district = location.addressComponents[i].name;
+    //       }
     //     }
-    //     if (district1 == null && location.addressComponents[i].types[0] === 'administrative_area_level_2') {
-    //       district = location.addressComponents[i].name;
-    //     }
-    //     else if (district1 != null){
-    //       district = district1
-    //     }
-    //   } else {
-    //     let bosnia = true;
-    //     if (location.addressComponents[i].types[0] === 'administrative_area_level_4') {
-    //       bosnia = false;
-    //       console.log('3')
-    //     }
-    //     else if (bosnia && location.addressComponents[i].types[0] === 'locality') {
-    //       city = location.addressComponents[i].name;
-    //       console.log('4')
-    //     }
-    //     else if (
-    //       location.addressComponents[i].types[0] === 'administrative_area_level_1'
-    //     ) {
-    //       console.log('5')
-    //       city = location.addressComponents[i].name;
-    //     } else if (
-    //       location.addressComponents[i].types[0] === 'administrative_area_level_2'
-    //     ) {
-    //       console.log('6')
-    //       district = location.addressComponents[i].name;
-    //     }
-    //   }
+    //     break;
     // }
-    let country = null;
-    let city = null;
-    let district = null;
-    let indexAddress = location.addressComponents.length - 1;
-    let findCOuntry = false;
 
-    // Ulkeye gore filtrelemek icin once ulke bulunur
-    while (0 <= indexAddress && !findCOuntry) {
-      if (location.addressComponents[indexAddress].types[0] === 'country') {
-        findCOuntry = true;
-        country = location.addressComponents[indexAddress].name;
-      }
-      indexAddress--;
-    }
-
-    indexAddress = location.addressComponents.length - 1;
-
-    switch (country) {
-      case 'Turkey':
-        for (let i = 0; i <= indexAddress; i++) {
-          if (
-            location.addressComponents[i].types[0] ===
-            'administrative_area_level_1'
-          ) {
-            city = location.addressComponents[i].name;
-          } else if (
-            location.addressComponents[i].types[0] ===
-            'administrative_area_level_2'
-          ) {
-            district = location.addressComponents[i].name;
-          }
-        }
-        break;
-
-      default:
-        for (let i = 0; i <= indexAddress; i++) {
-          if (
-            location.addressComponents[i].types[0] ===
-            'administrative_area_level_1'
-          ) {
-            city = location.addressComponents[i].name;
-          } else if (
-            location.addressComponents[i].types[0] ===
-            'administrative_area_level_2'
-          ) {
-            district = location.addressComponents[i].name;
-          }
-        }
-        break;
-    }
+    const result = await filteredLocation(place);
+    console.log('-------result', result);
+    console.log('-------place', place);
 
     // console.log('city', city)
     // console.log('district', district)
     const activityAddress = {
       id: uuidv4(),
       activityId: activity.id,
-      country: country,
-      countryEng: country != null ? convertLowerString(country) : null,
-      city: city,
-      cityEng: city != null ? convertLowerString(city) : null,
-      district: district,
-      districtEng: district != null ? convertLowerString(district) : null,
-      geoCode: location.location,
+      country: result.country,
+      city: result.city,
+      district: result.district,
+      geoCode: place.location,
       details: null,
-      fullAddress: location.address,
+      fullAddress: place.address,
       nodeNumber: nodeNumber,
       nodeCount: numberShowLocation,
       state: true,
       time: activity.startTime,
       createdTime: new Date().getTime(),
     };
+    console.log('-------activityAddress', activityAddress);
     return activityAddress;
   };
 
-  const convertAndSendAddressToServer = (activity: Object) => {
+  const convertAndSendAddressToServer = async (activity: Object) => {
     if (location0 != null) {
-      const post = convertLocation(location0, activity, 1);
+      const post = await convertLocation(location0, activity, 1);
+      console.log('-------', post)
       fireStoreFunction('ActivityAddress', post.id, post);
       console.log('1 kayıt', post);
     }
     if (location1 != null) {
-      const post = convertLocation(location1, activity, 2);
+      const post = await convertLocation(location1, activity, 2);
       fireStoreFunction('ActivityAddress', post.id, post);
       console.log('2 kayıt', post);
     }
     if (location2 != null) {
-      const post = convertLocation(location2, activity, 3);
+      const post = await convertLocation(location2, activity, 3);
       fireStoreFunction('ActivityAddress', post.id, post);
       console.log('3 kayıt', post);
     }
     if (location3 != null) {
-      const post = convertLocation(location3, activity, 4);
+      const post = await convertLocation(location3, activity, 4);
       fireStoreFunction('ActivityAddress', post.id, post);
       console.log('4 kayıt', post);
     }
     if (location4 != null) {
-      const post = convertLocation(location4, activity, 5);
+      const post = await convertLocation(location4, activity, 5);
       fireStoreFunction('ActivityAddress', post.id, post);
       console.log('5 kayıt', post);
     }
   };
 
-  const fireStoreFunction = (title: string, id: string, data: Object) => {
-    firestore()
+  const fireStoreFunction = async (title: string, id: string, data: Object) => {
+    console.log('fireStoreFunction', data)
+    try {
+      firestore()
       .collection(title)
       .doc(id)
       .set(data)
@@ -293,6 +238,11 @@ const CreateActivityScreen2 = () => {
       .catch((e) => {
         console.log('insert Adress', e);
       });
+    }
+    catch (error) {
+      console.error('fireStoreFunction', error)
+    }
+
   };
 
   const save = async () => {
@@ -814,7 +764,7 @@ const CreateActivityScreen2 = () => {
   const removeLocation = async (index: number) => {
     let t = numberShowLocation - 1;
     await setNumberShowLocation(t);
-    console.log('----', t);
+
     if (index === 1) {
       setLocation1(null);
       setShowLocation1(false);
@@ -834,7 +784,9 @@ const CreateActivityScreen2 = () => {
 
   const openLocationModal = (itemNo: number) => {
     console.log('itemNo', itemNo);
-    RNGooglePlaces.openAutocompleteModal()
+    RNGooglePlaces.openAutocompleteModal({
+      country: location.country_code
+    })
       .then((place) => {
         console.log('place', place);
 
@@ -1078,7 +1030,6 @@ const CreateActivityScreen2 = () => {
                 onItemPress={() => {
                   setSelectedActivityNameValue(null);
                   setBranchName(activityType.image);
-                  setNumberShowLocation(2);
                   if (
                     activityType.image !== 'jogging' &&
                     activityType.image !== 'bicycle' &&
@@ -1092,9 +1043,10 @@ const CreateActivityScreen2 = () => {
                     setLocation2(null);
                     setLocation3(null);
                     setLocation4(null);
-                    setNumberShowLocation(2);
+                    setNumberShowLocation(1);
                   } else {
                     setShowLocation1(true);
+                    setNumberShowLocation(2);
                   }
                 }}
               />

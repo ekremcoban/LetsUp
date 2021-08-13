@@ -28,7 +28,7 @@ import { colors } from 'styles/colors';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect } from 'react';
 import ContextApi from 'context/ContextApi';
-import { convertLowerString } from 'components/functions/common';
+import { convertLowerString, filteredGeoCoder, filteredLocation } from 'components/functions/common';
 import DisplaySpinner from '../../components/spinner';
 import messaging from '@react-native-firebase/messaging';
 import RNGooglePlaces from 'react-native-google-places';
@@ -36,7 +36,6 @@ import { Selector } from '../../components/selector/selector';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Geolocation from '@react-native-community/geolocation';
 import Geocoder from 'react-native-geocoding';
-import translate from 'translate-google-api';
 
 const ageActionSheetRef = createRef<IActionSheet>();
 let activityListTemp;
@@ -56,7 +55,7 @@ export const ActivityListScreen = () => {
   let activityTemp = [];
 
   useEffect(() => {
-    location != undefined && getFirebase(location.city);
+    location != undefined && getFirebase(location.country_name, location.city);
     getNotifications();
 
     // const unsubscribe = navigation.addListener('focus', () => {
@@ -81,20 +80,18 @@ export const ActivityListScreen = () => {
     });
   };
 
-  const getFirebase = async (city: string) => {
+  const getFirebase = async (country: string, city: string) => {
     console.log('location', location);
-    const countryEng = convertLowerString(location.country_name).toLowerCase();
-    const cityEng = convertLowerString(city).toLowerCase();
 
     if (location != null) {
       await firestore()
         .collection('ActivityAddress')
         .where('state', '==', true)
-        .where('countryEng', '==', countryEng)
-        .where('cityEng', '==', cityEng)
+        .where('country', '==', country)
+        .where('city', '==', city)
 
         .onSnapshot((querySnapshot) => {
-          // console.log('querySnapshot', querySnapshot);
+          console.log('querySnapshot', querySnapshot);
           addressTemp = [];
 
           querySnapshot != null &&
@@ -193,82 +190,21 @@ export const ActivityListScreen = () => {
     }
   };
 
-  const openLocationModal = () => {
+  const openLocationModal = async () => {
     RNGooglePlaces.openAutocompleteModal({
-      // country: 'TR',
+      country: location.country,
       type: 'cities',
     })
       .then(async (place) => {
+        setSpinner(true);
         console.log('place', place);
 
-        // TEST ICIN
-        let country = null;
-        let city = null;
-        let district = null;
-        let indexAddress = place.addressComponents.length - 1;
-        let findCOuntry = false;
+        const result = await filteredLocation(place);
+        console.log('result', result)
+        setSelectedCity(result.city);
+        getFirebase(result.country, result.city);
 
-        while (0 <= indexAddress && !findCOuntry) {
-          if (place.addressComponents[indexAddress].types[0] === 'country') {
-            findCOuntry = true;
-            country = place.addressComponents[indexAddress].shortName;
-          }
-          indexAddress--;
-        }
-
-        indexAddress = place.addressComponents.length - 1;
-
-        switch (country) {
-          case 'TR':
-            for (let i = 0; i <= indexAddress; i++) {
-              if (
-                place.addressComponents[i].types[0] ===
-                'administrative_area_level_1'
-              ) {
-                
-                const result = await translate([place.addressComponents[i].name, 'Türkiye'], {
-                  q: "tr",
-                  target: "en",
-                });
-
-                city = result[0];
-
-              } else if (
-                place.addressComponents[i].types[0] ===
-                'administrative_area_level_2'
-              ) {
-                const result = await translate([place.addressComponents[i].name, 'Türkiye'], {
-                  q: "tr",
-                  target: "en",
-                });
-
-                district = result[0];
-              }
-            }
-            break;
-          default:
-            break;
-        }
-
-        console.log('country', convertLowerString(country));
-        console.log('city', city);
-        console.log('district', district);
-
-        if (
-          country != 'TR'
-        ) {
-          const result = `The city is not in ${location.country_name}`;
-          console.log('sonuc', result);
-          setSelectedCity(result);
-          setInCountry(false);
-          getFirebase('');
-        } else {
-          console.log('burda city', city)
-          setSelectedCity(city);
-          getFirebase(city);
-        }
-
-        // console.log('country', convertLowerString(location.country_name));
+        setSpinner(false);
       })
       .catch((error) => {
         console.log(error.message)
@@ -276,13 +212,10 @@ export const ActivityListScreen = () => {
       }); // error is a Javascript Error object
   };
 
+
   const updateLocation = () => {
-    let country: any = null;
-    let city: any = null;
-    let district: any = null;
     let latitude: any = null;
     let longitude: any = null;
-
 
     Geolocation.getCurrentPosition((info) => {
       latitude = info.coords.latitude;
@@ -292,75 +225,15 @@ export const ActivityListScreen = () => {
       
       console.log('-----info', info);
       Geocoder.from(info.coords.latitude, info.coords.longitude)
-        .then((place) => {
+        .then(async (place) => {
           // var basic = json.results[json.results.length - 1].address_components;
           console.log('-----location', place);
 
-          let indexAddress = place.results.length - 1;
-          let findCOuntry = false;
+          const result = await filteredGeoCoder(place);
 
-          // Ulkeye gore filtrelemek icin once ulke bulunur
-          while (0 <= indexAddress && !findCOuntry) {
-            if (place.results[indexAddress].types[0] === 'country') {
-              findCOuntry = true;
-              country =
-                place.results[indexAddress].address_components[0].long_name;
-            }
-            indexAddress--;
-          }
-
-          indexAddress = place.results.length - 1;
-
-          switch (country) {
-            case 'Turkey':
-            case 'Turkiye':
-              for (let i = 0; i <= indexAddress; i++) {
-                if (
-                  place.results[i].types[0] === 'administrative_area_level_1'
-                ) {
-                  city = place.results[i].address_components[0].long_name;
-                } else if (
-                  place.results[i].types[0] === 'administrative_area_level_2'
-                ) {
-                  district = place.results[i].address_components[0].long_name;
-                }
-              }
-              break;
-
-            default:
-              for (let i = 0; i <= indexAddress; i++) {
-                if (
-                  place.results[i].types[0] === 'administrative_area_level_1'
-                ) {
-                  city = place.results[i].address_components[0].long_name;
-                } else if (
-                  place.results[i].types[0] === 'administrative_area_level_2'
-                ) {
-                  district = place.results[i].address_components[0].long_name;
-                }
-              }
-              break;
-          }
-
-          console.log('country', country);
-          console.log('city', city);
-          console.log('district', district);
-          // const city = 'Ekrem'; //basic[basic.length - 2].long_name;
-          // const latitude = info.coords.latitude;
-          // const longitude = info.coords.longitude;
-
-          setSelectedCity(city);
-          Alert.alert('selectedcity', convertLowerString(selectedCity));
-          Alert.alert('city', convertLowerString(city));
-          console.log('-------', selectedCity);
-          console.log('-------', city);
           setSpinner(false);
-          if (convertLowerString(selectedCity) !== convertLowerString(city)) {
-            getFirebase(city);
-            console.log('Sorguda');
-          } else {
-            console.log('Sorgu yok');
-          }
+          getFirebase(result.country, result.city);
+          setSelectedCity(result.city);
         })
         .catch((error) => {
           setSpinner(false);

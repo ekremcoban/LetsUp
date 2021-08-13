@@ -1,6 +1,6 @@
 {
   "name": "LetsUp",
-  "version": "0.25.0",
+  "version": "0.25.1",
   "private": true,
   "scripts": {
     "android": "react-native run-android",

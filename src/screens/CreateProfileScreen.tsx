@@ -33,7 +33,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import messaging from '@react-native-firebase/messaging';
 import Geolocation from '@react-native-community/geolocation';
 import Geocoder from 'react-native-geocoding';
-import { convertLowerString } from 'components/functions/common';
+import { convertLowerString, filteredGeoCoder } from 'components/functions/common';
 
 Geocoder.init('AIzaSyAokz8FcAIgsV0JbJZijJ5ypH-2bvQgC0U');
 
@@ -133,10 +133,6 @@ const CreateProfilScreen = () => {
   }, []);
 
   const updateLocation = () => {
-
-    let country: any = null;
-    let city: any = null;
-    let district: any = null;
     let latitude: any = null;
     let longitude: any = null;
 
@@ -147,71 +143,18 @@ const CreateProfilScreen = () => {
       setSpinner(true);
      
       Geocoder.from(info.coords.latitude, info.coords.longitude)
-        .then((place) => {
+        .then(async(place) => {
           // var basic = json.results[json.results.length - 1].address_components;
           console.log('-----location', place);
 
           let indexAddress = place.results.length - 1;
           let findCOuntry = false;
 
-          // Ulkeye gore filtrelemek icin once ulke bulunur
-          while (0 <= indexAddress && !findCOuntry) {
-            if (
-              place.results[indexAddress].types[0] === 'country'
-            ) {
-              findCOuntry = true;
-              country = place.results[indexAddress].address_components[0].long_name;
-            }
-            indexAddress--;
-          }
+          const result = await filteredGeoCoder(place);
 
-          indexAddress = place.results.length - 1;
-
-          switch (country) {
-            case 'Turkey':
-              case 'Turkiye':
-              for (let i = 0; i <= indexAddress; i++) {
-                if (
-                  place.results[i].types[0] ===
-                  'administrative_area_level_1'
-                ) {
-                  city = place.results[i].address_components[0].long_name;
-                } else if (
-                  place.results[i].types[0] ===
-                  'administrative_area_level_2'
-                ) {
-                  district = place.results[i].address_components[0].long_name;
-                }
-              }
-              break;
-      
-            default:
-              for (let i = 0; i <= indexAddress; i++) {
-                if (
-                  place.results[i].types[0] ===
-                  'administrative_area_level_1'
-                ) {
-                  city = place.results[i].address_components[0].long_name;
-                } else if (
-                  place.results[i].types[0] ===
-                  'administrative_area_level_2'
-                ) {
-                  district = place.results[i].address_components[0].long_name;
-                }
-              }
-              break;
-          }
-          
-          console.log('country', country)
-          console.log('city', city)
-          console.log('district', district)
-          // const city = 'Ekrem'; //basic[basic.length - 2].long_name;
-          // const latitude = info.coords.latitude;
-          // const longitude = info.coords.longitude;
-
-          setCity(city);
-          setCountry(country);
-          setDistrict(district);
+          setCity(result.city);
+          setCountry(result.country);
+          setDistrict(result.district);
           setLatitude(latitude);
           setLongitude(longitude);
           setSpinner(false);
@@ -249,19 +192,8 @@ const CreateProfilScreen = () => {
         longitude: longitude != null ? longitude : location.longitude,
       },
       country: country != null ? country : location.country_name,
-      countryEng:
-        country != null
-          ? convertLowerString(country)
-          : convertLowerString(location.country_name),
       city: city != null ? city : location.city,
-      cityEng:
-        city != null
-          ? convertLowerString(city)
-          : convertLowerString(location.city),
       district: district != null ? district : null,
-      distinctEng: district != null
-      ? convertLowerString(district)
-      : null,
       postal:
         location.zip_code != undefined ? location.zip_code : location.postal,
       type: 0,

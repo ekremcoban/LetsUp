@@ -73,9 +73,26 @@ class ActivityInfoScreen extends Component {
 
     this.getMembers();
 
-    const selectedAddress = this.props.route.params.addressList.filter(
+    let selectedAddress = this.props.route.params.addressList.filter(
       (x) => x.activityId === this.props.route.params.activity.id
     );
+
+    if (selectedAddress.length !== selectedAddress.nodeCount) {
+      console.log('-------girdi', selectedAddress);
+      firestore()
+        .collection('ActivityAddress')
+        .where('activityId', '==', selectedAddress[0].activityId)
+        .get()
+        .then((res) => {
+          selectedAddress = [];
+          res.docs.forEach((item) => {
+            selectedAddress.push(item.data());
+            console.log(item.data());
+          });
+          this.setState({selectedAddress})
+          console.log('-------selectedAddress', selectedAddress);
+        });
+    }
 
     this.setState({
       selectedAddress: selectedAddress,
@@ -468,7 +485,7 @@ class ActivityInfoScreen extends Component {
   };
 
   deleteAlert = (title: string, content: string, type: number) => {
-    console.log('uyeler', this.state.members)
+    console.log('uyeler', this.state.members);
     Alert.alert(title, content, [
       {
         text: 'No',
@@ -489,7 +506,8 @@ class ActivityInfoScreen extends Component {
           let request = memberCollection?.docs[0].data();
           if (
             this.props.route.params.activity.startTime <
-            new Date().getTime() + 7200000 && this.state.members.length > 0
+              new Date().getTime() + 7200000 &&
+            this.state.members.length > 0
           ) {
             request.isCanceled = true;
           } else {
@@ -724,62 +742,66 @@ class ActivityInfoScreen extends Component {
           </View>
           <Text style={styles.navigationTitle}>Navigation</Text>
           {this.state.selectedAddress != null &&
-            this.state.selectedAddress.map((address, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.viewLocation}
-                onPress={() => {
-                  this.setState({
-                    clickChooseMap: true,
-                    location: {
-                      latitude: address.geoCode.latitude,
-                      longitude: address.geoCode.longitude,
-                    },
-                  });
-                }}
-              >
-                <View
-                  style={{
-                    flex: 1,
-                    justifyContent: 'center',
-                    // height: heightView * 0.25,
-                    // backgroundColor: 'red',
+            this.state.selectedAddress
+              .sort((a, b) => {
+                return a.nodeNumber - b.nodeNumber;
+              })
+              .map((address, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.viewLocation}
+                  onPress={() => {
+                    this.setState({
+                      clickChooseMap: true,
+                      location: {
+                        latitude: address.geoCode.latitude,
+                        longitude: address.geoCode.longitude,
+                      },
+                    });
                   }}
                 >
-                  <Text>
-                    {index === 0 &&
-                    this.state.selectedAddress.length - 1 !== index
-                      ? 'Start'
-                      : index === this.state.selectedAddress.length - 1 &&
-                        index > 0
-                      ? 'Finish'
-                      : this.state.selectedAddress.length > 2
-                      ? 'Dest'
-                      : ''}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flex: 5,
-                    justifyContent: 'center',
-                    height: heightView * 0.25,
-                    // backgroundColor: 'yellow',
-                  }}
-                >
-                  <Text>{address.fullAddress}</Text>
-                </View>
-                <View
-                  style={{
-                    flex: 0.5,
-                    justifyContent: 'center',
-                    height: heightView * 0.25,
-                    // backgroundColor: 'red',
-                  }}
-                >
-                  <Ionicons name={'navigate-outline'} size={20} />
-                </View>
-              </TouchableOpacity>
-            ))}
+                  <View
+                    style={{
+                      flex: 1,
+                      justifyContent: 'center',
+                      // height: heightView * 0.25,
+                      // backgroundColor: 'red',
+                    }}
+                  >
+                    <Text>
+                      {index === 0 &&
+                      this.state.selectedAddress.length - 1 !== index
+                        ? 'Start'
+                        : index === this.state.selectedAddress.length - 1 &&
+                          index > 0
+                        ? 'Finish'
+                        : this.state.selectedAddress.length > 2
+                        ? 'Dest'
+                        : ''}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flex: 5,
+                      justifyContent: 'center',
+                      height: heightView * 0.25,
+                      // backgroundColor: 'yellow',
+                    }}
+                  >
+                    <Text>{address.fullAddress}</Text>
+                  </View>
+                  <View
+                    style={{
+                      flex: 0.5,
+                      justifyContent: 'center',
+                      height: heightView * 0.25,
+                      // backgroundColor: 'red',
+                    }}
+                  >
+                    <Ionicons name={'navigate-outline'} size={20} />
+                  </View>
+                </TouchableOpacity>
+              ))}
         </View>
       </View>
     );
@@ -978,8 +1000,12 @@ class ActivityInfoScreen extends Component {
               </Text>
             </TouchableNativeFeedback>
           </View>
-          {this.state.showPageToOwner && this.props.route.params.activity.isCanceled != true && showEmailIcon(member)}
-          {this.state.showPageToOwner && this.props.route.params.activity.isCanceled != true && showApproval(member)}
+          {this.state.showPageToOwner &&
+            this.props.route.params.activity.isCanceled != true &&
+            showEmailIcon(member)}
+          {this.state.showPageToOwner &&
+            this.props.route.params.activity.isCanceled != true &&
+            showApproval(member)}
         </View>
       ));
 
@@ -1032,9 +1058,12 @@ class ActivityInfoScreen extends Component {
         'this.props.route.params.activity',
         this.props.route.params.activity
       );
-    
+
       if (this.props.route.params.activity.isCanceled != true) {
-        if (!this.state.showPageToOwner && selectedMembers.ownerState == false) {
+        if (
+          !this.state.showPageToOwner &&
+          selectedMembers.ownerState == false
+        ) {
           return deniedView;
         } else if (this.state.showPageToOwner) {
           return deleteView;
@@ -1061,9 +1090,7 @@ class ActivityInfoScreen extends Component {
         } else if (this.state.isJoin) {
           return joinButton;
         }
-      }
-      else 
-        return canceledView;
+      } else return canceledView;
       // console.log('10')
     };
 
@@ -1076,7 +1103,7 @@ class ActivityInfoScreen extends Component {
               item._data.activityId === this.props.route.params.activity.id
           )[0]._data;
         }
-  
+
         if (this.context.user == null) {
           Alert.alert('Warning', 'You have to login first', [
             {
@@ -1088,14 +1115,16 @@ class ActivityInfoScreen extends Component {
           ]);
         } else if (
           selectedMembers.ownerState == true &&
-          this.props.route.params.activity.owner.email !== this.context.user.email
+          this.props.route.params.activity.owner.email !==
+            this.context.user.email
         ) {
           return this.requestAlert();
         } else if (this.state.showPageToOwner) {
           return this.deleteActivity();
         } else if (
           selectedMembers.length === 0 &&
-          this.props.route.params.activity.owner.email !== this.context.user.email
+          this.props.route.params.activity.owner.email !==
+            this.context.user.email
         ) {
           return this.requestAlert();
         } else if (selectedMembers.length === 0) {
