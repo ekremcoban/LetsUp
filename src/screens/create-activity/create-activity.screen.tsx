@@ -534,16 +534,18 @@ const CreateActivityScreen2 = () => {
 
   const handleStartTimeConfirm = (date: Date) => {
     setStartTimeActionSheetVisibility(false);
+    console.log('DATE', date)
     let warningTemp = warning;
     warningTemp.startTime = false;
     setWarning(warningTemp);
+    setActivityFinishTime(undefined)
     // console.log('1', date.getHours() * 60 + date.getMinutes());
     // console.log('2', new Date().getHours() * 60 + new Date().getMinutes());
     if (
       activityDate != undefined &&
       activityDate.getFullYear() === new Date().getFullYear() &&
       activityDate.getMonth() === new Date().getMonth() &&
-      activityDate.getDate() === new Date().getDate() &&
+      (activityDate.getDate() === new Date().getDate()) &&
       date.getHours() * 60 + date.getMinutes() >=
         (new Date().getHours() + 2) * 60 + new Date().getMinutes()
     ) {
@@ -567,7 +569,7 @@ const CreateActivityScreen2 = () => {
       let warningTemp = warning;
       warningTemp.startTime = false;
       setWarning(warningTemp);
-      console.log('BURDA 2', activityStartTime);
+      console.log('BURDA 2', startDate);
     } else if (
       activityDate != undefined &&
       activityDate.getFullYear() === new Date().getFullYear() &&
@@ -594,8 +596,26 @@ const CreateActivityScreen2 = () => {
       let warningTemp = warning;
       warningTemp.startTime = false;
       setWarning(warningTemp);
-    } else {
-      console.log('BURDA 5');
+    }
+    else if (activityDate != undefined 
+    && activityDate.getFullYear() === new Date().getFullYear()
+    && activityDate.getMonth() === new Date().getMonth()
+    && activityDate.getDate() === new Date().getDate() && new Date().getHours() >= 22) {
+      const startDate = new Date(
+        activityDate.getFullYear(),
+        activityDate.getMonth(),
+        activityDate.getDate() + 1,
+        date.getHours(),
+        date.getMinutes()
+      );
+      setActivityStartTime(startDate);
+      let warningTemp = warning;
+      warningTemp.startTime = false;
+      setWarning(warningTemp);
+      console.log('BURDA 5', startDate);
+    } 
+    else {
+      console.log('BURDA 6', activityDate.getDate());
       const selectedHour =
         date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
       const selectedMinute =
@@ -621,9 +641,6 @@ const CreateActivityScreen2 = () => {
     warningTemp.finishTime = false;
     setWarning(warningTemp);
 
-    console.log('1', date.getHours() * 60 + date.getMinutes());
-    console.log('2', new Date().getHours() * 60 + new Date().getMinutes());
-    console.log('activityFinishTime', activityStartTime);
     if (
       activityDate != undefined &&
       activityStartTime != undefined &&
@@ -635,7 +652,7 @@ const CreateActivityScreen2 = () => {
     ) {
       setActivityFinishTime(date);
       // console.warn('En az 2 saat olmalı');
-      console.log('BURDA 1');
+      console.log('BURDA 1', date);
     } else if (
       activityDate != undefined &&
       activityStartTime != undefined &&
@@ -669,7 +686,7 @@ const CreateActivityScreen2 = () => {
       let warningTemp = warning;
       warningTemp.finishTime = false;
       setWarning(warningTemp);
-      console.log('BURDA 3');
+      console.log('BURDA 3', date);
     } else if (
       activityDate != undefined &&
       activityStartTime != undefined &&
@@ -717,7 +734,7 @@ const CreateActivityScreen2 = () => {
       activityTime != undefined &&
       new Date().getFullYear() === activityDate.getFullYear() &&
       new Date().getMonth() === activityDate.getMonth() &&
-      new Date().getDate() === activityDate.getDate() &&
+      (new Date().getHours() < 22 ? new Date().getDate() === activityDate.getDate() : new Date().getDate() === activityDate.getDate() + 1) &&
       activityTime.getHours() * 60 + activityTime.getMinutes() <
         (new Date().getHours() + 2) * 60 + new Date().getMinutes()
     ) {
@@ -1205,7 +1222,14 @@ const CreateActivityScreen2 = () => {
           </View>
         </View>
         <View style={styles.secondRow}>
-          <TouchableOpacity style={{alignItems: 'center', justifyContent: 'flex-start', paddingTop: 10}} onPress={() => save()}>
+          <TouchableOpacity
+            style={{
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              paddingTop: 10,
+            }}
+            onPress={() => save()}
+          >
             <Image
               style={{ width: 80, height: 80 }}
               source={require('../../assets/img/letscreate.png')}
@@ -1215,6 +1239,15 @@ const CreateActivityScreen2 = () => {
         </View>
 
         <DateTimePickerModal
+          minimumDate={
+            new Date(
+              new Date().getFullYear(),
+              new Date().getMonth(),
+              new Date().getDate(),
+              new Date().getHours(),
+              new Date().getMinutes()
+            )
+          }
           isVisible={isDateActionSheetVisible}
           mode="date"
           onConfirm={handleDateConfirm}
@@ -1222,6 +1255,25 @@ const CreateActivityScreen2 = () => {
         />
 
         <DateTimePickerModal
+          date={
+            new Date(
+              new Date().getFullYear(),
+              new Date().getMonth(),
+              new Date().getHours() >= 22 ? new Date().getDate() + 1 : new Date().getDate(),
+              new Date().getHours() + 2,
+              new Date().getMinutes()
+            )
+          }
+          minimumDate={
+            new Date(
+              new Date().getFullYear(),
+              new Date().getMonth(),
+              new Date().getHours() >= 22 ? new Date().getDate() + 1 : new Date().getDate(),
+              new Date().getHours() + 2,
+              new Date().getMinutes()
+            )
+          }
+          locale="en_GB"
           isVisible={isStartTimeActionSheetVisible}
           mode="time"
           onConfirm={handleStartTimeConfirm}
@@ -1229,6 +1281,42 @@ const CreateActivityScreen2 = () => {
         />
 
         <DateTimePickerModal
+           date={
+            activityStartTime != undefined ?
+            new Date(
+              activityStartTime.getFullYear(),
+              activityStartTime.getMonth(),
+              activityStartTime.getDate(),
+              activityStartTime.getHours() + 1,
+              activityStartTime.getMinutes()
+            )
+            :
+            new Date(
+              new Date().getFullYear(),
+              new Date().getMonth(),
+              new Date().getDate(),
+              new Date().getHours() + 2,
+              new Date().getMinutes()
+            )
+          }
+          minimumDate={activityStartTime != undefined ?
+            new Date(
+              activityStartTime.getFullYear(),
+              activityStartTime.getMonth(),
+              activityStartTime.getDate(),
+              activityStartTime.getHours() + 1,
+              activityStartTime.getMinutes()
+            )
+            :
+            new Date(
+              new Date().getFullYear(),
+              new Date().getMonth(),
+              new Date().getDate(),
+              new Date().getHours() + 2,
+              new Date().getMinutes()
+            )
+          }
+          locale="en_GB"
           isVisible={isFinishTimeActionSheetVisible}
           mode="time"
           onConfirm={handleFinishTimeConfirm}
