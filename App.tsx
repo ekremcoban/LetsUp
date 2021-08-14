@@ -46,6 +46,7 @@ let App = () => {
   const [location, setLocation] = useState();
   const [isCreateActivity, setIsCreateActivity] = useState();
   const [suspendActivity, setSuspendActivity] = useState();
+  const [isSameCity, setIsSameCity] = useState();
   const value = {
     user,
     setUser,
@@ -57,6 +58,8 @@ let App = () => {
     setIsCreateActivity,
     suspendActivity, 
     setSuspendActivity,
+    isSameCity,
+    setIsSameCity,
   };
 
   const scheme = useColorScheme();
@@ -237,6 +240,7 @@ let App = () => {
             name="Create Activity"
             component={CreateActivityScreen}
             options={{
+              tabBarLabel: '',
               tabBarIcon: ({ color, size }) => (
                 <View
                   style={{

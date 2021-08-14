@@ -75,8 +75,6 @@ const CreateProfilScreen = () => {
     //   getCurrentUser();
     // }
 
-    console.log('Girdi', location);
-
     // Kullanici resim eklemediyse
     if (user == null) {
       getData('Users').then((user) => {
@@ -98,15 +96,12 @@ const CreateProfilScreen = () => {
           // Kullanici resim eklediyse
           getData('Photo').then((res) => {
             if (res == null) {
-              console.log('Burda 2', res);
               getImage();
             } else {
-              console.log('Burda 3');
               setPhoto(res);
             }
           });
         } else {
-          console.log('girmedi', photo);
           setPhoto(user.photo);
         }
         setSpinner(false);
@@ -145,10 +140,6 @@ const CreateProfilScreen = () => {
       Geocoder.from(info.coords.latitude, info.coords.longitude)
         .then(async(place) => {
           // var basic = json.results[json.results.length - 1].address_components;
-          console.log('-----location', place);
-
-          let indexAddress = place.results.length - 1;
-          let findCOuntry = false;
 
           const result = await filteredGeoCoder(place);
 
@@ -162,7 +153,6 @@ const CreateProfilScreen = () => {
         })
         .catch((error) => console.warn(error));
 
-      console.log('loc', info);
     });
   };
 
@@ -257,8 +247,8 @@ const CreateProfilScreen = () => {
   // Foto degistirilmek istendiginde
   const photoUpdate = () => {
     ImagePickerCropper.openPicker({
-      width: 200,
-      height: 200,
+      width: 1000,
+      height: 1000,
       cropping: true,
     })
       .then((image) => {

@@ -83,10 +83,10 @@ export const filteredLocation = async (place: Object) => {
       break;
   }
 
-  console.log('countryCode', countryCode);
-  console.log('country', country);
-  console.log('city', city);
-  console.log('district', district);
+  // console.log('countryCode', countryCode);
+  // console.log('country', country);
+  // console.log('city', city);
+  // console.log('district', district);
 
   result = {
     countryCode: countryCode,
@@ -157,9 +157,9 @@ export const filteredGeoCoder = async (place: Object) => {
       break;
   }
 
-  console.log('country', country);
-  console.log('city', city);
-  console.log('district', district);
+  // console.log('country', country);
+  // console.log('city', city);
+  // console.log('district', district);
   // const city = 'Ekrem'; //basic[basic.length - 2].long_name;
   // const latitude = info.coords.latitude;
   // const longitude = info.coords.longitude;

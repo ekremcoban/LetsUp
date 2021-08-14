@@ -8,7 +8,9 @@ const ContextApi = React.createContext({
     location: undefined,
     setLocation: () => {},
     suspendActivity: null,
-    setSuspendActivity: () => {}
+    setSuspendActivity: () => {},
+    isSameCity: null,
+    setIsSameCity: () => {},
   });
 
   export default ContextApi;

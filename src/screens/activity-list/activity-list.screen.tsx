@@ -25,10 +25,14 @@ import {
 } from 'components/activity-type-selector/models';
 import { IActivity } from './models';
 import { colors } from 'styles/colors';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect } from 'react';
 import ContextApi from 'context/ContextApi';
-import { convertLowerString, filteredGeoCoder, filteredLocation } from 'components/functions/common';
+import {
+  convertLowerString,
+  filteredGeoCoder,
+  filteredLocation,
+} from 'components/functions/common';
 import DisplaySpinner from '../../components/spinner';
 import messaging from '@react-native-firebase/messaging';
 import RNGooglePlaces from 'react-native-google-places';
@@ -41,21 +45,24 @@ const ageActionSheetRef = createRef<IActionSheet>();
 let activityListTemp;
 
 export const ActivityListScreen = () => {
-  const { location, user } = useContext(ContextApi);
+  const { location, user, isSameCity } = useContext(ContextApi);
   const navigation = useNavigation();
+  const route = useRoute();
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
   const [spinner, setSpinner] = useState<boolean>(true);
   const [activityList, setActivityList] = useState(null);
   const [addressList, setAddressList] = useState(null);
+  const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedCity, setSelectedCity] = useState(null);
-  const [inCountry, setInCountry] = useState<boolean>(true);
 
   let activityId = [];
   let addressTemp = [];
   let activityTemp = [];
 
   useEffect(() => {
+    // const unsubscribe = navigation.addListener('focus', () => {
     location != undefined && getFirebase(location.country_name, location.city);
+
     getNotifications();
 
     // const unsubscribe = navigation.addListener('focus', () => {
@@ -71,8 +78,10 @@ export const ActivityListScreen = () => {
     // });
 
     // Return the function to unsubscribe from the event so it gets removed on unmount
-    return () => {};
-  }, [navigation]);
+    return () => {
+      // unsubscribe();
+    };
+  }, [navigation, isSameCity]);
 
   const getNotifications = () => {
     messaging().onNotificationOpenedApp((remoteMessage) => {
@@ -91,8 +100,9 @@ export const ActivityListScreen = () => {
         .where('city', '==', city)
 
         .onSnapshot((querySnapshot) => {
-          console.log('querySnapshot', querySnapshot);
+          // console.log('querySnapshot Address 1', querySnapshot);
           addressTemp = [];
+          activityId = [];
 
           querySnapshot != null &&
             querySnapshot.docs.forEach((documentSnapshot) => {
@@ -101,36 +111,76 @@ export const ActivityListScreen = () => {
               addressTemp.push(documentSnapshot.data());
             });
 
-          addressTemp.forEach(item => {
+            addressTemp.forEach(item => {
             const selectedAddress = addressTemp.filter(a => a.activityId === item.activityId);
-            if (item.nodeCount === 2 && item.nodeNumber === 2) {
-               if (selectedAddress != undefined && selectedAddress[0].city !== selectedCity) {
-                addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
-                activityId = activityId.filter(a => a !== item.activityId);
-               }               
+            if (selectedAddress.length === 1 && selectedAddress[0].nodeCount === 2 && selectedAddress[0].nodeNumber === 2) {
+              addressTemp = addressTemp.filter(a => a.activityId !== item.activityId && a.city === city);
+              activityId = activityId.filter(a => a !== item.activityId);
+              console.log('2 dest', item)
             }
-            else if (item.nodeCount === 3 && item.nodeNumber === 3) {
-               if (selectedAddress[0].city !== selectedCity && selectedAddress[0].nodeCount === 3) {
-                addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
-                activityId = activityId.filter(a => a !== item.activityId);
-               }   
-            }
-            else if (item.nodeCount === 4 && item.nodeNumber === 4) {
-              if (selectedAddress[0].city !== selectedCity && selectedAddress[0].nodeCount === 4) {
-                addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
-                activityId = activityId.filter(a => a !== item.activityId);
-               }   
-            }
-            else if (item.nodeCount === 5 && item.nodeNumber === 5) {
-              if (selectedAddress[0].city !== selectedCity && selectedAddress[0].nodeCount === 5) {
-                addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
-                activityId = activityId.filter(a => a !== item.activityId);
-               }   
-            }
-          });
+          })
+          // addressTemp.forEach(item => {
+          //   const selectedAddress = addressTemp.filter(a => a.activityId === item.activityId);
+          //   if (selectedAddress.length === 1 && selectedAddress[0].nodeCount === 2 && selectedAddress[0].nodeNumber === 2) {
+          //     addressTemp = addressTemp.filter(a => a.activityId !== item.activityId && a.city === city);
+          //     activityId = activityId.filter(a => a !== item.activityId);
+          //     console.log('2 dest', item)
+          //   }
+          //   console.log('-------selectedCity', selectedAddress, selectedAddress.length)
+          //   if (item.nodeCount === 2 && item.nodeNumber === 1 && selectedAddress.filter(item => item.nodeNumber === 0).length === 0) {
+          //     const nodeFirst = selectedAddress.filter(item => item.nodeNumber === 1)[0];
+          //     console.log('-------first', nodeFirst.city, city)
+          //     if (nodeFirst.city !== city) {
+          //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
+          //       activityId = activityId.filter(a => a !== item.activityId);
+          //       console.log('----- 2', addressTemp);
+          //     }
+          //     else {
+          //       console.log('----- 2.1', addressTemp);
+          //     }
+          //   }
+          //   else if (item.nodeCount === 3 && item.nodeNumber === 3) {
+          //      if (selectedAddress.length === 1 && selectedAddress[0].city !== selectedCity) {
+          //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
+          //       activityId = activityId.filter(a => a !== item.activityId);
+          //       console.log('----- 3', addressTemp);
+          //      }
+          //      else if (selectedAddress.length === 2 && selectedAddress[0].city !== selectedCity && selectedAddress[1].city !== selectedCity) {
+          //       console.log('----- item', item);
+          //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
+          //       activityId = activityId.filter(a => a !== item.activityId);
+          //       console.log('----- 3.1', addressTemp);
+          //      }
+          //   }
+          //   else if (item.nodeCount === 4 && item.nodeNumber === 4) {
+          //     if (selectedAddress.length === 1 && selectedAddress[0].city !== selectedCity && selectedAddress[0].nodeCount === 4) {
+          //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
+          //       activityId = activityId.filter(a => a !== item.activityId);
+          //       console.log('----- 4', addressTemp);
+          //      }
+          //      else  if (selectedAddress.length === 2 && selectedAddress[0].city !== selectedCity && selectedAddress[1].city !== selectedCity && selectedAddress[0].nodeCount === 4) {
+          //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
+          //       activityId = activityId.filter(a => a !== item.activityId);
+          //       console.log('----- 4.1', addressTemp);
+          //      }
+          //      else  if (selectedAddress.length === 3 && selectedAddress[0].city !== selectedCity && selectedAddress[1].city !== selectedCity && selectedAddress[2].city !== selectedCity && selectedAddress[0].nodeCount === 4) {
+          //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
+          //       activityId = activityId.filter(a => a !== item.activityId);
+          //       console.log('----- 4.2', addressTemp);
+          //      }
+          //   }
+          //   else if (item.nodeCount === 5 && item.nodeNumber === 5) {
+          //     if (selectedAddress[0].city !== selectedCity && selectedAddress[0].nodeCount === 5) {
+          //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
+          //       activityId = activityId.filter(a => a !== item.activityId);
+          //       console.log('----- 5', addressTemp);
+          //      }
+          //   }
+          // });
 
           setAddressList([...addressTemp]);
-          console.log('addressTemp', addressTemp);
+          console.log('addressTemp 1', addressTemp);
+          // console.log('activityId 1', activityId);
 
           let index = 0;
           const partion = Math.ceil(activityId.length / 10);
@@ -145,7 +195,6 @@ export const ActivityListScreen = () => {
             while (index < activityId.length) {
               stackTen.push(activityId[index++]);
               if (index % 10 === 0) {
-                console.log(i, 'gonder', stackTen);
                 firestore()
                   .collection('Activities')
                   .where('id', 'in', stackTen)
@@ -162,13 +211,14 @@ export const ActivityListScreen = () => {
 
                     setActivityList([...activityTemp]);
                     activityListTemp = [...activityTemp];
+                    console.log('activityListTemp 1', activityListTemp);
                     setSpinner(false);
                   });
 
                 stackTen = [];
               } else {
                 if (index === activityId.length) {
-                  console.log(i, 'falza', stackTen);
+                  // console.log(i, 'falza', stackTen);
                   firestore()
                     .collection('Activities')
                     .where('id', 'in', stackTen)
@@ -191,6 +241,7 @@ export const ActivityListScreen = () => {
 
                       setActivityList([...activityTemp]);
                       activityListTemp = [...activityTemp];
+                      console.log('activityListTemp 2', activityListTemp);
                       setSpinner(false);
                     });
 
@@ -229,18 +280,18 @@ export const ActivityListScreen = () => {
         console.log('place', place);
 
         const result = await filteredLocation(place);
-        console.log('result', result)
+        // console.log('result', result)
+        setSelectedCountry(result.country);
         setSelectedCity(result.city);
         getFirebase(result.country, result.city);
 
         setSpinner(false);
       })
       .catch((error) => {
-        console.log(error.message)
+        console.log(error.message);
         setSpinner(false);
       }); // error is a Javascript Error object
   };
-
 
   const updateLocation = () => {
     let latitude: any = null;
@@ -251,7 +302,7 @@ export const ActivityListScreen = () => {
       longitude = info.coords.longitude;
 
       setSpinner(true);
-      
+
       Geocoder.from(info.coords.latitude, info.coords.longitude)
         .then(async (place) => {
           // var basic = json.results[json.results.length - 1].address_components;
@@ -260,11 +311,12 @@ export const ActivityListScreen = () => {
 
           setSpinner(false);
           getFirebase(result.country, result.city);
+          setSelectedCountry(result.country);
           setSelectedCity(result.city);
         })
         .catch((error) => {
           setSpinner(false);
-          console.warn('updateLocation', error)
+          console.warn('updateLocation', error);
         });
 
       console.log('loc', info);
@@ -343,7 +395,9 @@ export const ActivityListScreen = () => {
             warning={false}
             onPress={() => openLocationModal()}
             text={
-              selectedCity == null && location != undefined && location.city != undefined
+              selectedCity == null &&
+              location != undefined &&
+              location.city != undefined
                 ? location.city
                 : selectedCity
             }
@@ -377,13 +431,13 @@ export const ActivityListScreen = () => {
                 activityList
                   .filter(
                     (x) =>
-                      (user != undefined &&
+                      (user != undefined && x.state &&
                         x.owner.email !== user.email &&
                         (x.gender == user.gender || x.gender == null) &&
                         ((x.minAge <= user.age && x.maxAge >= user.age) ||
                           x.minAge == null)) ||
-                      (user != undefined && x.owner.email === user.email) ||
-                      user == undefined
+                      (user != undefined && x.state && x.owner.email === user.email) ||
+                      user == undefined && x.state
                   )
 
                   // x.state && user != undefined

@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Image,
 } from 'react-native';
 import Popover from '../../components/popover';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
@@ -31,7 +32,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { colors } from 'styles/colors';
 import { useNavigation } from '@react-navigation/native';
 import { getData } from 'db/localDb';
-import { convertLowerString, filteredLocation } from 'components/functions/common';
+import {
+  convertLowerString,
+  filteredLocation,
+} from 'components/functions/common';
 import ContextApi from 'context/ContextApi';
 import { useEffect } from 'react';
 
@@ -42,7 +46,13 @@ const genderActionSheetRef = createRef<IActionSheet>();
 
 const CreateActivityScreen2 = () => {
   const navigation = useNavigation();
-  const { user, location, suspendActivity, setSuspendActivity } = useContext(ContextApi);
+  const {
+    user,
+    location,
+    suspendActivity,
+    setSuspendActivity,
+    setIsSameCity,
+  } = useContext(ContextApi);
   const [branchName, setBranchName] = useState<string>(String || undefined);
 
   const [location0, setLocation0] = useState(null);
@@ -105,7 +115,7 @@ const CreateActivityScreen2 = () => {
     const unsubscribe = navigation.addListener('focus', () => {
       setIsMounted(false);
       console.log('ingo', suspendActivity);
-      
+
       // The screen is focused
       // Call any action
     });
@@ -119,7 +129,6 @@ const CreateActivityScreen2 = () => {
     activity: Object,
     nodeNumber: number
   ) => {
- 
     // let country = null;
     // let city = null;
     // let district = null;
@@ -172,11 +181,7 @@ const CreateActivityScreen2 = () => {
     // }
 
     const result = await filteredLocation(place);
-    console.log('-------result', result);
-    console.log('-------place', place);
 
-    // console.log('city', city)
-    // console.log('district', district)
     const activityAddress = {
       id: uuidv4(),
       activityId: activity.id,
@@ -192,21 +197,25 @@ const CreateActivityScreen2 = () => {
       time: activity.startTime,
       createdTime: new Date().getTime(),
     };
-    console.log('-------activityAddress', activityAddress);
+
     return activityAddress;
   };
 
   const convertAndSendAddressToServer = async (activity: Object) => {
+    let startCity = '';
+    let finishCity = '';
+
     if (location0 != null) {
       const post = await convertLocation(location0, activity, 1);
-      console.log('-------', post)
       fireStoreFunction('ActivityAddress', post.id, post);
       console.log('1 kayıt', post);
+      startCity = post.city;
     }
     if (location1 != null) {
       const post = await convertLocation(location1, activity, 2);
       fireStoreFunction('ActivityAddress', post.id, post);
       console.log('2 kayıt', post);
+      finishCity = post.city;
     }
     if (location2 != null) {
       const post = await convertLocation(location2, activity, 3);
@@ -223,26 +232,24 @@ const CreateActivityScreen2 = () => {
       fireStoreFunction('ActivityAddress', post.id, post);
       console.log('5 kayıt', post);
     }
+    setIsSameCity(startCity === finishCity);
   };
 
   const fireStoreFunction = async (title: string, id: string, data: Object) => {
-    console.log('fireStoreFunction', data)
     try {
       firestore()
-      .collection(title)
-      .doc(id)
-      .set(data)
-      .then(() => {
-        console.log('Adress insert!');
-      })
-      .catch((e) => {
-        console.log('insert Adress', e);
-      });
+        .collection(title)
+        .doc(id)
+        .set(data)
+        .then(() => {
+          console.log('Adress insert!');
+        })
+        .catch((e) => {
+          console.log('insert Adress', e);
+        });
+    } catch (error) {
+      console.error('fireStoreFunction', error);
     }
-    catch (error) {
-      console.error('fireStoreFunction', error)
-    }
-
   };
 
   const save = async () => {
@@ -392,7 +399,6 @@ const CreateActivityScreen2 = () => {
       const activityId = uuidv4();
       getData('Users').then((user) => {
         if (user != null) {
-          console.log('user', user);
           const activity = {
             id: activityId,
             type: branchName,
@@ -421,7 +427,7 @@ const CreateActivityScreen2 = () => {
             maxQuota: selectedQuotaRange[1],
             createdTime: new Date().getTime(),
           };
-          
+
           if (activity.owner.photo == null) {
             getData('Photo').then((p) => {
               if (p != null) {
@@ -433,7 +439,7 @@ const CreateActivityScreen2 = () => {
           Alert.alert('Info', 'Do you confirm to create a new activity?', [
             {
               text: 'No',
-              onPress: () => console.log('Cancel Pressed'),
+              onPress: () => console.log('cancel new activity'),
               style: 'cancel',
             },
             {
@@ -785,7 +791,7 @@ const CreateActivityScreen2 = () => {
   const openLocationModal = (itemNo: number) => {
     console.log('itemNo', itemNo);
     RNGooglePlaces.openAutocompleteModal({
-      country: location.country_code
+      country: location.country_code,
     })
       .then((place) => {
         console.log('place', place);
@@ -904,7 +910,7 @@ const CreateActivityScreen2 = () => {
     <View style={[styles.row, styles.rowLocation]}>
       <View style={styles.locationTitle}>
         {numberShowLocation === 2 && !showLocation3 && !showLocation4 ? (
-          <Text>FINISH 1</Text>
+          <Text>FINISH</Text>
         ) : (
           <Text>DEST 1</Text>
         )}
@@ -1081,17 +1087,19 @@ const CreateActivityScreen2 = () => {
               />
             </View>
           </View>
-          <ScrollView>
+          <View>
             <View style={styles.locationLabel}>
               <Text style={styles.label}>
                 {`${polyglot.t(
                   'screens.create_activity.inputs.location.label'
                 )}*`}
               </Text>
-              {(branchName === 'jogging' ||
-                branchName === 'bicycle' ||
-                branchName === 'hiking') &&
-                addMoreButton}
+              {
+                branchName === 'jogging' ||
+                  branchName === 'bicycle' ||
+                  branchName === 'hiking'
+                // && addMoreButton
+              }
             </View>
             <View style={styles.locationWrapper}>
               {locationArea0}
@@ -1100,7 +1108,7 @@ const CreateActivityScreen2 = () => {
               {showLocation3 && locationArea3}
               {showLocation4 && locationArea4}
             </View>
-          </ScrollView>
+          </View>
           <View style={styles.row}>
             <View style={styles.column}>
               <Selector
@@ -1151,7 +1159,7 @@ const CreateActivityScreen2 = () => {
             </View>
           </View>
 
-          <View style={styles.row}>
+          <View style={[styles.row, {}]}>
             <View style={styles.column}>
               <Selector
                 labelPosition="center"
@@ -1197,7 +1205,13 @@ const CreateActivityScreen2 = () => {
           </View>
         </View>
         <View style={styles.secondRow}>
-          <CustomButton onPress={() => save()} title="Create Activity" />
+          <TouchableOpacity style={{alignItems: 'center', justifyContent: 'flex-start', paddingTop: 10}} onPress={() => save()}>
+            <Image
+              style={{ width: 80, height: 80 }}
+              source={require('../../assets/img/letscreate.png')}
+            />
+          </TouchableOpacity>
+          {/* <CustomButton onPress={() => save()} title="Create Activity" /> */}
         </View>
 
         <DateTimePickerModal
@@ -1285,7 +1299,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingLeft: 5,
     paddingEnd: 5,
-    marginBottom: 20,
+    marginBottom: 5,
   },
   column: {
     flex: 1,
@@ -1299,14 +1313,16 @@ const styles = StyleSheet.create({
     width: 70,
   },
   locationWrapper: {
-    marginBottom: 10,
+    // marginBottom: 10,
   },
   locationLabel: {
+    paddingTop: 5,
     paddingHorizontal: 10,
     paddingBottom: 2,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    // backgroundColor: 'red'
   },
   locationAddMore: {
     flexDirection: 'row',
@@ -1345,12 +1361,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   firstRow: {
-    flex: 10,
+    flex: 5,
+    // backgroundColor: 'purple'
   },
   secondRow: {
     flex: 2,
-    justifyContent: 'center',
-    // backgroundColor: 'red'
+    justifyContent: 'flex-start',
+    // backgroundColor: 'yellow'
   },
 });
 

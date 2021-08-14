@@ -265,7 +265,6 @@ class ActivityInfoScreen extends Component {
           selectedAddress = [];
           res.docs.forEach((item) => {
             selectedAddress.push(item.data());
-            console.log(item.data());
           });
           
           this.setState({selectedAddress})
@@ -314,7 +313,6 @@ class ActivityInfoScreen extends Component {
         .get();
 
       if (result.docs.length > 0) {
-        console.log(result.docs[0].data().memberState);
         this.setState({ isJoin: !result.docs[0].data().memberState });
       }
     }
@@ -367,7 +365,7 @@ class ActivityInfoScreen extends Component {
       const transportPlan = 'd';
 
       OpenMapDirections(startPoint, targetPort, transportPlan).then((res) => {
-        console.log(res);
+        // console.log(res);
       });
     }
   };
@@ -413,7 +411,6 @@ class ActivityInfoScreen extends Component {
   // Aktiviteye katilma ya da ayrilma talebi gonderir
   sendRequest = async () => {
     const token = await messaging().getToken();
-    // console.log('token', token);
     let context = this.context;
     let memberCollection;
 
@@ -426,10 +423,7 @@ class ActivityInfoScreen extends Component {
 
     if (memberCollection.docs.length > 0) {
       request = memberCollection.docs[0].data();
-      //   console.log('memberCollection 1', request);
     }
-
-    // console.log('memberCollection 2', memberCollection.docs.length);
 
     if (memberCollection.docs.length == 0) {
       this.setState({ isJoin: false });
@@ -453,7 +447,7 @@ class ActivityInfoScreen extends Component {
         startTime: this.props.route.params.activity.startTime,
         createdTime: new Date().getTime(),
       };
-      console.log('ilk kayıt', request);
+
       this.fireStoreInsertFunction('Members', request.id, request);
     } else if (request.memberState === false) {
       this.setState((prev) => ({ isJoin: !prev.isJoin }));
@@ -462,7 +456,7 @@ class ActivityInfoScreen extends Component {
       }
 
       request.memberState = true;
-      console.log('ilk güncelleme', request);
+
       this.fireStoreUpdateFunction(
         'Members',
         memberCollection?.docs[0].data().id,
@@ -470,7 +464,6 @@ class ActivityInfoScreen extends Component {
       );
     } else if (request.memberState === true) {
       this.setState((prev) => ({ isJoin: !prev.isJoin }));
-      console.log('ikinci güncelleme', request);
 
       const activityStartTime = this.props.route.params.activity.startTime;
       const convinientTime = 1627837960000; //new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours() + 2, new Date().getMinutes()).getMilliseconds();
@@ -490,7 +483,7 @@ class ActivityInfoScreen extends Component {
   };
 
   deleteAlert = (title: string, content: string, type: number) => {
-    console.log('uyeler', this.state.members);
+
     Alert.alert(title, content, [
       {
         text: 'No',
@@ -507,6 +500,22 @@ class ActivityInfoScreen extends Component {
             .collection('Activities')
             .where('id', '==', this.props.route.params.activity.id)
             .get();
+
+            let activityAddress = await firestore()
+            .collection('ActivityAddress')
+            .where('activityId', '==', memberCollection?.docs[0].data().id)
+            .get();
+
+            activityAddress.docs.forEach(item => {
+              let updateAddress = item.data();
+              updateAddress.state = false;
+              this.fireStoreUpdateFunction(
+                'ActivityAddress',
+                item.data().id,
+                updateAddress
+              );
+            })
+            
 
           let request = memberCollection?.docs[0].data();
           if (
@@ -525,6 +534,7 @@ class ActivityInfoScreen extends Component {
             memberCollection?.docs[0].data().id,
             request
           );
+
           this.props.navigation.goBack();
         },
       },
@@ -608,7 +618,6 @@ class ActivityInfoScreen extends Component {
 
   approvalYes = async (member: number) => {
     this.setState({ modalVisible: false });
-    console.log('Memner', member._data);
 
     // Istek kayitli mi bilgisi
     const memberCollection = await firestore()
@@ -649,7 +658,6 @@ class ActivityInfoScreen extends Component {
   // Aktivitye katildi yetenek puani verildi
   joinYes = async (rating: number) => {
     this.setState({ modalVisible: false });
-    console.log('Memner', rating);
 
     // Istek kayitli mi bilgisi
     const memberCollection = await firestore()
@@ -1055,14 +1063,6 @@ class ActivityInfoScreen extends Component {
             item._data.activityId === this.props.route.params.activity.id
         )[0]._data;
       }
-      if (this.state.members != null) {
-        console.log('this.state.members', this.state.members[0]);
-      }
-
-      console.log(
-        'this.props.route.params.activity',
-        this.props.route.params.activity
-      );
 
       if (this.props.route.params.activity.isCanceled != true) {
         if (
@@ -1096,7 +1096,6 @@ class ActivityInfoScreen extends Component {
           return joinButton;
         }
       } else return canceledView;
-      // console.log('10')
     };
 
     const showActionButton = () => {
