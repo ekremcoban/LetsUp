@@ -1324,6 +1324,9 @@ const CreateActivityScreen2 = () => {
         />
 
         <ActivityNameActionSheet
+        title={polyglot.t(
+          'screens.create_activity.action_sheets.activity_name.title'
+        )}
           branchName={branchName}
           ref={activityNameActionSheetRef}
           onSelect={(activityNameValue: number) => {

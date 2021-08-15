@@ -252,7 +252,7 @@ class ActivityInfoScreen extends Component {
        `);
         }
       }
-    }, 1500);
+    }, 2000);
   };
 
   getMoreThanOneAddress = async (selectedAddress: any) => {

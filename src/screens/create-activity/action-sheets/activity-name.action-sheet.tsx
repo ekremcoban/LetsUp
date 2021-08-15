@@ -8,6 +8,7 @@ import { Picker } from 'components/picker/picker';
 import { activityNames } from 'models/activity-names';
 
 interface IActivityNameActionSheetProps {
+  title: string | undefined;
   branchName: string | undefined;
   onSelect: (value: number) => void;
   onCancel: () => void;
@@ -69,6 +70,13 @@ export const ActivityNameActionSheet = forwardRef<
       }))
     }
 
+    if (props.branchName === 'feedback') {
+      return activityNames.filter(a => a.value >= 42 && a.value < 47).map((activityName) => ({
+        value: activityName.value,
+        text: polyglot.t(activityName.text),
+      }))
+    }
+
   }
 
   return (
@@ -78,9 +86,7 @@ export const ActivityNameActionSheet = forwardRef<
         props.onSelect(selectedValue);
       }}
       onCancel={props.onCancel}
-      title={polyglot.t(
-        'screens.create_activity.action_sheets.activity_name.title'
-      )}
+      title={props.title}
     >
       <Picker
         fluid

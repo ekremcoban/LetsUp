@@ -39,6 +39,9 @@ import messaging from '@react-native-firebase/messaging';
 import MemberInfoScreen from 'screens/MemberInfoScreen';
 import OwnerInfoScreen from 'screens/OwnerInfoScreen';
 import { Alert } from 'react-native';
+import FeedbackScreen from 'screens/FeedbackScreen';
+import UsageTipsScreen from 'screens/UsageTipsScreen';
+import WhoAreWeScreen from 'screens/WhoAreWeScreen';
 
 let App = () => {
   const [user, setUser] = useState();
@@ -435,6 +438,48 @@ let App = () => {
                 component={CreateProfileScreen}
                 options={{
                   title: 'Create Profile',
+                  headerStyle: {
+                    backgroundColor: colors.bar,
+                  },
+                  headerTintColor: '#fff',
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                  },
+                }}
+              />
+                <Stack.Screen
+                name="Feedback"
+                component={FeedbackScreen}
+                options={{
+                  title: 'Feedback',
+                  headerStyle: {
+                    backgroundColor: colors.bar,
+                  },
+                  headerTintColor: '#fff',
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                  },
+                }}
+              />
+               <Stack.Screen
+                name="Usage Tips"
+                component={UsageTipsScreen}
+                options={{
+                  title: 'Usage Tips',
+                  headerStyle: {
+                    backgroundColor: colors.bar,
+                  },
+                  headerTintColor: '#fff',
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                  },
+                }}
+              />
+               <Stack.Screen
+                name="Who Are We"
+                component={WhoAreWeScreen}
+                options={{
+                  title: 'Who Are We',
                   headerStyle: {
                     backgroundColor: colors.bar,
                   },

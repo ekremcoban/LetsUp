@@ -46,7 +46,11 @@ export const activityNames: ActivityName[] = [
   { value: 38, text: 'activity_names.38', branch: 'frisbee' },
   { value: 39, text: 'activity_names.39', branch: 'frisbee' },
   { value: 40, text: 'activity_names.40', branch: 'frisbee' },
-  { value: 41, text: 'activity_names.41', branch: 'frisbee' }
+  { value: 41, text: 'activity_names.41', branch: 'frisbee' },
+  { value: 42, text: 'activity_names.42', branch: 'feedback' },
+  { value: 43, text: 'activity_names.43', branch: 'feedback' },
+  { value: 44, text: 'activity_names.44', branch: 'feedback' },
+  { value: 45, text: 'activity_names.45', branch: 'feedback' }
 ];
 
 export const getSelectedActivityName = (

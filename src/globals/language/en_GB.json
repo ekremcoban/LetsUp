@@ -47,7 +47,12 @@
     "38": "Let's socialize",
     "39": "Come if you're bored",
     "40": "Will you be my rival?",
-    "41": "Do you play frisbee with us?"
+    "41": "Do you play frisbee with us?",
+
+    "42": "Please Select",
+    "43": "Advice",
+    "44": "Complaint",
+    "45": "Error"
   },
   "activity_types": {
     "basketball": "Basketball",

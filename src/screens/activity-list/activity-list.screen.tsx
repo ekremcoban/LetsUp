@@ -41,6 +41,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Geolocation from '@react-native-community/geolocation';
 import Geocoder from 'react-native-geocoding';
 import crashlytics from '@react-native-firebase/crashlytics';
+import analytics from '@react-native-firebase/analytics';
 
 const ageActionSheetRef = createRef<IActionSheet>();
 let activityListTemp;
@@ -63,7 +64,16 @@ export const ActivityListScreen = () => {
   useEffect(() => {
     console.log('Burda');
  
-    // const unsubscribe = navigation.addListener('focus', () => {
+     const unsubscribe = navigation.addListener('focus', () => {
+      console.log('İçerde');
+      analytics().logEvent('ActivityListScreen', {
+        id: 3745092,
+        item: 'mens grey t-shirt',
+        description: ['round neck', 'long sleeved'],
+        size: 'L',
+      })
+     });
+
     location != undefined && getFirebase(location.country_name, location.city);
 
     getNotifications();
@@ -82,7 +92,7 @@ export const ActivityListScreen = () => {
 
     // Return the function to unsubscribe from the event so it gets removed on unmount
     return () => {
-      // unsubscribe();
+      unsubscribe();
     };
   }, [navigation, isSameCity]);
 
