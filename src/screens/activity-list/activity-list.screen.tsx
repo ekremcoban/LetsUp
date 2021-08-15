@@ -40,6 +40,7 @@ import { Selector } from '../../components/selector/selector';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Geolocation from '@react-native-community/geolocation';
 import Geocoder from 'react-native-geocoding';
+import crashlytics from '@react-native-firebase/crashlytics';
 
 const ageActionSheetRef = createRef<IActionSheet>();
 let activityListTemp;
@@ -60,6 +61,8 @@ export const ActivityListScreen = () => {
   let activityTemp = [];
 
   useEffect(() => {
+    console.log('Burda');
+ 
     // const unsubscribe = navigation.addListener('focus', () => {
     location != undefined && getFirebase(location.country_name, location.city);
 
@@ -90,168 +93,170 @@ export const ActivityListScreen = () => {
   };
 
   const getFirebase = async (country: string, city: string) => {
-    console.log('location', location);
-
-    if (location != null) {
-      await firestore()
-        .collection('ActivityAddress')
-        .where('state', '==', true)
-        .where('country', '==', country)
-        .where('city', '==', city)
-
-        .onSnapshot((querySnapshot) => {
-          // console.log('querySnapshot Address 1', querySnapshot);
-          addressTemp = [];
-          activityId = [];
-
-          querySnapshot != null &&
-            querySnapshot.docs.forEach((documentSnapshot) => {
-              // Sadece bulundugu sehirdeki aktiviteleri aldik
-              activityId.push(documentSnapshot.data().activityId);
-              addressTemp.push(documentSnapshot.data());
-            });
-
-            addressTemp.forEach(item => {
-            const selectedAddress = addressTemp.filter(a => a.activityId === item.activityId);
-            if (selectedAddress.length === 1 && selectedAddress[0].nodeCount === 2 && selectedAddress[0].nodeNumber === 2) {
-              addressTemp = addressTemp.filter(a => a.activityId !== item.activityId && a.city === city);
-              activityId = activityId.filter(a => a !== item.activityId);
-              console.log('2 dest', item)
+    try {
+      if (location != null) {
+        await firestore()
+          .collection('ActivityAddress')
+          .where('state', '==', true)
+          .where('country', '==', country)
+          .where('city', '==', city)
+  
+          .onSnapshot((querySnapshot) => {
+            // console.log('querySnapshot Address 1', querySnapshot);
+            addressTemp = [];
+            activityId = [];
+  
+            querySnapshot != null &&
+              querySnapshot.docs.forEach((documentSnapshot) => {
+                // Sadece bulundugu sehirdeki aktiviteleri aldik
+                activityId.push(documentSnapshot.data().activityId);
+                addressTemp.push(documentSnapshot.data());
+              });
+  
+              addressTemp.forEach(item => {
+              const selectedAddress = addressTemp.filter(a => a.activityId === item.activityId);
+              if (selectedAddress.length === 1 && selectedAddress[0].nodeCount === 2 && selectedAddress[0].nodeNumber === 2) {
+                addressTemp = addressTemp.filter(a => a.activityId !== item.activityId && a.city === city);
+                activityId = activityId.filter(a => a !== item.activityId);
+                console.log('2 dest', item)
+              }
+            })
+            // addressTemp.forEach(item => {
+            //   const selectedAddress = addressTemp.filter(a => a.activityId === item.activityId);
+            //   if (selectedAddress.length === 1 && selectedAddress[0].nodeCount === 2 && selectedAddress[0].nodeNumber === 2) {
+            //     addressTemp = addressTemp.filter(a => a.activityId !== item.activityId && a.city === city);
+            //     activityId = activityId.filter(a => a !== item.activityId);
+            //     console.log('2 dest', item)
+            //   }
+            //   console.log('-------selectedCity', selectedAddress, selectedAddress.length)
+            //   if (item.nodeCount === 2 && item.nodeNumber === 1 && selectedAddress.filter(item => item.nodeNumber === 0).length === 0) {
+            //     const nodeFirst = selectedAddress.filter(item => item.nodeNumber === 1)[0];
+            //     console.log('-------first', nodeFirst.city, city)
+            //     if (nodeFirst.city !== city) {
+            //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
+            //       activityId = activityId.filter(a => a !== item.activityId);
+            //       console.log('----- 2', addressTemp);
+            //     }
+            //     else {
+            //       console.log('----- 2.1', addressTemp);
+            //     }
+            //   }
+            //   else if (item.nodeCount === 3 && item.nodeNumber === 3) {
+            //      if (selectedAddress.length === 1 && selectedAddress[0].city !== selectedCity) {
+            //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
+            //       activityId = activityId.filter(a => a !== item.activityId);
+            //       console.log('----- 3', addressTemp);
+            //      }
+            //      else if (selectedAddress.length === 2 && selectedAddress[0].city !== selectedCity && selectedAddress[1].city !== selectedCity) {
+            //       console.log('----- item', item);
+            //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
+            //       activityId = activityId.filter(a => a !== item.activityId);
+            //       console.log('----- 3.1', addressTemp);
+            //      }
+            //   }
+            //   else if (item.nodeCount === 4 && item.nodeNumber === 4) {
+            //     if (selectedAddress.length === 1 && selectedAddress[0].city !== selectedCity && selectedAddress[0].nodeCount === 4) {
+            //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
+            //       activityId = activityId.filter(a => a !== item.activityId);
+            //       console.log('----- 4', addressTemp);
+            //      }
+            //      else  if (selectedAddress.length === 2 && selectedAddress[0].city !== selectedCity && selectedAddress[1].city !== selectedCity && selectedAddress[0].nodeCount === 4) {
+            //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
+            //       activityId = activityId.filter(a => a !== item.activityId);
+            //       console.log('----- 4.1', addressTemp);
+            //      }
+            //      else  if (selectedAddress.length === 3 && selectedAddress[0].city !== selectedCity && selectedAddress[1].city !== selectedCity && selectedAddress[2].city !== selectedCity && selectedAddress[0].nodeCount === 4) {
+            //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
+            //       activityId = activityId.filter(a => a !== item.activityId);
+            //       console.log('----- 4.2', addressTemp);
+            //      }
+            //   }
+            //   else if (item.nodeCount === 5 && item.nodeNumber === 5) {
+            //     if (selectedAddress[0].city !== selectedCity && selectedAddress[0].nodeCount === 5) {
+            //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
+            //       activityId = activityId.filter(a => a !== item.activityId);
+            //       console.log('----- 5', addressTemp);
+            //      }
+            //   }
+            // });
+  
+            setAddressList([...addressTemp]);
+            console.log('addressTemp 1', addressTemp);
+            // console.log('activityId 1', activityId);
+  
+            let index = 0;
+            const partion = Math.ceil(activityId.length / 10);
+  
+            if (partion === 0) {
+              setSpinner(false);
+              setActivityList(null);
             }
-          })
-          // addressTemp.forEach(item => {
-          //   const selectedAddress = addressTemp.filter(a => a.activityId === item.activityId);
-          //   if (selectedAddress.length === 1 && selectedAddress[0].nodeCount === 2 && selectedAddress[0].nodeNumber === 2) {
-          //     addressTemp = addressTemp.filter(a => a.activityId !== item.activityId && a.city === city);
-          //     activityId = activityId.filter(a => a !== item.activityId);
-          //     console.log('2 dest', item)
-          //   }
-          //   console.log('-------selectedCity', selectedAddress, selectedAddress.length)
-          //   if (item.nodeCount === 2 && item.nodeNumber === 1 && selectedAddress.filter(item => item.nodeNumber === 0).length === 0) {
-          //     const nodeFirst = selectedAddress.filter(item => item.nodeNumber === 1)[0];
-          //     console.log('-------first', nodeFirst.city, city)
-          //     if (nodeFirst.city !== city) {
-          //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
-          //       activityId = activityId.filter(a => a !== item.activityId);
-          //       console.log('----- 2', addressTemp);
-          //     }
-          //     else {
-          //       console.log('----- 2.1', addressTemp);
-          //     }
-          //   }
-          //   else if (item.nodeCount === 3 && item.nodeNumber === 3) {
-          //      if (selectedAddress.length === 1 && selectedAddress[0].city !== selectedCity) {
-          //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
-          //       activityId = activityId.filter(a => a !== item.activityId);
-          //       console.log('----- 3', addressTemp);
-          //      }
-          //      else if (selectedAddress.length === 2 && selectedAddress[0].city !== selectedCity && selectedAddress[1].city !== selectedCity) {
-          //       console.log('----- item', item);
-          //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
-          //       activityId = activityId.filter(a => a !== item.activityId);
-          //       console.log('----- 3.1', addressTemp);
-          //      }
-          //   }
-          //   else if (item.nodeCount === 4 && item.nodeNumber === 4) {
-          //     if (selectedAddress.length === 1 && selectedAddress[0].city !== selectedCity && selectedAddress[0].nodeCount === 4) {
-          //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
-          //       activityId = activityId.filter(a => a !== item.activityId);
-          //       console.log('----- 4', addressTemp);
-          //      }
-          //      else  if (selectedAddress.length === 2 && selectedAddress[0].city !== selectedCity && selectedAddress[1].city !== selectedCity && selectedAddress[0].nodeCount === 4) {
-          //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
-          //       activityId = activityId.filter(a => a !== item.activityId);
-          //       console.log('----- 4.1', addressTemp);
-          //      }
-          //      else  if (selectedAddress.length === 3 && selectedAddress[0].city !== selectedCity && selectedAddress[1].city !== selectedCity && selectedAddress[2].city !== selectedCity && selectedAddress[0].nodeCount === 4) {
-          //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
-          //       activityId = activityId.filter(a => a !== item.activityId);
-          //       console.log('----- 4.2', addressTemp);
-          //      }
-          //   }
-          //   else if (item.nodeCount === 5 && item.nodeNumber === 5) {
-          //     if (selectedAddress[0].city !== selectedCity && selectedAddress[0].nodeCount === 5) {
-          //       addressTemp = addressTemp.filter(a => a.activityId !== item.activityId);
-          //       activityId = activityId.filter(a => a !== item.activityId);
-          //       console.log('----- 5', addressTemp);
-          //      }
-          //   }
-          // });
-
-          setAddressList([...addressTemp]);
-          console.log('addressTemp 1', addressTemp);
-          // console.log('activityId 1', activityId);
-
-          let index = 0;
-          const partion = Math.ceil(activityId.length / 10);
-
-          if (partion === 0) {
-            setSpinner(false);
-            setActivityList(null);
-          }
-
-          for (let i = 0; i < partion; i++) {
-            let stackTen = [];
-            while (index < activityId.length) {
-              stackTen.push(activityId[index++]);
-              if (index % 10 === 0) {
-                firestore()
-                  .collection('Activities')
-                  .where('id', 'in', stackTen)
-                  .onSnapshot((documentSnapshot) => {
-                    documentSnapshot.docs.forEach((s) => {
-                      const isIt = activityTemp.filter(
-                        (a) => a.id === s.data().id
-                      );
-
-                      if (isIt.length === 0) {
-                        activityTemp.push(s.data());
-                      }
-                    });
-
-                    setActivityList([...activityTemp]);
-                    activityListTemp = [...activityTemp];
-                    console.log('activityListTemp 1', activityListTemp);
-                    setSpinner(false);
-                  });
-
-                stackTen = [];
-              } else {
-                if (index === activityId.length) {
-                  // console.log(i, 'falza', stackTen);
+  
+            for (let i = 0; i < partion; i++) {
+              let stackTen = [];
+              while (index < activityId.length) {
+                stackTen.push(activityId[index++]);
+                if (index % 10 === 0) {
                   firestore()
                     .collection('Activities')
                     .where('id', 'in', stackTen)
                     .onSnapshot((documentSnapshot) => {
                       documentSnapshot.docs.forEach((s) => {
-                        //Aktivite var mı bakar
                         const isIt = activityTemp.filter(
                           (a) => a.id === s.data().id
                         );
-
+  
                         if (isIt.length === 0) {
-                          activityTemp.push(s.data());
-                        } else {
-                          activityTemp = activityTemp.filter(
-                            (item) => item.id !== s.data().id
-                          );
                           activityTemp.push(s.data());
                         }
                       });
-
+  
                       setActivityList([...activityTemp]);
                       activityListTemp = [...activityTemp];
-                      console.log('activityListTemp 2', activityListTemp);
+                      console.log('activityListTemp 1', activityListTemp);
                       setSpinner(false);
                     });
-
+  
                   stackTen = [];
+                } else {
+                  if (index === activityId.length) {
+                    // console.log(i, 'falza', stackTen);
+                    firestore()
+                      .collection('Activities')
+                      .where('id', 'in', stackTen)
+                      .onSnapshot((documentSnapshot) => {
+                        documentSnapshot.docs.forEach((s) => {
+                          //Aktivite var mı bakar
+                          const isIt = activityTemp.filter(
+                            (a) => a.id === s.data().id
+                          );
+  
+                          if (isIt.length === 0) {
+                            activityTemp.push(s.data());
+                          } else {
+                            activityTemp = activityTemp.filter(
+                              (item) => item.id !== s.data().id
+                            );
+                            activityTemp.push(s.data());
+                          }
+                        });
+  
+                        setActivityList([...activityTemp]);
+                        activityListTemp = [...activityTemp];
+                        console.log('activityListTemp 2', activityListTemp);
+                        setSpinner(false);
+                      });
+  
+                    stackTen = [];
+                  }
                 }
               }
             }
-          }
-        });
-    }
+          });
+      }
+    } catch (error) {}
+    crashlytics().recordError(error);
+    crashlytics().log('Activity List');
   };
 
   const getPlace = (activity: Object) => {
@@ -431,13 +436,16 @@ export const ActivityListScreen = () => {
                 activityList
                   .filter(
                     (x) =>
-                      (user != undefined && x.state &&
+                      (user != undefined &&
+                        x.state &&
                         x.owner.email !== user.email &&
                         (x.gender == user.gender || x.gender == null) &&
                         ((x.minAge <= user.age && x.maxAge >= user.age) ||
                           x.minAge == null)) ||
-                      (user != undefined && x.state && x.owner.email === user.email) ||
-                      user == undefined && x.state
+                      (user != undefined &&
+                        x.state &&
+                        x.owner.email === user.email) ||
+                      (user == undefined && x.state)
                   )
 
                   // x.state && user != undefined
