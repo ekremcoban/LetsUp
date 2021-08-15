@@ -19,18 +19,18 @@ const NotificationScreen = () => {
     let notificationArray = [];
     if (user != undefined) {
       firestore()
-      .collection('Notifications')
-      .where('toWho', '==', user.email)
-      .where('state', '==', true)
-      .onSnapshot((noti) => {
-        setSpinner(false);
-        console.log('noti', noti.docs);
-        notificationArray = [];
-        noti.docs.forEach((item) => {
-          notificationArray.push(item.data());
+        .collection('Notifications')
+        .where('toWho', '==', user.email)
+        .where('state', '==', true)
+        .onSnapshot((noti) => {
+          setSpinner(false);
+          console.log('noti', noti.docs);
+          notificationArray = [];
+          noti.docs.forEach((item) => {
+            notificationArray.push(item.data());
+          });
+          setNotifications([...notificationArray]);
         });
-        setNotifications([...notificationArray]);
-      });
     }
   };
 
@@ -44,8 +44,10 @@ const NotificationScreen = () => {
         return require('assets/img/hiking.png');
       case 'jogging':
         return require('assets/img/jogging.png');
-      case 'tennis':
-        return require('assets/img/tennis.png');
+      case 'table_tennis':
+        return require('assets/img/table_tennis.png');
+      case 'volleyball':
+        return require('assets/img/volleyball.png');
       default:
         return require('assets/img/join.png');
     }
@@ -159,49 +161,55 @@ const NotificationScreen = () => {
   };
 
   return (
-    <View style={{flex: 1,}}>
-        {spinner && <DisplaySpinner /> }
-    <ScrollView>
-      <View style={{ marginTop: 10 }}>
-        {notifications != [] &&
-          notifications
-            .sort((a, b) => {
-              return b.createdTime - a.createdTime;
-            })
-            .map((item, index) => {
-              return (
-                <View key={item.createdTime} 
-                style={
-                  index % 2
-                    ? [styles.viewContainer, { backgroundColor: '#E5E5E5' }]
-                    : styles.viewContainer
-                }>
-                  <View style={styles.viewLeft}>
-                    <Image
-                      source={findPicture(item.branch)}
-                      style={styles.icon}
-                    />
-                  </View>
-                  <View style={styles.viewRight}>
-                    <View style={{ flexDirection: 'row' }}>
-                      <Text style={{ flex: 4 }}>{item.title}</Text>
-                      <Ionicons
-                        size={20}
-                        name={'trash-outline'}
-                        style={{ color: 'gray', flex: 1 }}
-                        onPress={() =>
-                          deleteNotification('Warning', 'Are you sure ?', item)
-                        }
+    <View style={{ flex: 1 }}>
+      {spinner && <DisplaySpinner />}
+      <ScrollView>
+        <View style={{ marginTop: 10 }}>
+          {notifications != [] &&
+            notifications
+              .sort((a, b) => {
+                return b.createdTime - a.createdTime;
+              })
+              .map((item, index) => {
+                return (
+                  <View
+                    key={item.createdTime}
+                    style={
+                      index % 2
+                        ? [styles.viewContainer, { backgroundColor: '#E5E5E5' }]
+                        : styles.viewContainer
+                    }
+                  >
+                    <View style={styles.viewLeft}>
+                      <Image
+                        source={findPicture(item.branch)}
+                        style={styles.icon}
                       />
                     </View>
-                    <Text style={styles.textBody}>{item.body}</Text>
-                    {item.type === 0 && item.isActive && showButton(item)}
+                    <View style={styles.viewRight}>
+                      <View style={{ flexDirection: 'row' }}>
+                        <Text style={{ flex: 4 }}>{item.title}</Text>
+                        <Ionicons
+                          size={20}
+                          name={'trash-outline'}
+                          style={{ color: 'gray', flex: 1 }}
+                          onPress={() =>
+                            deleteNotification(
+                              'Warning',
+                              'Are you sure ?',
+                              item
+                            )
+                          }
+                        />
+                      </View>
+                      <Text style={styles.textBody}>{item.body}</Text>
+                      {item.type === 0 && item.isActive && showButton(item)}
+                    </View>
                   </View>
-                </View>
-              );
-            })}
-      </View>
-    </ScrollView>
+                );
+              })}
+        </View>
+      </ScrollView>
     </View>
   );
 };

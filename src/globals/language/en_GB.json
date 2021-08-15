@@ -50,9 +50,17 @@
     "41": "Do you play frisbee with us?",
 
     "42": "Please Select",
-    "43": "Advice",
-    "44": "Complaint",
-    "45": "Error"
+    "43": "Voleybol 1",
+    "44": "Voleybol 2",
+    "45": "Voleybol 3",
+    "46": "Voleybol 4",
+    "47": "Voleybol 5",
+
+    "48": "Please Select",
+    "49": "Advice",
+    "50": "Complaint",
+    "51": "Error"
+
   },
   "activity_types": {
     "basketball": "Basketball",
@@ -61,7 +69,8 @@
     "frisbee": "Frisbee",
     "hiking": "Hiking",
     "jogging": "Jogging",
-    "table_tennis": "Tennis"
+    "table_tennis": "Table Tennis",
+    "volleyball": "Volleyball"
   },
   "components": {
     "selector": {

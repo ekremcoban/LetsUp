@@ -49,7 +49,7 @@ export const ActivityNameActionSheet = forwardRef<
       }))
     }
 
-    if (props.branchName === 'tennis') {
+    if (props.branchName === 'table_tennis') {
       return activityNames.filter(a => a.value >= 24 && a.value < 30).map((activityName) => ({
         value: activityName.value,
         text: polyglot.t(activityName.text),
@@ -70,8 +70,15 @@ export const ActivityNameActionSheet = forwardRef<
       }))
     }
 
+    if (props.branchName === 'volleyball') {
+      return activityNames.filter(a => a.value >= 42 && a.value < 48).map((activityName) => ({
+        value: activityName.value,
+        text: polyglot.t(activityName.text),
+      }))
+    }
+
     if (props.branchName === 'feedback') {
-      return activityNames.filter(a => a.value >= 42 && a.value < 47).map((activityName) => ({
+      return activityNames.filter(a => a.value >= 48 && a.value < 52).map((activityName) => ({
         value: activityName.value,
         text: polyglot.t(activityName.text),
       }))

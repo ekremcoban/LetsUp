@@ -337,8 +337,10 @@ class MemberOldActivityInfoScreen extends Component {
                 ? require('assets/img/hiking.png')
                 : this.props.route.params.activity.type === 'jogging'
                 ? require('assets/img/jogging.png')
-                : this.props.route.params.activity.type === 'tennis'
-                ? require('assets/img/tennis.png')
+                : this.props.route.params.activity.type === 'table_tennis'
+                ? require('assets/img/table_tennis.png')
+                : this.props.route.params.activity.type === 'volleyball'
+                ? require('assets/img/volleyball.png')
                 : require('assets/img/join.png')
             }
             style={styles.icon}

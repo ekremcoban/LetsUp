@@ -198,8 +198,10 @@ const MyActivitiesScreen = () => {
                 ? require('assets/img/hiking.png')
                 : item.type === 'jogging'
                 ? require('assets/img/jogging.png')
-                : item.type === 'tennis'
-                ? require('assets/img/tennis.png')
+                : item.type === 'table_tennis'
+                ? require('assets/img/table_tennis.png')
+                : item.type === 'volleyball'
+                ? require('assets/img/volleyball.png')
                 : require('assets/img/join.png')
             }
             style={styles.icon}
@@ -272,8 +274,10 @@ const MyActivitiesScreen = () => {
                 ? require('assets/img/hiking.png')
                 : item.type === 'jogging'
                 ? require('assets/img/jogging.png')
-                : item.type === 'tennis'
-                ? require('assets/img/tennis.png')
+                : item.type === 'table_tennis'
+                ? require('assets/img/table_tennis.png')
+                : item.type === 'volleyball'
+                ? require('assets/img/volleyball.png')
                 : require('assets/img/join.png')
             }
             style={styles.icon}

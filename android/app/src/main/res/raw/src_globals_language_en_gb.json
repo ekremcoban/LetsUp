@@ -50,9 +50,16 @@
     "41": "Do you play frisbee with us?",
 
     "42": "Please Select",
-    "43": "Let's play frisbee",
-    "44": "Let's socialize",
-    "45": "Come if you're bored"
+    "43": "Voleybol 1",
+    "44": "Voleybol 2",
+    "45": "Voleybol 3",
+    "46": "Voleybol 4",
+    "47": "Voleybol 5",
+
+    "48": "Please Select",
+    "49": "Advice",
+    "50": "Complaint",
+    "51": "Error"
   },
   "activity_types": {
     "basketball": "Basketball",

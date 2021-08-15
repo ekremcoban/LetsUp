@@ -11,5 +11,6 @@ export const activityTypes: IActivityType[] = [
   { id: 3, image: 'frisbee', textKey: 'activity_types.frisbee'},
   { id: 4, image: 'hiking', textKey: 'activity_types.hiking' },
   { id: 5, image: 'jogging', textKey: 'activity_types.jogging'},
-  { id: 6, image: 'tennis', textKey: 'activity_types.table_tennis'},
+  { id: 6, image: 'table_tennis', textKey: 'activity_types.table_tennis'},
+  { id: 7, image: 'volleyball', textKey: 'activity_types.volleyball'},
 ];
