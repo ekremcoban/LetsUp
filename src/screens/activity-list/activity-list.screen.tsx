@@ -42,6 +42,7 @@ import Geolocation from '@react-native-community/geolocation';
 import Geocoder from 'react-native-geocoding';
 import crashlytics from '@react-native-firebase/crashlytics';
 import analytics from '@react-native-firebase/analytics';
+import perf from '@react-native-firebase/perf';
 
 const ageActionSheetRef = createRef<IActionSheet>();
 let activityListTemp;
@@ -74,9 +75,7 @@ export const ActivityListScreen = () => {
       })
      });
 
-    location != undefined && getFirebase(location.country_name, location.city);
-
-    getNotifications();
+     preparingData(location);
 
     // const unsubscribe = navigation.addListener('focus', () => {
     //   if (isCreateActivity) {
@@ -95,6 +94,21 @@ export const ActivityListScreen = () => {
       unsubscribe();
     };
   }, [navigation, isSameCity]);
+
+  const preparingData = async (location: any) => {
+    const trace = await perf().startTrace('Activity_List');
+    if (user != null) {
+      trace.putAttribute('user', user.email);
+    }
+    else {
+      trace.putAttribute('user', '');
+    }
+
+    location != undefined && getFirebase(location.country_name, location.city);
+    getNotifications();
+
+    await trace.stop();
+  }
 
   const getNotifications = () => {
     messaging().onNotificationOpenedApp((remoteMessage) => {
