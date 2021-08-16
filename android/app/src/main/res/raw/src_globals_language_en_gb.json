@@ -68,7 +68,8 @@
     "frisbee": "Frisbee",
     "hiking": "Hiking",
     "jogging": "Jogging",
-    "table_tennis": "Tennis"
+    "table_tennis": "Table Tennis",
+    "volleyball": "Volleyball"
   },
   "components": {
     "selector": {

@@ -60,6 +60,7 @@
     "49": "Advice",
     "50": "Complaint",
     "51": "Error"
+
   },
   "activity_types": {
     "basketball": "Basketball",
@@ -68,7 +69,8 @@
     "frisbee": "Frisbee",
     "hiking": "Hiking",
     "jogging": "Jogging",
-    "table_tennis": "Tennis"
+    "table_tennis": "Table Tennis",
+    "volleyball": "Volleyball"
   },
   "components": {
     "selector": {
