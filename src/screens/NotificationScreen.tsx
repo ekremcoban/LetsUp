@@ -87,7 +87,6 @@ const NotificationScreen = () => {
     content: string,
     item: Object
   ) => {
-    isReadNotification(item)
     Alert.alert(title, content, [
       {
         text: 'No',
@@ -99,6 +98,7 @@ const NotificationScreen = () => {
         onPress: async () => {
           let temp = item;
           temp.state = false;
+          temp.isRead = true;
 
           const result = await firestore()
             .collection('Notifications')
@@ -111,7 +111,7 @@ const NotificationScreen = () => {
 
   const accept = (title: string, content: string, item: Object) => {
     console.log('item', item);
-    isReadNotification(item)
+ 
     Alert.alert(title, content, [
       {
         text: 'No',
@@ -130,6 +130,7 @@ const NotificationScreen = () => {
           console.log('mem', member.data());
           let temp = member.data();
           temp.ownerState = true;
+          temp.isRead = true;
 
           const result = await firestore()
             .collection('Members')
@@ -142,7 +143,7 @@ const NotificationScreen = () => {
 
   const denied = (title: string, content: string, item: Object) => {
     console.log('item', item);
-    isReadNotification(item)
+
     Alert.alert(title, content, [
       {
         text: 'No',
@@ -161,6 +162,7 @@ const NotificationScreen = () => {
           console.log('mem', member.data());
           let temp = member.data();
           temp.ownerState = false;
+          temp.isRead = true;
 
           const result = await firestore()
             .collection('Members')
