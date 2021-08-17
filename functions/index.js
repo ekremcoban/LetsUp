@@ -149,6 +149,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
             fromWho: memberEmail,
             toWho: ownerEmail,
             state: true,
+            isRead: false,
             isActive: true,
             type: 0,
             createdTime: new Date().getTime()
@@ -182,6 +183,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
            fromWho: memberEmail,
            toWho: ownerEmail,
            state: true,
+           isRead: false,
            isActive: true,
            type: 1,
            createdTime: new Date().getTime()
@@ -218,6 +220,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
            fromWho: memberEmail,
            toWho: ownerEmail,
            state: true,
+           isRead: false,
            isActive: true,
            tyep: 2,
            createdTime: new Date().getTime()
@@ -254,6 +257,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
            fromWho: memberEmail,
            toWho: ownerEmail,
            state: true,
+           isRead: false,
            isActive: true,
            tyep: 3,
            createdTime: new Date().getTime()
@@ -286,6 +290,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
            fromWho: ownerEmail,
            toWho: memberEmail,
            state: true,
+           isRead: false,
            isActive: true,
            type: 4,
            createdTime: new Date().getTime()
@@ -333,6 +338,7 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
            fromWho: ownerEmail,
            toWho: memberEmail,
            state: true,
+           isRead: false,
            isActive: true,
            type: 5,
            createdTime: new Date().getTime()

@@ -1,18 +1,21 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { StyleSheet, Text, View, Image, Button, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, Button, Alert, TouchableOpacity } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import ContextApi from 'context/ContextApi';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ScrollView } from 'react-native-gesture-handler';
 import DisplaySpinner from '../components/spinner';
+import { useNavigation } from '@react-navigation/native';
 
 const NotificationScreen = () => {
-  const { user } = useContext(ContextApi);
-  const [notifications, setNotifications] = useState([]);
+  const navigation = useNavigation();
+  const { user, newNotifications, notifications, setNewNotifications } = useContext(
+    ContextApi
+  );
   const [spinner, setSpinner] = useState<boolean>(false);
 
   useEffect(() => {
-    getNotificationsInfo();
+    // getNotificationsInfo();
   }, []);
 
   const getNotificationsInfo = () => {
@@ -30,6 +33,20 @@ const NotificationScreen = () => {
             notificationArray.push(item.data());
           });
           setNotifications([...notificationArray]);
+          if (newNotifications > 0) {
+            console.log('notififi', notificationArray);
+            notificationArray.forEach(async (item) => {
+              if (!item.isRead) {
+                let temp = item;
+                temp.isRead = true;
+
+                await firestore()
+                  .collection('Notifications')
+                  .doc(temp.id)
+                  .set(temp);
+              }
+            });
+          }
         });
     }
   };
@@ -53,11 +70,24 @@ const NotificationScreen = () => {
     }
   };
 
+  const isReadNotification = async (
+    item: Object
+  ) => {
+    let temp = item;
+    temp.isRead = true;
+
+    await firestore()
+    .collection('Notifications')
+    .doc(temp.id)
+    .set(temp);
+}
+
   const deleteNotification = async (
     title: string,
     content: string,
     item: Object
   ) => {
+    isReadNotification(item)
     Alert.alert(title, content, [
       {
         text: 'No',
@@ -81,6 +111,7 @@ const NotificationScreen = () => {
 
   const accept = (title: string, content: string, item: Object) => {
     console.log('item', item);
+    isReadNotification(item)
     Alert.alert(title, content, [
       {
         text: 'No',
@@ -111,6 +142,7 @@ const NotificationScreen = () => {
 
   const denied = (title: string, content: string, item: Object) => {
     console.log('item', item);
+    isReadNotification(item)
     Alert.alert(title, content, [
       {
         text: 'No',
@@ -186,16 +218,18 @@ const NotificationScreen = () => {
                         style={styles.icon}
                       />
                     </View>
-                    <View style={styles.viewRight}>
+                    <TouchableOpacity style={styles.viewRight}
+                    onPress={() => isReadNotification(item)}
+                    >
                       <View style={{ flexDirection: 'row' }}>
-                        <Text style={{ flex: 4 }}>{item.title}</Text>
+                        <Text style={item.isRead ? {flex: 4} : { flex: 4, color: 'green' }}>{item.title}</Text>
                         <Ionicons
                           size={20}
                           name={'trash-outline'}
                           style={{ color: 'gray', flex: 1 }}
                           onPress={() =>
                             deleteNotification(
-                              'Warning',
+                              'Deleting',
                               'Are you sure ?',
                               item
                             )
@@ -204,7 +238,7 @@ const NotificationScreen = () => {
                       </View>
                       <Text style={styles.textBody}>{item.body}</Text>
                       {item.type === 0 && item.isActive && showButton(item)}
-                    </View>
+                    </TouchableOpacity>
                   </View>
                 );
               })}

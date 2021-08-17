@@ -315,7 +315,10 @@ const CreateActivityScreen2 = () => {
       startActivityTime = new Date(
         activityDate.getFullYear(),
         activityDate.getMonth(),
-        activityDate.getDate(),
+        new Date().getFullYear() === activityDate.getFullYear() &&
+        new Date().getMonth() === activityDate.getMonth() &&
+        new Date().getDate() === activityDate.getDate() &&
+        new Date().getHours() >= 22 ? activityDate.getDate() + 1 : activityDate.getDate(),
         activityStartTime.getHours(),
         activityStartTime.getMinutes()
       );
@@ -325,7 +328,10 @@ const CreateActivityScreen2 = () => {
       finishActivityTime = new Date(
         activityDate.getFullYear(),
         activityDate.getMonth(),
-        activityDate.getDate(),
+        new Date().getFullYear() === activityDate.getFullYear() &&
+        new Date().getMonth() === activityDate.getMonth() &&
+        new Date().getDate() === activityDate.getDate() &&
+        new Date().getHours() >= 22 ? activityDate.getDate() + 1 : activityDate.getDate(),
         activityFinishTime.getHours(),
         activityFinishTime.getMinutes()
       );

@@ -43,6 +43,7 @@ import Geocoder from 'react-native-geocoding';
 import crashlytics from '@react-native-firebase/crashlytics';
 import analytics from '@react-native-firebase/analytics';
 import perf from '@react-native-firebase/perf';
+import { LogBox } from 'react-native';
 
 const ageActionSheetRef = createRef<IActionSheet>();
 let activityListTemp;
@@ -64,8 +65,9 @@ export const ActivityListScreen = () => {
 
   useEffect(() => {
     console.log('Burda');
+    LogBox.ignoreAllLogs();
  
-     const unsubscribe = navigation.addListener('focus', () => {
+    const unsubscribe = navigation.addListener('focus', () => {
       console.log('İçerde');
       analytics().logEvent('ActivityListScreen'
       // , {
@@ -77,7 +79,7 @@ export const ActivityListScreen = () => {
       )
      });
 
-     preparingData(location);
+      preparingData(location);
 
     // const unsubscribe = navigation.addListener('focus', () => {
     //   if (isCreateActivity) {
@@ -92,9 +94,7 @@ export const ActivityListScreen = () => {
     // });
 
     // Return the function to unsubscribe from the event so it gets removed on unmount
-    return () => {
-      unsubscribe();
-    };
+    return unsubscribe;
   }, [navigation, isSameCity]);
 
   const preparingData = async (location: any) => {
@@ -106,7 +106,10 @@ export const ActivityListScreen = () => {
       trace.putAttribute('user', '');
     }
 
-    location != undefined && getFirebase(location.country_name, location.city);
+    if (location != undefined) {
+      getFirebase(location.country_name, location.city);
+    }
+
     getNotifications();
 
     await trace.stop();

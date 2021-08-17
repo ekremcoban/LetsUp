@@ -42,6 +42,7 @@ import { Alert } from 'react-native';
 import FeedbackScreen from 'screens/FeedbackScreen';
 import UsageTipsScreen from 'screens/UsageTipsScreen';
 import WhoAreWeScreen from 'screens/WhoAreWeScreen';
+import { Badge } from 'react-native-elements';
 
 let App = () => {
   const [user, setUser] = useState();
@@ -50,6 +51,8 @@ let App = () => {
   const [isCreateActivity, setIsCreateActivity] = useState();
   const [suspendActivity, setSuspendActivity] = useState();
   const [isSameCity, setIsSameCity] = useState();
+  const [newNotifications, setNewNotifications] = useState(0);
+  const [notifications, setNotifications] = useState([]);
   const value = {
     user,
     setUser,
@@ -59,10 +62,14 @@ let App = () => {
     setLocation,
     isCreateActivity,
     setIsCreateActivity,
-    suspendActivity, 
+    suspendActivity,
     setSuspendActivity,
     isSameCity,
     setIsSameCity,
+    newNotifications,
+    setNewNotifications,
+    notifications,
+    setNotifications
   };
 
   const scheme = useColorScheme();
@@ -73,6 +80,7 @@ let App = () => {
     CodePush.sync();
     requestUserPermission();
     subscribeToTopic();
+    getNotifications();
 
     const subscriber1 = getData('myLocation').then((myLocation) => {
       console.log('muy', myLocation);
@@ -116,9 +124,13 @@ let App = () => {
       }
     });
 
-    const subscriber3 = messaging().onMessage(async remoteMessage => {
-      console.log(remoteMessage)
-      Alert.alert(remoteMessage.notification.title, remoteMessage.notification.body);
+    const subscriber3 = messaging().onMessage(async (remoteMessage) => {
+      console.log(remoteMessage);
+      setNewNotifications(prevCount => prevCount + 1);
+      // Alert.alert(
+      //   remoteMessage.notification.title,
+      //   remoteMessage.notification.body
+      // );
     });
 
     return {
@@ -141,6 +153,37 @@ let App = () => {
     if (enabled) {
       getFcmToken();
       // console.log('Authorization status:', authStatus);
+    }
+  };
+
+  const getNotifications = async () => {
+    let newNotificationArray = [];
+    let notificationArray = [];
+
+    const userInfo = await getData('Users');
+
+    console.log('no', userInfo)
+    if (userInfo != undefined) {
+      firestore()
+        .collection('Notifications')
+        .where('toWho', '==', userInfo.email)
+        .where('state', '==', true)
+        .onSnapshot((noti) => {
+          newNotificationArray = [];
+          notificationArray = [];
+          noti.docs.forEach((item) => {
+            notificationArray.push(item.data());
+            if (!item.data().isRead) {
+              newNotificationArray.push(item.data());
+            }
+          });
+          console.log('BURDAAAAA')
+          setNewNotifications(newNotificationArray.length);
+          setNotifications([...notificationArray]);
+        });
+    }
+    else {
+      setNewNotifications(0);
     }
   };
 
@@ -182,7 +225,12 @@ let App = () => {
     <TouchableOpacity onPress={() => navigation.navigate('Profile Info')}>
       <Image
         source={{
-          uri: photo != null ? photo : user != null && user.photo != null ? user.photo : '',
+          uri:
+            photo != null
+              ? photo
+              : user != null && user.photo != null
+              ? user.photo
+              : '',
         }}
         style={{ width: 25, height: 25, borderRadius: 20 }}
       />
@@ -273,7 +321,18 @@ let App = () => {
             component={NotificationScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
-                <Ionicons name={'notifications'} size={25} color={color} />
+                <>
+                  {newNotifications > 0 && <Badge
+                    value={newNotifications}
+                    status="success"
+                    containerStyle={{
+                      position: 'absolute',
+                      top: 0,
+                      right: '25%',
+                    }}
+                  />}
+                  <Ionicons name={'notifications'} size={25} color={color} />
+                </>
               ),
             }}
           />
@@ -447,7 +506,7 @@ let App = () => {
                   },
                 }}
               />
-                <Stack.Screen
+              <Stack.Screen
                 name="Feedback"
                 component={FeedbackScreen}
                 options={{
@@ -461,7 +520,7 @@ let App = () => {
                   },
                 }}
               />
-               <Stack.Screen
+              <Stack.Screen
                 name="Usage Tips"
                 component={UsageTipsScreen}
                 options={{
@@ -475,7 +534,7 @@ let App = () => {
                   },
                 }}
               />
-               <Stack.Screen
+              <Stack.Screen
                 name="Who Are We"
                 component={WhoAreWeScreen}
                 options={{

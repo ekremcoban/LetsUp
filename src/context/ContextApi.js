@@ -11,6 +11,10 @@ const ContextApi = React.createContext({
     setSuspendActivity: () => {},
     isSameCity: null,
     setIsSameCity: () => {},
+    newNotifications: 0,
+    setNewNotifications: (item) => {},
+    notifications: 0,
+    setNotifications: (item) => {},
   });
 
   export default ContextApi;
