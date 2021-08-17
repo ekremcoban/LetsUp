@@ -521,9 +521,12 @@ const CreateActivityScreen2 = () => {
           activityDate.getMonth() == new Date().getMonth() &&
           activityDate.getDate() >= new Date().getDate()))
     ) {
-      if (activityDate.getDate() < 10) {
+      if (activityDate.getDate() < 10 && new Date().getHours() < 22) {
         result = '0' + activityDate.getDate().toString();
-      } else {
+      } else if (activityDate.getDate() > 10) {
+        result = (activityDate.getDate() + 1).toString();
+      } 
+      else {
         result = activityDate.getDate().toString();
       }
       if (activityDate.getMonth() + 2 < 10) {
@@ -1288,7 +1291,7 @@ console.log('handleFinishTimeConfirm', date)
             new Date(
               new Date().getFullYear(),
               new Date().getMonth(),
-              new Date().getDate(),
+              new Date().getHours() >= 22 ? new Date().getDate() + 1 : new Date().getDate(),
               new Date().getHours(),
               new Date().getMinutes()
             )
