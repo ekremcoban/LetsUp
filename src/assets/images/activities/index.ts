@@ -9,6 +9,6 @@ export const activityImages: {
   jogging: require('./jogging.svg').default,
   table_tennis: require('./table_tennis.svg').default,
   bowling: require('./bowling.svg').default,
-  frisbee: require('./hiking.svg').default,
+  frisbee: require('./frisbee.svg').default,
   volleyball: require('./volleyball.svg').default,
 };

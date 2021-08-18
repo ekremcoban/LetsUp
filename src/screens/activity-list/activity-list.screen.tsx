@@ -69,14 +69,7 @@ export const ActivityListScreen = () => {
  
     const unsubscribe = navigation.addListener('focus', () => {
       console.log('İçerde');
-      analytics().logEvent('ActivityListScreen'
-      // , {
-      //   id: 3745092,
-      //   item: 'mens grey t-shirt',
-      //   description: ['round neck', 'long sleeved'],
-      //   size: 'L',
-      // }
-      )
+      analytics().logEvent('ActivityListScreen')
      });
 
       preparingData(location);

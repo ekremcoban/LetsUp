@@ -89,7 +89,8 @@ class ActivityInfoScreen extends Component {
 
     if (
       this.context.user != null &&
-      this.context.user.email === this.props.route.params.activity.owner.email &&
+      this.context.user.email ===
+        this.props.route.params.activity.owner.email &&
       selectedAddress.length === selectedAddress.nodeCount
     ) {
       this.showMap(selectedAddress);
@@ -266,12 +267,12 @@ class ActivityInfoScreen extends Component {
           res.docs.forEach((item) => {
             selectedAddress.push(item.data());
           });
-          
-          this.setState({selectedAddress})
+
+          this.setState({ selectedAddress });
         });
-        this.showMap(selectedAddress);
+      this.showMap(selectedAddress);
     }
-  }
+  };
 
   getMembers = async () => {
     const members = await firestore()
@@ -483,7 +484,6 @@ class ActivityInfoScreen extends Component {
   };
 
   deleteAlert = (title: string, content: string, type: number) => {
-
     Alert.alert(title, content, [
       {
         text: 'No',
@@ -501,21 +501,20 @@ class ActivityInfoScreen extends Component {
             .where('id', '==', this.props.route.params.activity.id)
             .get();
 
-            let activityAddress = await firestore()
+          let activityAddress = await firestore()
             .collection('ActivityAddress')
             .where('activityId', '==', memberCollection?.docs[0].data().id)
             .get();
 
-            activityAddress.docs.forEach(item => {
-              let updateAddress = item.data();
-              updateAddress.state = false;
-              this.fireStoreUpdateFunction(
-                'ActivityAddress',
-                item.data().id,
-                updateAddress
-              );
-            })
-            
+          activityAddress.docs.forEach((item) => {
+            let updateAddress = item.data();
+            updateAddress.state = false;
+            this.fireStoreUpdateFunction(
+              'ActivityAddress',
+              item.data().id,
+              updateAddress
+            );
+          });
 
           let request = memberCollection?.docs[0].data();
           if (
@@ -1256,9 +1255,8 @@ class ActivityInfoScreen extends Component {
         </View>
 
         <View style={styles.viewPlaceAndDate}>
-          <Text>
+          <Text style={styles.textDate}>
             {this.props.route.params.getPlace(this.props.route.params.activity)}{' '}
-            -{' '}
           </Text>
           <Text style={styles.textDate}>
             {new Date(this.props.route.params.activity.startTime)
@@ -1283,8 +1281,30 @@ class ActivityInfoScreen extends Component {
                 : new Date(
                     this.props.route.params.activity.startTime
                   ).getMinutes())}
+                  -
+            {(new Date(this.props.route.params.activity.finishTime).getHours() <
+            10
+              ? '0' +
+                new Date(this.props.route.params.activity.finishTime).getHours()
+              : new Date(
+                  this.props.route.params.activity.finishTime
+                ).getHours()) +
+              ':' +
+              (new Date(
+                this.props.route.params.activity.finishTime
+              ).getMinutes() < 10
+                ? '0' +
+                  new Date(
+                    this.props.route.params.activity.finishTime
+                  ).getMinutes()
+                : new Date(
+                    this.props.route.params.activity.finishTime
+                  ).getMinutes())}
           </Text>
         </View>
+        <Text style={styles.textDate}>TEST Bitiş Tarihi:  {new Date(this.props.route.params.activity.finishTime)
+              .toString()
+              .substring(0, 15)}</Text>
         {this.state.showPageToOwner || this.state.showPageToMember
           ? showDetail
           : !this.state.isJoin &&
@@ -1482,7 +1502,7 @@ const styles = StyleSheet.create({
   viewPlaceAndDate: {
     height: heightView * 0.3,
     marginTop: 5,
-    flexDirection: 'row',
+    // flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     borderTopWidth: 1,

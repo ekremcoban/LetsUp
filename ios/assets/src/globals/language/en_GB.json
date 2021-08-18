@@ -70,7 +70,11 @@
     "hiking": "Hiking",
     "jogging": "Jogging",
     "table_tennis": "Table Tennis",
-    "volleyball": "Volleyball"
+    "volleyball": "Volleyball",
+    "tennis": "tennis",
+    "badminton": "Badminton",
+    "meditation": "Meditation",
+    "roller_skate": "Roller Skate"
   },
   "components": {
     "selector": {

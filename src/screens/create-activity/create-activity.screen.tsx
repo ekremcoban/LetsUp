@@ -318,7 +318,9 @@ const CreateActivityScreen2 = () => {
         new Date().getFullYear() === activityDate.getFullYear() &&
         new Date().getMonth() === activityDate.getMonth() &&
         new Date().getDate() === activityDate.getDate() &&
-        new Date().getHours() >= 22 ? activityDate.getDate() + 1 : activityDate.getDate(),
+        new Date().getHours() >= 22
+          ? activityDate.getDate() + 1
+          : activityDate.getDate(),
         activityStartTime.getHours(),
         activityStartTime.getMinutes()
       );
@@ -331,7 +333,9 @@ const CreateActivityScreen2 = () => {
         new Date().getFullYear() === activityDate.getFullYear() &&
         new Date().getMonth() === activityDate.getMonth() &&
         new Date().getDate() === activityDate.getDate() &&
-        new Date().getHours() >= 22 ? activityDate.getDate() + 1 : activityDate.getDate(),
+        new Date().getHours() >= 22
+          ? activityDate.getDate() + 1
+          : activityDate.getDate(),
         activityFinishTime.getHours(),
         activityFinishTime.getMinutes()
       );
@@ -521,14 +525,35 @@ const CreateActivityScreen2 = () => {
           activityDate.getMonth() == new Date().getMonth() &&
           activityDate.getDate() >= new Date().getDate()))
     ) {
-      if (activityDate.getDate() < 10 && new Date().getHours() < 22) {
-        result = '0' + activityDate.getDate().toString();
-      } else if (activityDate.getDate() > 10) {
-        result = (activityDate.getDate() + 1).toString();
-      } 
-      else {
-        result = activityDate.getDate().toString();
+      if (
+        new Date().getFullYear() === activityDate.getFullYear() &&
+        new Date().getMonth() === activityDate.getMonth() &&
+        new Date().getDate() === activityDate.getDate()
+      ) {
+        if (activityDate.getDate() < 10 && new Date().getHours() < 22) {
+          result = '0' + activityDate.getDate().toString();
+        } else if (activityDate.getDate() < 10) {
+          result = '0' + (activityDate.getDate() + 1).toString();
+        } else if (
+          activityDate.getDate() >= 10 &&
+          new Date().getHours() >= 22
+        ) {
+          result = (activityDate.getDate() + 1).toString();
+        } else if (activityDate.getDate() >= 10) {
+          result = activityDate.getDate().toString();
+        } else {
+          result = activityDate.getDate().toString();
+        }
       }
+      else {
+        if (activityDate.getDate() < 10) {
+          result = '0' + (activityDate.getDate() + 1).toString();
+        }
+        else {
+          result = activityDate.getDate().toString();
+        }
+      }
+
       if (activityDate.getMonth() + 2 < 10) {
         result += '.0' + (activityDate.getMonth() + 1).toString();
       } else {
@@ -543,19 +568,19 @@ const CreateActivityScreen2 = () => {
 
   const handleStartTimeConfirm = (date: Date) => {
     setStartTimeActionSheetVisibility(false);
-    console.log('DATE', date)
+    // console.log('DATE', date)
 
     let warningTemp = warning;
     warningTemp.startTime = false;
     setWarning(warningTemp);
-    setActivityFinishTime(undefined)
+    setActivityFinishTime(undefined);
     // console.log('1', date.getHours() * 60 + date.getMinutes());
     // console.log('2', new Date().getHours() * 60 + new Date().getMinutes());
     if (
       activityDate != undefined &&
       activityDate.getFullYear() === new Date().getFullYear() &&
       activityDate.getMonth() === new Date().getMonth() &&
-      (activityDate.getDate() === new Date().getDate()) &&
+      activityDate.getDate() === new Date().getDate() &&
       date.getHours() * 60 + date.getMinutes() >=
         (new Date().getHours() + 2) * 60 + new Date().getMinutes()
     ) {
@@ -601,16 +626,25 @@ const CreateActivityScreen2 = () => {
       activityDate != undefined &&
       activityDate.getFullYear() > new Date().getFullYear()
     ) {
-      console.log('BURDA 4');
-      setActivityStartTime(date);
+      const startDate = new Date(
+        activityDate.getFullYear(),
+        activityDate.getMonth(),
+        activityDate.getDate(),
+        date.getHours(),
+        date.getMinutes()
+      );
+      console.log('BURDA 4', startDate);
+      setActivityStartTime(startDate);
       let warningTemp = warning;
       warningTemp.startTime = false;
       setWarning(warningTemp);
-    }
-    else if (activityDate != undefined 
-    && activityDate.getFullYear() === new Date().getFullYear()
-    && activityDate.getMonth() === new Date().getMonth()
-    && activityDate.getDate() === new Date().getDate() && new Date().getHours() >= 22) {
+    } else if (
+      activityDate != undefined &&
+      activityDate.getFullYear() === new Date().getFullYear() &&
+      activityDate.getMonth() === new Date().getMonth() &&
+      activityDate.getDate() === new Date().getDate() &&
+      new Date().getHours() >= 22
+    ) {
       const startDate = new Date(
         activityDate.getFullYear(),
         activityDate.getMonth(),
@@ -623,8 +657,7 @@ const CreateActivityScreen2 = () => {
       warningTemp.startTime = false;
       setWarning(warningTemp);
       console.log('BURDA 5', startDate);
-    } 
-    else {
+    } else {
       console.log('_BURDA 6', activityDate.getDate());
       const selectedHour =
         date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
@@ -651,7 +684,8 @@ const CreateActivityScreen2 = () => {
     warningTemp.finishTime = false;
     setWarning(warningTemp);
 
-console.log('handleFinishTimeConfirm', date)
+    console.log('activityStartTime', activityStartTime);
+    console.log('handleFinishTimeConfirm', date);
 
     if (
       activityStartTime != undefined &&
@@ -676,7 +710,7 @@ console.log('handleFinishTimeConfirm', date)
       const finishDate = new Date(
         activityDate.getFullYear(),
         activityDate.getMonth(),
-        activityDate.getDate() + 1,
+        activityStartTime.getHours() >= 23 ? activityStartTime.getDate() + 1 : activityStartTime.getDate(),
         date.getHours(),
         date.getMinutes()
       );
@@ -708,8 +742,7 @@ console.log('handleFinishTimeConfirm', date)
       warningTemp.finishTime = false;
       setWarning(warningTemp);
       console.log('BURDA 4');
-    } 
-    else if (
+    } else if (
       activityStartTime != undefined &&
       activityStartTime.getFullYear() === new Date().getFullYear() &&
       activityStartTime.getMonth() === new Date().getMonth() &&
@@ -728,15 +761,17 @@ console.log('handleFinishTimeConfirm', date)
       warningTemp.finishTime = false;
       setWarning(warningTemp);
       console.log('BURDA 5', finishDate);
-    }
-    else if (activityStartTime != undefined &&
+    } else if (
+      activityStartTime != undefined &&
       activityStartTime.getFullYear() === new Date().getFullYear() &&
-      activityStartTime.getMonth() >= new Date().getMonth()) {
-      
+      activityStartTime.getMonth() >= new Date().getMonth()
+    ) {
       const finishDate = new Date(
         activityStartTime.getFullYear(),
         activityStartTime.getMonth(),
-        activityStartTime.getHours() > 22 ? activityStartTime.getDate() + 1 : activityStartTime.getDate(),
+        activityStartTime.getHours() > 22
+          ? activityStartTime.getDate() + 1
+          : activityStartTime.getDate(),
         date.getHours(),
         date.getMinutes()
       );
@@ -745,8 +780,7 @@ console.log('handleFinishTimeConfirm', date)
       warningTemp.finishTime = false;
       setWarning(warningTemp);
       console.log('BURDA 6', finishDate);
-    }
-    else if (activityStartTime != undefined) {
+    } else if (activityStartTime != undefined) {
       console.log('BURDA 7_', activityStartTime);
       const selectedHour =
         date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
@@ -766,23 +800,29 @@ console.log('handleFinishTimeConfirm', date)
         'Warning',
         `You selected: ${selectedHour}:${selectedMinute}\nThe time must be minimum: ${minHour}:${minMinute}\n\nNote: You must select the time at least 1 hour. `
       );
-    } 
-    else if (activityStartTime == undefined) {
+    } else if (activityStartTime == undefined) {
       Alert.alert('Warning', `You must select start time firstly`);
     } else {
       console.log('burda ', activityStartTime, activityFinishTime);
     }
   };
 
-  const showTimeText = (activityDate: Date, activityTime: Date, whichOne: number) => {
+  const showTimeText = (
+    activityDate: Date,
+    activityTime: Date,
+    whichOne: number
+  ) => {
     let result = 'Seçiniz';
 
-    if (whichOne === 0 &&
+    if (
+      whichOne === 0 &&
       activityDate != undefined &&
       activityTime != undefined &&
       new Date().getFullYear() === activityDate.getFullYear() &&
       new Date().getMonth() === activityDate.getMonth() &&
-      (new Date().getHours() < 22 ? new Date().getDate() === activityDate.getDate() : new Date().getDate() === activityDate.getDate() + 1) &&
+      (new Date().getHours() < 22
+        ? new Date().getDate() === activityDate.getDate()
+        : new Date().getDate() === activityDate.getDate() + 1) &&
       activityTime.getHours() * 60 + activityTime.getMinutes() <
         (new Date().getHours() + 2) * 60 + new Date().getMinutes()
     ) {
@@ -1216,7 +1256,11 @@ console.log('handleFinishTimeConfirm', date)
                     )}
                     onPress={() => setFinishTimeActionSheetVisibility(true)}
                     text={(() => {
-                      return showTimeText(activityStartTime, activityFinishTime, 1);
+                      return showTimeText(
+                        activityStartTime,
+                        activityFinishTime,
+                        1
+                      );
                     })()}
                   />
                 </View>
@@ -1291,7 +1335,9 @@ console.log('handleFinishTimeConfirm', date)
             new Date(
               new Date().getFullYear(),
               new Date().getMonth(),
-              new Date().getHours() >= 22 ? new Date().getDate() + 1 : new Date().getDate(),
+              new Date().getHours() >= 22
+                ? new Date().getDate() + 1
+                : new Date().getDate(),
               new Date().getHours(),
               new Date().getMinutes()
             )
@@ -1307,19 +1353,27 @@ console.log('handleFinishTimeConfirm', date)
             new Date(
               new Date().getFullYear(),
               new Date().getMonth(),
-              new Date().getHours() >= 22 ? new Date().getDate() + 1 : new Date().getDate(),
+              new Date().getHours() >= 22
+                ? new Date().getDate() + 1
+                : new Date().getDate(),
               new Date().getHours() + 2,
               new Date().getMinutes()
             )
           }
           minimumDate={
-            new Date(
-              new Date().getFullYear(),
-              new Date().getMonth(),
-              new Date().getHours() >= 22 ? new Date().getDate() + 1 : new Date().getDate(),
-              new Date().getHours() + 2,
-              new Date().getMinutes()
-            )
+            activityDate.getFullYear() === new Date().getFullYear() &&
+            activityDate.getMonth() === new Date().getMonth() &&
+            activityDate.getDate() === new Date().getDate()
+              ? new Date(
+                  new Date().getFullYear(),
+                  new Date().getMonth(),
+                  new Date().getHours() >= 22
+                    ? new Date().getDate() + 1
+                    : new Date().getDate(),
+                  new Date().getHours() + 2,
+                  new Date().getMinutes()
+                )
+              : undefined
           }
           locale="en_GB"
           isVisible={isStartTimeActionSheetVisible}
@@ -1329,40 +1383,39 @@ console.log('handleFinishTimeConfirm', date)
         />
 
         <DateTimePickerModal
-           date={
-            activityStartTime != undefined ?
-            new Date(
-              activityStartTime.getFullYear(),
-              activityStartTime.getMonth(),
-              activityStartTime.getDate(),
-              activityStartTime.getHours() + 1,
-              activityStartTime.getMinutes()
-            )
-            :
-            new Date(
-              new Date().getFullYear(),
-              new Date().getMonth(),
-              new Date().getDate(),
-              new Date().getHours() + 2,
-              new Date().getMinutes()
-            )
+          date={
+            activityStartTime != undefined
+              ? new Date(
+                  activityStartTime.getFullYear(),
+                  activityStartTime.getMonth(),
+                  activityStartTime.getDate(),
+                  activityStartTime.getHours() + 1,
+                  activityStartTime.getMinutes()
+                )
+              : new Date(
+                  new Date().getFullYear(),
+                  new Date().getMonth(),
+                  new Date().getDate(),
+                  new Date().getHours() + 2,
+                  new Date().getMinutes()
+                )
           }
-          minimumDate={activityStartTime != undefined ?
-            new Date(
-              activityStartTime.getFullYear(),
-              activityStartTime.getMonth(),
-              activityStartTime.getDate(),
-              activityStartTime.getHours() + 1,
-              activityStartTime.getMinutes()
-            )
-            :
-            new Date(
-              new Date().getFullYear(),
-              new Date().getMonth(),
-              new Date().getDate(),
-              new Date().getHours() + 2,
-              new Date().getMinutes()
-            )
+          minimumDate={
+            activityStartTime != undefined
+              ? new Date(
+                  activityStartTime.getFullYear(),
+                  activityStartTime.getMonth(),
+                  activityStartTime.getDate(),
+                  activityStartTime.getHours() + 1,
+                  activityStartTime.getMinutes()
+                )
+              : new Date(
+                  new Date().getFullYear(),
+                  new Date().getMonth(),
+                  new Date().getDate(),
+                  new Date().getHours() + 2,
+                  new Date().getMinutes()
+                )
           }
           locale="en_GB"
           isVisible={isFinishTimeActionSheetVisible}
@@ -1372,9 +1425,9 @@ console.log('handleFinishTimeConfirm', date)
         />
 
         <ActivityNameActionSheet
-        title={polyglot.t(
-          'screens.create_activity.action_sheets.activity_name.title'
-        )}
+          title={polyglot.t(
+            'screens.create_activity.action_sheets.activity_name.title'
+          )}
           branchName={branchName}
           ref={activityNameActionSheetRef}
           onSelect={(activityNameValue: number) => {
