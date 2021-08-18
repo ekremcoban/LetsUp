@@ -68,7 +68,7 @@ export const ActivityListScreen = () => {
     LogBox.ignoreAllLogs();
  
     const unsubscribe = navigation.addListener('focus', () => {
-      console.log('İçerde');
+      console.log('İçerde 1');
       analytics().logEvent('ActivityListScreen')
      });
 

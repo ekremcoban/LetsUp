@@ -1191,6 +1191,8 @@ class ActivityInfoScreen extends Component {
                 ? require('assets/img/frisbee.png')
                 : this.props.route.params.activity.type === 'jogging'
                 ? require('assets/img/jogging.png')
+                : this.props.route.params.activity.type === 'bowling'
+                ? require('assets/img/bowling.png')
                 : this.props.route.params.activity.type === 'table_tennis'
                 ? require('assets/img/table_tennis.png')
                 : this.props.route.params.activity.type === 'tennis'
