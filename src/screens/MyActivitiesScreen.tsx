@@ -200,8 +200,18 @@ const MyActivitiesScreen = () => {
                 ? require('assets/img/jogging.png')
                 : item.type === 'table_tennis'
                 ? require('assets/img/table_tennis.png')
+                : item.type === 'tennis'
+                ? require('assets/img/tennis.png')
                 : item.type === 'volleyball'
                 ? require('assets/img/volleyball.png')
+                : item.type === 'badminton'
+                ? require('assets/img/badminton.png')
+                : item.type === 'meditation'
+                ? require('assets/img/meditation.png')
+                : item.type === 'roller_skate'
+                ? require('assets/img/roller_skate.png')
+                : item.type === 'skateboard'
+                ? require('assets/img/skateboard.png')
                 : require('assets/img/join.png')
             }
             style={styles.icon}
@@ -276,8 +286,18 @@ const MyActivitiesScreen = () => {
                 ? require('assets/img/jogging.png')
                 : item.type === 'table_tennis'
                 ? require('assets/img/table_tennis.png')
+                : item.type === 'tennis'
+                ? require('assets/img/tennis.png')
                 : item.type === 'volleyball'
                 ? require('assets/img/volleyball.png')
+                : item.type === 'badminton'
+                ? require('assets/img/badminton.png')
+                : item.type === 'meditation'
+                ? require('assets/img/meditation.png')
+                : item.type === 'roller_skate'
+                ? require('assets/img/roller_skate.png')
+                : item.type === 'skateboard'
+                ? require('assets/img/skateboard.png')
                 : require('assets/img/join.png')
             }
             style={styles.icon}

@@ -57,9 +57,44 @@
     "47": "Voleybol 5",
 
     "48": "Please Select",
-    "49": "Advice",
-    "50": "Complaint",
-    "51": "Error"
+    "49": "Badminton 1",
+    "50": "Badminton 2",
+    "51": "Badminton 3",
+    "52": "Badminton 4",
+    "53": "Badminton 5",
+
+    "54": "Please Select",
+    "55": "Meditation 1",
+    "56": "Meditation 2",
+    "57": "Meditation 3",
+    "58": "Meditation 4",
+    "59": "Meditation 5",
+
+    "60": "Please Select",
+    "61": "Roller skate 1",
+    "62": "Roller skate 2",
+    "63": "Roller skate 3",
+    "64": "Roller skate 4",
+    "65": "Roller skate 5",
+
+    "66": "Please Select",
+    "67": "Skateboard 1",
+    "68": "Skateboard 2",
+    "69": "Skateboard 3",
+    "70": "Skateboard 4",
+    "71": "Skateboard 5",
+
+    "72": "Please Select",
+    "73": "Tennis 1",
+    "74": "Tennis 2",
+    "75": "Tennis 3",
+    "76": "Tennis 4",
+    "77": "Tennis 5",
+
+    "78": "Please Select",
+    "79": "Advice",
+    "80": "Complaint",
+    "81": "Error"
 
   },
   "activity_types": {
@@ -74,7 +109,8 @@
     "tennis": "tennis",
     "badminton": "Badminton",
     "meditation": "Meditation",
-    "roller_skate": "Roller Skate"
+    "roller_skate": "Roller Skate",
+    "skateboard": "skateboard"
   },
   "components": {
     "selector": {

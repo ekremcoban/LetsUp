@@ -996,7 +996,9 @@ const CreateActivityScreen2 = () => {
     <View style={[styles.row, styles.rowLocation]}>
       {(branchName === 'jogging' ||
         branchName === 'bicycle' ||
-        branchName === 'hiking') && (
+        branchName === 'roller_skate' ||
+        branchName === 'bicycle' ||
+        branchName === 'skateboard') && (
         <View style={styles.locationTitle}>
           <Text>START</Text>
         </View>
@@ -1144,6 +1146,8 @@ const CreateActivityScreen2 = () => {
                   if (
                     activityType.image !== 'jogging' &&
                     activityType.image !== 'bicycle' &&
+                    activityType.image !== 'roller_skate' &&
+                    activityType.image !== 'skateboard' &&
                     activityType.image !== 'hiking'
                   ) {
                     setShowLocation1(false);
@@ -1202,6 +1206,8 @@ const CreateActivityScreen2 = () => {
               {
                 branchName === 'jogging' ||
                   branchName === 'bicycle' ||
+                  branchName === 'roller_skate' ||
+                  branchName === 'skateboard' ||
                   branchName === 'hiking'
                 // && addMoreButton
               }

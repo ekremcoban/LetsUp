@@ -351,8 +351,18 @@ class OwnerOldActivityInfoScreen extends Component {
                 ? require('assets/img/jogging.png')
                 : this.props.route.params.activity.type === 'table_tennis'
                 ? require('assets/img/table_tennis.png')
+                : this.props.route.params.activity.type === 'tennis'
+                ? require('assets/img/tennis.png')
                 : this.props.route.params.activity.type === 'volleyball'
                 ? require('assets/img/volleyball.png')
+                : this.props.route.params.activity.type === 'badminton'
+                ? require('assets/img/badminton.png')
+                : this.props.route.params.activity.type === 'meditation'
+                ? require('assets/img/meditation.png')
+                : this.props.route.params.activity.type === 'roller_skate'
+                ? require('assets/img/roller_skate.png')
+                : this.props.route.params.activity.type === 'skateboard'
+                ? require('assets/img/skateboard.png')
                 : require('assets/img/join.png')
             }
             style={styles.icon}

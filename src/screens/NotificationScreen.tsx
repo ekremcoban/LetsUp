@@ -1,5 +1,13 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { StyleSheet, Text, View, Image, Button, Alert, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  Button,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import ContextApi from 'context/ContextApi';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -9,9 +17,12 @@ import { useNavigation } from '@react-navigation/native';
 
 const NotificationScreen = () => {
   const navigation = useNavigation();
-  const { user, newNotifications, notifications, setNewNotifications } = useContext(
-    ContextApi
-  );
+  const {
+    user,
+    newNotifications,
+    notifications,
+    setNewNotifications,
+  } = useContext(ContextApi);
   const [spinner, setSpinner] = useState<boolean>(false);
 
   useEffect(() => {
@@ -63,24 +74,29 @@ const NotificationScreen = () => {
         return require('assets/img/jogging.png');
       case 'table_tennis':
         return require('assets/img/table_tennis.png');
+        case 'tennis':
+          return require('assets/img/tennis.png');
       case 'volleyball':
         return require('assets/img/volleyball.png');
+      case 'badminton':
+        return require('assets/img/badminton.png');
+      case 'meditation':
+        return require('assets/img/meditation.png');
+      case 'roller_skate':
+        return require('assets/img/roller_skate.png');
+      case 'skateboard':
+        return require('assets/img/skateboard.png');
       default:
         return require('assets/img/join.png');
     }
   };
 
-  const isReadNotification = async (
-    item: Object
-  ) => {
+  const isReadNotification = async (item: Object) => {
     let temp = item;
     temp.isRead = true;
 
-    await firestore()
-    .collection('Notifications')
-    .doc(temp.id)
-    .set(temp);
-}
+    await firestore().collection('Notifications').doc(temp.id).set(temp);
+  };
 
   const deleteNotification = async (
     title: string,
@@ -111,7 +127,7 @@ const NotificationScreen = () => {
 
   const accept = (title: string, content: string, item: Object) => {
     console.log('item', item);
- 
+
     Alert.alert(title, content, [
       {
         text: 'No',
@@ -220,11 +236,20 @@ const NotificationScreen = () => {
                         style={styles.icon}
                       />
                     </View>
-                    <TouchableOpacity style={styles.viewRight}
-                    onPress={() => isReadNotification(item)}
+                    <TouchableOpacity
+                      style={styles.viewRight}
+                      onPress={() => isReadNotification(item)}
                     >
                       <View style={{ flexDirection: 'row' }}>
-                        <Text style={item.isRead ? {flex: 4} : { flex: 4, color: 'green' }}>{item.title}</Text>
+                        <Text
+                          style={
+                            item.isRead
+                              ? { flex: 4 }
+                              : { flex: 4, color: 'green' }
+                          }
+                        >
+                          {item.title}
+                        </Text>
                         <Ionicons
                           size={20}
                           name={'trash-outline'}

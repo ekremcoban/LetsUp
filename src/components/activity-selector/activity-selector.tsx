@@ -61,9 +61,16 @@ const ActivitySelectorCard: FC<IActivitySelectorCardProps> = (
           source={props.branchType === 'basketball' ? require('assets/img/basketball.png')
           : props.branchType === 'bicycle' ? require('assets/img/bicycle.png')
           : props.branchType === 'hiking' ? require('assets/img/hiking.png')
+          : props.branchType === 'frisbee' ? require('assets/img/frisbee.png')
           : props.branchType === 'jogging' ? require('assets/img/jogging.png')
+          : props.branchType === 'bowling' ? require('assets/img/bowling.png')
           : props.branchType === 'table_tennis' ? require('assets/img/table_tennis.png')
+          : props.branchType === 'tennis' ? require('assets/img/tennis.png')
           : props.branchType === 'volleyball' ? require('assets/img/volleyball.png')
+          : props.branchType === 'badminton' ? require('assets/img/badminton.png')
+          : props.branchType === 'meditation' ? require('assets/img/meditation.png')
+          : props.branchType === 'roller_skate' ? require('assets/img/roller_skate.png')
+          : props.branchType === 'skateboard' ? require('assets/img/skateboard.png')
         : require('assets/img/join.png')}
           style={cardStyles.icon}
         />
