@@ -311,35 +311,35 @@ const CreateActivityScreen2 = () => {
       warningTemp.finishTime = true;
     }
 
-    if (activityDate != undefined && activityStartTime != undefined) {
-      startActivityTime = new Date(
-        activityDate.getFullYear(),
-        activityDate.getMonth(),
-        new Date().getFullYear() === activityDate.getFullYear() &&
-        new Date().getMonth() === activityDate.getMonth() &&
-        new Date().getDate() === activityDate.getDate() &&
-        new Date().getHours() >= 22
-          ? activityDate.getDate() + 1
-          : activityDate.getDate(),
-        activityStartTime.getHours(),
-        activityStartTime.getMinutes()
-      );
-    }
+    // if (activityDate != undefined && activityStartTime != undefined) {
+    //   startActivityTime = new Date(
+    //     activityDate.getFullYear(),
+    //     activityDate.getMonth(),
+    //     new Date().getFullYear() === activityDate.getFullYear() &&
+    //     new Date().getMonth() === activityDate.getMonth() &&
+    //     new Date().getDate() === activityDate.getDate() &&
+    //     new Date().getHours() >= 22
+    //       ? activityDate.getDate() + 1
+    //       : activityDate.getDate(),
+    //     activityStartTime.getHours(),
+    //     activityStartTime.getMinutes()
+    //   );
+    // }
 
-    if (activityDate != undefined && activityFinishTime != undefined) {
-      finishActivityTime = new Date(
-        activityDate.getFullYear(),
-        activityDate.getMonth(),
-        new Date().getFullYear() === activityDate.getFullYear() &&
-        new Date().getMonth() === activityDate.getMonth() &&
-        new Date().getDate() === activityDate.getDate() &&
-        new Date().getHours() >= 22
-          ? activityDate.getDate() + 1
-          : activityDate.getDate(),
-        activityFinishTime.getHours(),
-        activityFinishTime.getMinutes()
-      );
-    }
+    // if (activityDate != undefined && activityFinishTime != undefined) {
+    //   finishActivityTime = new Date(
+    //     activityDate.getFullYear(),
+    //     activityDate.getMonth(),
+    //     new Date().getFullYear() === activityDate.getFullYear() &&
+    //     new Date().getMonth() === activityDate.getMonth() &&
+    //     new Date().getDate() === activityDate.getDate() &&
+    //     new Date().getHours() >= 22
+    //       ? activityDate.getDate() + 1
+    //       : activityDate.getDate(),
+    //     activityFinishTime.getHours(),
+    //     activityFinishTime.getMinutes()
+    //   );
+    // }
 
     if (user == undefined || user == null) {
       Alert.alert('Warning', 'You have to login to create a new activity', [
@@ -360,9 +360,9 @@ const CreateActivityScreen2 = () => {
               ),
               date: activityDate.getTime(),
               startTime:
-                activityStartTime != null && startActivityTime.getTime(),
+                activityStartTime != null && activityStartTime.getTime(),
               finishTime:
-                activityFinishTime != null && finishActivityTime.getTime(),
+                activityFinishTime != null && activityFinishTime.getTime(),
               gender:
                 selectedGenderValue == 2
                   ? 'Male'
@@ -422,9 +422,9 @@ const CreateActivityScreen2 = () => {
             isCanceled: null,
             isDeleted: null,
             date: activityDate.getTime(), //Aktivite gunu
-            startTime: activityStartTime != null && startActivityTime.getTime(),
+            startTime: activityStartTime != null && activityStartTime.getTime(),
             finishTime:
-              activityFinishTime != null && finishActivityTime.getTime(),
+              activityFinishTime != null && activityFinishTime.getTime(),
             gender:
               selectedGenderValue == 2
                 ? 'Male'
@@ -449,7 +449,7 @@ const CreateActivityScreen2 = () => {
           Alert.alert('Info', 'Do you confirm to create a new activity?', [
             {
               text: 'No',
-              onPress: () => console.log('cancel new activity'),
+              onPress: () => console.log('cancel new activity',activityFinishTime.getTime()),
               style: 'cancel',
             },
             {
