@@ -17,11 +17,8 @@ import { useNavigation } from '@react-navigation/native';
 
 const NotificationScreen = () => {
   const navigation = useNavigation();
-  const {
-    notifications,
-  } = useContext(ContextApi);
+  const { notifications } = useContext(ContextApi);
   const [spinner, setSpinner] = useState<boolean>(false);
-
 
   const findPicture = (type: string) => {
     switch (type) {
@@ -35,8 +32,8 @@ const NotificationScreen = () => {
         return require('assets/img/jogging.png');
       case 'table_tennis':
         return require('assets/img/table_tennis.png');
-        case 'tennis':
-          return require('assets/img/tennis.png');
+      case 'tennis':
+        return require('assets/img/tennis.png');
       case 'volleyball':
         return require('assets/img/volleyball.png');
       case 'badminton':
@@ -173,6 +170,18 @@ const NotificationScreen = () => {
     );
   };
 
+  const goToActivityInfo = async (noti: Object) => {
+    console.log('aaaaa', noti)
+    const activity = await firestore()
+    .collection('Activities')
+    .where('id', '==', noti.activityId)
+    .get();
+
+    navigation.navigate('Member Old Activity Info', {
+      activity: activity.docs[0].data(),
+    })
+  };
+
   return (
     <View style={{ flex: 1 }}>
       {spinner && <DisplaySpinner />}
@@ -201,7 +210,11 @@ const NotificationScreen = () => {
                     </View>
                     <TouchableOpacity
                       style={styles.viewRight}
-                      onPress={() => isReadNotification(item)}
+                      onPress={() =>
+                        item.type !== 6
+                          ? isReadNotification(item)
+                          : goToActivityInfo(item)
+                      }
                     >
                       <View style={{ flexDirection: 'row' }}>
                         <Text
@@ -213,10 +226,26 @@ const NotificationScreen = () => {
                         >
                           {item.title}
                         </Text>
+                        <Text style={{ paddingEnd: 20 }}>
+                          {new Date(item.createdTime)
+                            .toString()
+                            .substring(0, 10)}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          width: '100%',
+                          justifyContent: 'space-between',
+                          paddingEnd: 20,
+                        }}
+                      >
+                        <Text style={styles.textBody}>{item.body}</Text>
+                        {item.type === 0 && item.isActive && showButton(item)}
                         <Ionicons
                           size={20}
                           name={'trash-outline'}
-                          style={{ color: 'gray', flex: 1 }}
+                          style={{ color: 'gray' }}
                           onPress={() =>
                             deleteNotification(
                               'Deleting',
@@ -226,8 +255,6 @@ const NotificationScreen = () => {
                           }
                         />
                       </View>
-                      <Text style={styles.textBody}>{item.body}</Text>
-                      {item.type === 0 && item.isActive && showButton(item)}
                     </TouchableOpacity>
                   </View>
                 );
