@@ -72,7 +72,7 @@ class ActivityInfoScreen extends Component {
   componentDidMount() {
     this.isMember();
     LogBox.ignoreAllLogs();
-    setTimeout(() => {this.setState({spinner: false})}, 500);
+    setTimeout(() => {this.setState({spinner: false})}, 1000);
 
     this.getMembers();
 
