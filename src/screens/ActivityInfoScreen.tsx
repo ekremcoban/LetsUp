@@ -29,6 +29,7 @@ import { Alert } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import { Rating, AirbnbRating } from 'react-native-ratings';
 import { colors } from 'utilities/constants/globalValues';
+import DisplaySpinner from '../components/spinner';
 
 const IconStart = locationTag['start'];
 const IconJoin = locationTag['join'];
@@ -65,11 +66,13 @@ class ActivityInfoScreen extends Component {
     selectedMember: null,
     showPageToOwner: false,
     showPageToMember: false,
+    spinner: true,
   };
 
   componentDidMount() {
     this.isMember();
     LogBox.ignoreAllLogs();
+    setTimeout(() => {this.setState({spinner: false})}, 500);
 
     this.getMembers();
 
@@ -1175,6 +1178,8 @@ class ActivityInfoScreen extends Component {
     );
 
     return (
+      <>
+      {this.state.spinner ? <DisplaySpinner /> : 
       <ScrollView style={{ height: 1000 }}>
         {modal}
         {this.state.clickChooseMap && popUp}
@@ -1340,6 +1345,8 @@ class ActivityInfoScreen extends Component {
         {showMembersContainer}
         <View style={{ height: 50 }} />
       </ScrollView>
+    }
+       </>
     );
   }
 }
