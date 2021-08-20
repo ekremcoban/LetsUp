@@ -11,7 +11,8 @@ import { firebase } from '@react-native-firebase/auth';
 import messaging from '@react-native-firebase/messaging';
 
 const LoginScreen = ({ navigation }: any) => {
-  const { user, setUser, setUserPhoto } = useContext(ContextApi);
+  const { user, setUser, setUserPhoto,
+  setNewNotifications, setNotifications } = useContext(ContextApi);
   const [spinner, setSpinner] = useState<boolean>(false);
 
   const signIn = async (navigation: any) => {
@@ -33,6 +34,7 @@ const LoginScreen = ({ navigation }: any) => {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
+      getNotifications(userInfo.user);
   
       // Kullanici kayitli mi bilgisi
       const usersCollection = await firestore()
@@ -57,6 +59,35 @@ const LoginScreen = ({ navigation }: any) => {
       .then((data) => {
         return data;
       });
+  };
+
+  const getNotifications = async (userInfo: Object) => {
+    let newNotificationArray = [];
+    let notificationArray = [];
+
+    console.log('no', userInfo)
+    if (userInfo != undefined) {
+      firestore()
+        .collection('Notifications')
+        .where('toWho', '==', userInfo.email)
+        .where('state', '==', true)
+        .onSnapshot((noti) => {
+          newNotificationArray = [];
+          notificationArray = [];
+          noti.docs.forEach((item) => {
+            notificationArray.push(item.data());
+            if (!item.data().isRead) {
+              newNotificationArray.push(item.data());
+            }
+          });
+          console.log('BURDAAAAA')
+          setNewNotifications(newNotificationArray.length);
+          setNotifications([...notificationArray]);
+        });
+    }
+    else {
+      setNewNotifications(0);
+    }
   };
 
   const getImage = async () => {
