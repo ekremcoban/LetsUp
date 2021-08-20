@@ -15,7 +15,7 @@ exports.scheduledFunction = functions.pubsub.schedule('*/1 * * * *').onRun(async
 
     activeActivities.docs.forEach(async item => {
         if (item.data().startTime < admin.firestore.Timestamp.now().toMillis() + 7200000) {
-            const inactiveActivity = item.data();
+            let inactiveActivity = item.data();
             inactiveActivity.state = false;
 
             db.collection('Activities')
@@ -33,7 +33,7 @@ exports.scheduledFunction = functions.pubsub.schedule('*/1 * * * *').onRun(async
             .get();
 
             address.docs.forEach(item => {
-                const inactiveAddress = item.data();
+                let inactiveAddress = item.data();
                 inactiveAddress.state = false;
 
                 db.collection('ActivityAddress')
@@ -47,6 +47,30 @@ exports.scheduledFunction = functions.pubsub.schedule('*/1 * * * *').onRun(async
                 });
             })
         }
+    })
+
+
+
+    const activitiesFeedback = await db.collection('Activities')
+    .where('feedbackReminder', '!=', true)
+    .get();
+
+    // Feedbacke uygun aktiviteler(Bitis suresi gecmis ve daha once notification gonderilmemis olanlar)
+    const convinientFeedback = activitiesFeedback.docs.filter(item => item.data().finishTime <= admin.firestore.Timestamp.now().toMillis() - 60000);
+
+    convinientFeedback.forEach(async item => {
+        let inactive = item.data();
+        inactive.feedbackReminder = true;
+
+        db.collection('Activities')
+        .doc(inactive.id)
+        .set(inactive)
+        .then(() => {
+            console.log('inactive', ' Update');
+        })
+        .catch((e) => {
+          console.log('inactive', ' Update error: ', e);
+        });
     })
 
     return console.log('Timer çalıştı')
@@ -156,9 +180,9 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
         });
 
         return admin.messaging().sendToDevice(ownerToken, message).then(res => {
-        console.log('memberNotifications is succeess --> ', ownerName, memberName)
+        console.log('A New Request is succeess --> ', ownerName, memberName)
         }).catch(e => {
-            console.log('memberNotifications is error --> ')
+            console.log('A New Request is error --> ')
         })
     }
 
@@ -190,9 +214,9 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
        });
 
        return admin.messaging().sendToDevice(ownerToken, message).then(res => {
-        console.log('memberNotifications is succeess --> ', ownerName, memberName)
+        console.log('Request Was Withdrawn is succeess --> ', ownerName, memberName)
         }).catch(e => {
-            console.log('memberNotifications is error --> ')
+            console.log('Request Was Withdrawn is error --> ')
         })
     }
 
@@ -227,9 +251,9 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
        });
 
        return admin.messaging().sendToDevice(ownerToken, message).then(res => {
-        console.log('memberNotifications is succeess --> ', ownerName, memberName)
+        console.log('Someone Has Gone is succeess --> ', ownerName, memberName)
         }).catch(e => {
-            console.log('memberNotifications is error --> ')
+            console.log('Someone Has Gone is error --> ')
         })
     }
 
@@ -264,9 +288,9 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
        });
 
        return admin.messaging().sendToDevice(ownerToken, message).then(res => {
-        console.log('memberNotifications is succeess --> ', ownerName, memberName)
+        console.log('Someone Came Back is succeess --> ', ownerName, memberName)
         }).catch(e => {
-            console.log('memberNotifications is error --> ')
+            console.log('Someone Came Back is error --> ')
         })
     }
     
@@ -312,9 +336,9 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
        };
 
        return admin.messaging().sendToDevice(memberToken, message).then(res => {
-        console.log('memberNotifications is succeess --> ', ownerName, memberName)
+        console.log('Sorry For This is succeess --> ', ownerName, memberName)
         }).catch(e => {
-            console.log('memberNotifications is error --> ')
+            console.log('Sorry For This is error --> ')
         })
     }
 
@@ -360,14 +384,14 @@ exports.memberNotifications=functions.firestore.document('Members/{id}').onWrite
        };
 
        return admin.messaging().sendToDevice(memberToken, message).then(res => {
-        console.log('memberNotifications is succeess --> ', ownerName, memberName)
+        console.log('Accepted You is succeess --> ', ownerName, memberName)
         }).catch(e => {
-            console.log('memberNotifications is error --> ')
+            console.log('Accepted You is error --> ')
         })
     }
 });
 
-// Aktivite silindiginde
+// Aktivite silindiginde, guncellendiginde
 exports.activityNotifications=functions.firestore.document('Activities/{id}').onUpdate(async event => {
     const id = event.after.get('id');
     const name = event.after.get('name');
@@ -375,6 +399,8 @@ exports.activityNotifications=functions.firestore.document('Activities/{id}').on
     const isCanceled = event.after.get('isCanceled');
     const isDeleted = event.after.get('isDeleted');
     const type = event.after.get('type');
+    const beforeFeedback = event.before.get('feedbackReminder');
+    const afterFeedback = event.after.get('feedbackReminder');
 
     let collectionRef = await db.collection('Notifications').doc();
 
@@ -414,6 +440,77 @@ exports.activityNotifications=functions.firestore.document('Activities/{id}').on
                 console.log('activitiesNotifications is error --> ', e)
             })
         })
+    }
+
+    //Aktivite feedback notification gonderilir
+    if (!beforeFeedback && afterFeedback) {
+        let message = {
+            notification: {
+                title: 'Feedback Time',
+                body: `Did the opposing player come to ${name}?`
+            },
+       }
+
+       const membersFeedback = await db.collection('Members')
+       .where('activityId', '==', id)
+       .where('memberState', '==', true)
+       .where('ownerState', '==', true)
+       .where('ownerJoin', '==', null)
+       .where('memberJoin', '==', null)
+       .get();
+
+       membersFeedback.docs.forEach(async item => {
+        let collectionRef = await db.collection('Notifications').doc();
+
+        await db.collection('Notifications')
+        .doc(collectionRef.id)
+        .set({
+            id: collectionRef.id,
+            activityId: id,
+            title: message.notification.title,
+            body: message.notification.body,
+            branch: type,
+            fromWho: null,
+            toWho: item.data().memberEmail,
+            state: true,
+            isRead: false,
+            isActive: true,
+            type: 6,
+            createdTime: new Date().getTime()
+        });
+
+        await admin.messaging().sendToDevice(item.data().memberToken, message).then(res => {
+            console.log('Feedback Time is succeess --> ', name)
+        }).catch(e => {
+            console.log('Feedback Time is error --> ', e)
+        })
+    });
+
+    let collectionRef = await db.collection('Notifications').doc();
+
+    await db.collection('Notifications')
+    .doc(collectionRef.id)
+    .set({
+        id: collectionRef.id,
+        activityId: id,
+        title: message.notification.title,
+        body: message.notification.body,
+        branch: type,
+        fromWho: null,
+        toWho: membersFeedback.docs[0].data().ownerEmail,
+        state: true,
+        isRead: false,
+        isActive: true,
+        type: 6,
+        createdTime: new Date().getTime()
+    });
+
+    await admin.messaging().sendToDevice(membersFeedback.docs[0].data().ownerToken, message).then(res => {
+        console.log('Feedback Time is succeess --> ', name)
+    }).catch(e => {
+        console.log('Feedback Time is error --> ', e)
+    })
+
     }
 });
 

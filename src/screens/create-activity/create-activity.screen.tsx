@@ -435,6 +435,7 @@ const CreateActivityScreen2 = () => {
             maxAge: selectedAgeRange[1],
             minQuota: selectedQuotaRange[0],
             maxQuota: selectedQuotaRange[1],
+            feedbackReminder: null,
             createdTime: new Date().getTime(),
           };
 
