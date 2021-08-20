@@ -18,49 +18,10 @@ import { useNavigation } from '@react-navigation/native';
 const NotificationScreen = () => {
   const navigation = useNavigation();
   const {
-    user,
-    newNotifications,
     notifications,
-    setNewNotifications,
   } = useContext(ContextApi);
   const [spinner, setSpinner] = useState<boolean>(false);
 
-  useEffect(() => {
-    // getNotificationsInfo();
-  }, []);
-
-  const getNotificationsInfo = () => {
-    let notificationArray = [];
-    if (user != undefined) {
-      firestore()
-        .collection('Notifications')
-        .where('toWho', '==', user.email)
-        .where('state', '==', true)
-        .onSnapshot((noti) => {
-          setSpinner(false);
-          console.log('noti', noti.docs);
-          notificationArray = [];
-          noti.docs.forEach((item) => {
-            notificationArray.push(item.data());
-          });
-          setNotifications([...notificationArray]);
-          if (newNotifications > 0) {
-            console.log('notififi', notificationArray);
-            notificationArray.forEach(async (item) => {
-              if (!item.isRead) {
-                let temp = item;
-                temp.isRead = true;
-
-                await firestore()
-                  .collection('Notifications')
-                  .doc(temp.id)
-                  .set(temp);
-              }
-            });
-          }
-        });
-    }
-  };
 
   const findPicture = (type: string) => {
     switch (type) {
@@ -138,6 +99,7 @@ const NotificationScreen = () => {
         text: 'Yes',
         onPress: async () => {
           setSpinner(true);
+          isReadNotification(item);
           const member = await firestore()
             .collection('Members')
             .doc(item.membersId)
@@ -169,6 +131,7 @@ const NotificationScreen = () => {
       {
         text: 'Yes',
         onPress: async () => {
+          isReadNotification(item);
           setSpinner(true);
           const member = await firestore()
             .collection('Members')
