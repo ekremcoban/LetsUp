@@ -67,12 +67,12 @@ class ActivityInfoScreen extends Component {
     showPageToOwner: false,
     showPageToMember: false,
     spinner: true,
+    spinnerInside: false,
   };
 
   componentDidMount() {
     this.isMember();
     LogBox.ignoreAllLogs();
-    setTimeout(() => {this.setState({spinner: false})}, 1000);
 
     this.getMembers();
 
@@ -257,6 +257,7 @@ class ActivityInfoScreen extends Component {
         }
       }
     }, 2000);
+    this.setState({spinner: false})
   };
 
   getMoreThanOneAddress = async (selectedAddress: any) => {
@@ -414,6 +415,7 @@ class ActivityInfoScreen extends Component {
 
   // Aktiviteye katilma ya da ayrilma talebi gonderir
   sendRequest = async () => {
+    this.setState({spinnerInside: true})
     const token = await messaging().getToken();
     let context = this.context;
     let memberCollection;
@@ -484,6 +486,7 @@ class ActivityInfoScreen extends Component {
         request
       );
     }
+    this.setState({spinnerInside: false})
   };
 
   deleteAlert = (title: string, content: string, type: number) => {
@@ -685,19 +688,19 @@ class ActivityInfoScreen extends Component {
   render() {
     const joinButton = (
       <View style={styles.viewbuttonAction}>
-        <Ionicons
+        {!this.state.spinnerInside && <Ionicons
           size={20}
           name="hand-left-outline"
           style={{ color: 'white' }}
-        />
-        <Text style={styles.textButtonAction}>Join</Text>
+        />}
+        <Text style={styles.textButtonAction}>{!this.state.spinnerInside ? 'Join' : 'Sending'}</Text>
       </View>
     );
 
     const leaveButton = (
       <View style={[styles.viewbuttonAction, styles.viewButtonActionLeave]}>
-        <Ionicons size={20} name="hand-left" style={{ color: 'white' }} />
-        <Text style={styles.textButtonAction}>Leave</Text>
+        {!this.state.spinnerInside && <Ionicons size={20} name="hand-left" style={{ color: 'white' }} />}
+        <Text style={styles.textButtonAction}>{!this.state.spinnerInside ? 'Leave' : 'Sending'}</Text>
       </View>
     );
 
@@ -1470,7 +1473,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   viewButtonActionLeave: {
-    backgroundColor: 'red',
+    backgroundColor:  'red',
   },
   viewButtonActionDelete: {
     backgroundColor: 'red',
