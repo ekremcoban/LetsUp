@@ -15,10 +15,22 @@ import { ScrollView } from 'react-native-gesture-handler';
 import DisplaySpinner from '../components/spinner';
 import { useNavigation } from '@react-navigation/native';
 
+let activityId = [];
+let activityTemp = [];
+let ownerActivity = [];
+let address = [];
+
 const NotificationScreen = () => {
   const navigation = useNavigation();
-  const { notifications } = useContext(ContextApi);
+  const { user, notifications } = useContext(ContextApi);
+  const [activityOwnerList, setActivityOwnerList] = useState(null);
+  const [activityMemberList, setActivityMemberList] = useState(null);
+  const [addressList, setAddressList] = useState(null);
   const [spinner, setSpinner] = useState<boolean>(false);
+
+  useEffect(() => {
+    getFirebase();
+  }, []);
 
   const findPicture = (type: string) => {
     switch (type) {
@@ -170,16 +182,138 @@ const NotificationScreen = () => {
     );
   };
 
-  const goToActivityInfo = async (noti: Object) => {
-    console.log('aaaaa', noti)
-    const activity = await firestore()
-    .collection('Activities')
-    .where('id', '==', noti.activityId)
-    .get();
+  const getFirebase = async () => {
+    if (user != null) {
+      await firestore()
+        .collection('Activities')
+        .where('owner.email', '==', user.email)
+        .where('isDeleted', '==', null)
+        .onSnapshot((querySnapshot) => {
+          ownerActivity = [];
+          querySnapshot.forEach((documentSnapshot) => {
+            firestore()
+              .collection('ActivityAddress')
+              .where('activityId', '==', documentSnapshot.data().id)
+              .get()
+              .then((items) => {
+                address.push(items.docs[0].data());
+                setAddressList(address);
+              });
+            ownerActivity.push(documentSnapshot.data());
+          });
+          setActivityOwnerList(ownerActivity);
+        });
 
-    navigation.navigate('Member Old Activity Info', {
-      activity: activity.docs[0].data(),
-    })
+      await firestore()
+        .collection('Members')
+        .where('memberEmail', '==', user.email)
+        .where('ownerState', '==', true)
+        .onSnapshot((querySnapshot) => {
+          querySnapshot.forEach((documentSnapshot) => {
+            activityId.push(documentSnapshot.data().activityId);
+          });
+          console.log('activityId 1', activityId);
+
+          let index = 0;
+          const partion = Math.ceil(activityId.length / 10);
+
+          if (partion === 0) {
+            setSpinner(false);
+          }
+
+          for (let i = 0; i < partion; i++) {
+            let stackTen = [];
+            while (index < activityId.length) {
+              stackTen.push(activityId[index++]);
+              if (index % 10 === 0) {
+                firestore()
+                  .collection('Activities')
+                  .where('id', 'in', stackTen)
+                  // .where('ime', '>', 1626820440000)
+                  .onSnapshot((documentSnapshot) => {
+                    documentSnapshot.docs.forEach((documentSnapshot) => {
+                      firestore()
+                        .collection('ActivityAddress')
+                        .where('activityId', '==', documentSnapshot.data().id)
+                        .get()
+                        .then((items) => {
+                          address.push(items.docs[0].data());
+                          setAddressList(address);
+                        });
+                      // console.log('User data: ', s.data());
+                      const isIt = activityTemp.filter(
+                        (a) => a.id === documentSnapshot.data().id
+                      );
+
+                      if (isIt.length === 0) {
+                        activityTemp.push(documentSnapshot.data());
+                      }
+                    });
+                    console.log('activityTemp 1', activityTemp);
+                    setActivityMemberList([...activityTemp]);
+                    setSpinner(false);
+                  });
+
+                stackTen = [];
+              } else {
+                if (index === activityId.length) {
+                  console.log(i, 'falza', stackTen);
+                  firestore()
+                    .collection('Activities')
+                    .where('id', 'in', stackTen)
+                    // .where('ime', '>', 1626820440000)
+                    .onSnapshot((documentSnapshot) => {
+                      documentSnapshot.docs.forEach((documentSnapshot) => {
+                        firestore()
+                          .collection('ActivityAddress')
+                          .where('activityId', '==', documentSnapshot.data().id)
+                          .get()
+                          .then((items) => {
+                            address.push(items.docs[0].data());
+                            setAddressList(address);
+                          });
+                        // console.log('User data: ', s.data());
+                        const isIt = activityTemp.filter(
+                          (a) => a.id === documentSnapshot.data().id
+                        );
+
+                        if (isIt.length === 0) {
+                          activityTemp.push(documentSnapshot.data());
+                        }
+                      });
+                      console.log('activityTemp 2', activityTemp);
+                      setActivityMemberList([...activityTemp]);
+                      setSpinner(false);
+                    });
+
+                  stackTen = [];
+                }
+              }
+            }
+          }
+        });
+    }
+  };
+
+  const goToActivityInfo = async (item: Object) => {
+    isReadNotification(item);
+    console.log('user', user)
+    console.log('item', item)
+    console.log('activityOwnerList', activityOwnerList)
+    console.log('activityMemberList', activityMemberList)
+    const activityOwner = activityOwnerList.filter(activity => activity.id === item.activityId);
+
+    if (activityOwner.length > 0 && user.email == activityOwner[0].owner.email) {
+      console.log('AKTİVİTE SAHİBİ')
+      navigation.navigate('Owner Old Activity Info', {
+        activity: activityOwnerList.filter(activity => activity.id === item.activityId)[0],
+      });
+    } else {
+      console.log('AKTİVİTE ÜYESİ')
+      navigation.navigate('Member Old Activity Info', {
+        activity: activityMemberList.filter(activity => activity.id === item.activityId)[0],
+      })
+    }
   };
 
   return (
@@ -226,26 +360,15 @@ const NotificationScreen = () => {
                         >
                           {item.title}
                         </Text>
-                        <Text style={{ paddingEnd: 20 }}>
+                        <Text style={{ paddingEnd: 10 }}>
                           {new Date(item.createdTime)
                             .toString()
                             .substring(0, 10)}
                         </Text>
-                      </View>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          width: '100%',
-                          justifyContent: 'space-between',
-                          paddingEnd: 20,
-                        }}
-                      >
-                        <Text style={styles.textBody}>{item.body}</Text>
-                        {item.type === 0 && item.isActive && showButton(item)}
                         <Ionicons
                           size={20}
                           name={'trash-outline'}
-                          style={{ color: 'gray' }}
+                          style={{ color: 'gray', flex: 1 }}
                           onPress={() =>
                             deleteNotification(
                               'Deleting',
@@ -255,6 +378,8 @@ const NotificationScreen = () => {
                           }
                         />
                       </View>
+                      <Text style={styles.textBody}>{item.body}</Text>
+                      {item.type === 0 && item.isActive && showButton(item)}
                     </TouchableOpacity>
                   </View>
                 );

@@ -443,7 +443,7 @@ exports.activityNotifications=functions.firestore.document('Activities/{id}').on
     }
 
     //Aktivite feedback notification gonderilir
-    if (!beforeFeedback && afterFeedback) {
+    if (beforeFeedback != true && afterFeedback) {
         let message = {
             notification: {
                 title: 'Feedback Time',
@@ -470,7 +470,7 @@ exports.activityNotifications=functions.firestore.document('Activities/{id}').on
             title: message.notification.title,
             body: message.notification.body,
             branch: type,
-            fromWho: null,
+            fromWho: item.data().ownerEmail,
             toWho: item.data().memberEmail,
             state: true,
             isRead: false,
@@ -496,7 +496,7 @@ exports.activityNotifications=functions.firestore.document('Activities/{id}').on
         title: message.notification.title,
         body: message.notification.body,
         branch: type,
-        fromWho: null,
+        fromWho: membersFeedback.docs[0].data().memberEmail,
         toWho: membersFeedback.docs[0].data().ownerEmail,
         state: true,
         isRead: false,
