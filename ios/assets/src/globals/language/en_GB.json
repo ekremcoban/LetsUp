@@ -106,11 +106,11 @@
     "jogging": "Jogging",
     "table_tennis": "Table Tennis",
     "volleyball": "Volleyball",
-    "tennis": "tennis",
+    "tennis": "Tennis",
     "badminton": "Badminton",
     "meditation": "Meditation",
     "roller_skate": "Roller Skate",
-    "skateboard": "skateboard"
+    "skateboard": "Skateboard"
   },
   "components": {
     "selector": {
