@@ -15,6 +15,8 @@ target 'LetsUp' do
 
   pod 'RNCPicker', :path => '../node_modules/@react-native-community/picker'
 
+  pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
+
   target 'LetsUpTests' do
     inherit! :complete
     # Pods for testing

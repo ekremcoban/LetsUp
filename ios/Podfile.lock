@@ -830,6 +830,8 @@ PODS:
     - React
   - react-native-safe-area-context (3.1.9):
     - React-Core
+  - react-native-splash-screen (3.2.0):
+    - React
   - react-native-webview (11.4.0):
     - React-Core
   - React-perflogger (0.64.0)
@@ -1038,6 +1040,7 @@ DEPENDENCIES:
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-google-places (from `../node_modules/react-native-google-places`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -1164,6 +1167,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-google-places"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-splash-screen:
+    :path: "../node_modules/react-native-splash-screen"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
   React-perflogger:
@@ -1298,6 +1303,7 @@ SPEC CHECKSUMS:
   react-native-get-random-values: 41f0c91ac0da870e47b307e07752e9e54bc2dc7e
   react-native-google-places: 978bcc6ec4bd1d9b0ab3693e3705d4f1f2459caf
   react-native-safe-area-context: 86612d2c9a9e94e288319262d10b5f93f0b395f5
+  react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-webview: fdd3c7c2ad173e8ca8c82729ed05f3fda2491a82
   React-perflogger: 9c547d8f06b9bf00cb447f2b75e8d7f19b7e02af
   React-RCTActionSheet: 3080b6e12e0e1a5b313c8c0050699b5c794a1b11
@@ -1336,6 +1342,6 @@ SPEC CHECKSUMS:
   Yoga: 8c8436d4171c87504c648ae23b1d81242bdf3bbf
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 5cd01294d622f74043ad8b755ba40e858acfea66
+PODFILE CHECKSUM: 5bd1b978bf2828627dd30dbd10d3c6196c9b0b6d
 
 COCOAPODS: 1.11.0.beta.2

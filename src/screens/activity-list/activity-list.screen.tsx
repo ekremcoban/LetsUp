@@ -44,6 +44,7 @@ import crashlytics from '@react-native-firebase/crashlytics';
 import analytics from '@react-native-firebase/analytics';
 import perf from '@react-native-firebase/perf';
 import { LogBox } from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
 
 const ageActionSheetRef = createRef<IActionSheet>();
 let activityListTemp;
@@ -66,13 +67,16 @@ export const ActivityListScreen = () => {
   useEffect(() => {
     console.log('Burda');
     LogBox.ignoreAllLogs();
- 
+    setTimeout(() => {
+      SplashScreen.hide();
+    }, 1000);
+
     const unsubscribe = navigation.addListener('focus', () => {
       console.log('İçerde 1');
-      analytics().logEvent('ActivityListScreen')
-     });
+      analytics().logEvent('ActivityListScreen');
+    });
 
-      preparingData(location);
+    preparingData(location);
 
     // const unsubscribe = navigation.addListener('focus', () => {
     //   if (isCreateActivity) {
@@ -94,8 +98,7 @@ export const ActivityListScreen = () => {
     const trace = await perf().startTrace('Activity_List');
     if (user != null) {
       trace.putAttribute('user', user.email);
-    }
-    else {
+    } else {
       trace.putAttribute('user', '');
     }
 
@@ -106,7 +109,7 @@ export const ActivityListScreen = () => {
     getNotifications();
 
     await trace.stop();
-  }
+  };
 
   const getNotifications = () => {
     messaging().onNotificationOpenedApp((remoteMessage) => {
@@ -122,27 +125,35 @@ export const ActivityListScreen = () => {
           .where('state', '==', true)
           .where('country', '==', country)
           .where('city', '==', city)
-  
+
           .onSnapshot((querySnapshot) => {
             // console.log('querySnapshot Address 1', querySnapshot);
             addressTemp = [];
             activityId = [];
-  
+
             querySnapshot != null &&
               querySnapshot.docs.forEach((documentSnapshot) => {
                 // Sadece bulundugu sehirdeki aktiviteleri aldik
                 activityId.push(documentSnapshot.data().activityId);
                 addressTemp.push(documentSnapshot.data());
               });
-  
-              addressTemp.forEach(item => {
-              const selectedAddress = addressTemp.filter(a => a.activityId === item.activityId);
-              if (selectedAddress.length === 1 && selectedAddress[0].nodeCount === 2 && selectedAddress[0].nodeNumber === 2) {
-                addressTemp = addressTemp.filter(a => a.activityId !== item.activityId && a.city === city);
-                activityId = activityId.filter(a => a !== item.activityId);
-                console.log('2 dest', item)
+
+            addressTemp.forEach((item) => {
+              const selectedAddress = addressTemp.filter(
+                (a) => a.activityId === item.activityId
+              );
+              if (
+                selectedAddress.length === 1 &&
+                selectedAddress[0].nodeCount === 2 &&
+                selectedAddress[0].nodeNumber === 2
+              ) {
+                addressTemp = addressTemp.filter(
+                  (a) => a.activityId !== item.activityId && a.city === city
+                );
+                activityId = activityId.filter((a) => a !== item.activityId);
+                console.log('2 dest', item);
               }
-            })
+            });
             // addressTemp.forEach(item => {
             //   const selectedAddress = addressTemp.filter(a => a.activityId === item.activityId);
             //   if (selectedAddress.length === 1 && selectedAddress[0].nodeCount === 2 && selectedAddress[0].nodeNumber === 2) {
@@ -201,19 +212,19 @@ export const ActivityListScreen = () => {
             //      }
             //   }
             // });
-  
+
             setAddressList([...addressTemp]);
             console.log('addressTemp 1', addressTemp);
             // console.log('activityId 1', activityId);
-  
+
             let index = 0;
             const partion = Math.ceil(activityId.length / 10);
-  
+
             if (partion === 0) {
               setSpinner(false);
               setActivityList(null);
             }
-  
+
             for (let i = 0; i < partion; i++) {
               let stackTen = [];
               while (index < activityId.length) {
@@ -227,18 +238,18 @@ export const ActivityListScreen = () => {
                         const isIt = activityTemp.filter(
                           (a) => a.id === s.data().id
                         );
-  
+
                         if (isIt.length === 0) {
                           activityTemp.push(s.data());
                         }
                       });
-  
+
                       setActivityList([...activityTemp]);
                       activityListTemp = [...activityTemp];
                       console.log('activityListTemp 1', activityListTemp);
                       setSpinner(false);
                     });
-  
+
                   stackTen = [];
                 } else {
                   if (index === activityId.length) {
@@ -252,7 +263,7 @@ export const ActivityListScreen = () => {
                           const isIt = activityTemp.filter(
                             (a) => a.id === s.data().id
                           );
-  
+
                           if (isIt.length === 0) {
                             activityTemp.push(s.data());
                           } else {
@@ -262,13 +273,13 @@ export const ActivityListScreen = () => {
                             activityTemp.push(s.data());
                           }
                         });
-  
+
                         setActivityList([...activityTemp]);
                         activityListTemp = [...activityTemp];
                         console.log('activityListTemp 2', activityListTemp);
                         setSpinner(false);
                       });
-  
+
                     stackTen = [];
                   }
                 }
@@ -315,7 +326,7 @@ export const ActivityListScreen = () => {
         setSpinner(false);
       })
       .catch((error) => {
-        console.log(error.message);
+        console.log('openLocationModal', error.message);
         setSpinner(false);
       }); // error is a Javascript Error object
   };
@@ -327,7 +338,7 @@ export const ActivityListScreen = () => {
     Geolocation.getCurrentPosition((info) => {
       latitude = info.coords.latitude;
       longitude = info.coords.longitude;
-
+      console.log('geoLoca', info);
       setSpinner(true);
 
       Geocoder.from(info.coords.latitude, info.coords.longitude)
