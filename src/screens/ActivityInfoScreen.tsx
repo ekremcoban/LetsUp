@@ -1340,7 +1340,9 @@ class ActivityInfoScreen extends Component {
                 }}
               >
                 <Text style={{ color: 'white', fontWeight: '700' }}>
-                  Awaiting confirmation...
+                  {selectedMembers.length == 0 || selectedMembers.ownerState == null
+                  ? 'Awaiting confirmation...'
+                : 'Please Reload the Page'}
                 </Text>
               </View>
             )}
