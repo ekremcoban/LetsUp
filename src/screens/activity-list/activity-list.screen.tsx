@@ -69,7 +69,7 @@ export const ActivityListScreen = () => {
     LogBox.ignoreAllLogs();
     setTimeout(() => {
       SplashScreen.hide();
-    }, 1000);
+    }, 1500);
 
     const unsubscribe = navigation.addListener('focus', () => {
       console.log('İçerde 1');

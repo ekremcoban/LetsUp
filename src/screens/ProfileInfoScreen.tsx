@@ -13,31 +13,116 @@ import ContextApi from 'context/ContextApi';
 import { useContext } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { getData } from 'db/localDb';
+import firestore from '@react-native-firebase/firestore';
+import { ScrollView } from 'react-native-gesture-handler';
+import { selectImg } from 'utilities/constants/selectImage';
+import { filter } from 'lodash';
 
 const ProfileInfoScreen = () => {
   const navigation = useNavigation();
   const { user, userPhoto } = useContext(ContextApi);
   const [photoPath, setPhotoPath] = useState<string>(null);
+  const [whichTab, setWhichTab] = useState<number>(0);
+  const [myJoinedActivities, setMyJoinedActivities] = useState<Object>(
+    undefined
+  );
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      console.log('profil info')
+      console.log('profil info');
 
-          getData('Photo').then(res => {
-            setPhotoPath(res)
-            console.log('profil photo db', res)
-            if (res == null) {
-              getData('Users').then(res => {
-                setPhotoPath(res.photo)
-              })
-            }
-        })
-    })
+      getData('Photo').then((res) => {
+        setPhotoPath(res);
+        console.log('profil photo db', res);
+        if (res == null) {
+          getData('Users').then((res) => {
+            setPhotoPath(res.photo);
+          });
+        }
+      });
+    });
+
+    getMyActivities();
 
     return () => {
-        unsubscribe;
-      };
-    }, [navigation]);
+      unsubscribe;
+    };
+  }, [navigation]);
+
+  const getMyActivities = async () => {
+    let myJoinedActivities = [];
+    let feedbackMyActivities = [];
+
+    const resultMyActivities = await firestore()
+      .collection('Activities')
+      .where('owner.email', '==', 'resulekremcoban@gmail.com')
+      .where('state', '==', false)
+      .get();
+
+    resultMyActivities.docs.forEach(async (myActivity) => {
+      let isJoined = 1;
+      let isSuccess = false;
+      let resultFeedbackMembers = await firestore()
+        .collection('Members')
+        .where('activityId', '==', myActivity.data().id)
+        // .where('ownerJoin', '==', false)
+        .get();
+
+        console.log('resultFeedbackMembers.docs.', resultFeedbackMembers.docs)
+      resultFeedbackMembers.docs.forEach((myMember) => {
+        isJoined = 1;
+        
+        if (myMember.data().ownerJoin == false) {
+          isSuccess = false;
+          isJoined = 0;
+          console.log('**********', myMember.data().ownerJoin)
+        }
+        if (myMember.data().ownerJoin != undefined) {
+          isSuccess = true;
+        }
+        else {
+          isSuccess = true;
+          isJoined = 0;
+          console.log('000000000', myActivity.data().type, myActivity.data().ownerJoin)
+        }
+      });
+
+      if (myJoinedActivities.length === 0) {
+        console.log('İLK')
+        myJoinedActivities.push({
+          type: myActivity.data().type,
+          isJoined: isJoined,
+          count: isSuccess ? 1 : 0,
+        });
+      } else {
+        let isThereActivity = myJoinedActivities.filter(
+          (myJoinedActivity) => myJoinedActivity.type === myActivity.data().type
+        );
+
+        if (isThereActivity.length === 0) {
+          console.log('EKLE')
+          myJoinedActivities.push({
+            type: myActivity.data().type,
+            isJoined: isJoined,
+            count: isSuccess ? 1 : 0,
+          });
+        } else {
+          console.log('GÜNCELLE')
+          isThereActivity[0].count += 1;
+          if (isJoined === 1) {
+            isThereActivity[0].isJoined += 1;
+          }
+        }
+      }
+      console.log('myJoinedActivities', myJoinedActivities);
+      setMyJoinedActivities([...myJoinedActivities]);
+      // console.log('feedbackMyActivities', feedbackMyActivities)
+    });
+    console.log('HAYDAA')
+    console.log('myJoinedActivities', myJoinedActivities);
+
+   
+  };
 
   const photo = () => {
     ImagePickerCropper.openPicker({
@@ -57,12 +142,99 @@ const ProfileInfoScreen = () => {
       });
   };
 
+  const myActivities = () => {
+    const showMyJoined =
+      myJoinedActivities != undefined &&
+      myJoinedActivities
+        .sort((a, b) => {
+          return b.count - a.count;
+        })
+        // .filter(item => item.count > 0)
+        .map((item) => (
+          <View style={styles.viewItemHorizontal}>
+            <View style={styles.viewItemCol1}>
+              <Image source={selectImg(item.type)} style={styles.icon} />
+            </View>
+            <View style={styles.viewItemCol2}>
+              <Text style={styles.textItem}>{item.type}</Text>
+            </View>
+            <View style={styles.viewItemCol3}>
+              <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+                <Text style={styles.joinedTitle}>Skill</Text>
+              </View>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                }}
+              >
+                <Text style={styles.joinedText}>-</Text>
+              </View>
+            </View>
+            <View style={styles.viewItemCol4}>
+              <Text style={styles.joinedTitle}>Joined</Text>
+              {myJoinedActivities != undefined && (
+                <Text style={styles.joinedText}>{item.isJoined + '/' + item.count}</Text>
+              )}
+            </View>
+          </View>
+        ));
+
+    return (
+      <View style={styles.viewItems}>
+        <ScrollView>{showMyJoined}</ScrollView>
+      </View>
+    );
+  };
+
+  const asAMember = (
+    <View style={styles.viewItems}>
+      <View style={styles.viewItemHorizontal}>
+        <View style={styles.viewItemCol1}>
+          <Image
+            source={require('assets/img/bicycle.png')}
+            style={styles.icon}
+          />
+        </View>
+        <View style={styles.viewItemCol2}>
+          <Text style={styles.textItem}>Bicycle</Text>
+        </View>
+        <View style={styles.viewItemCol3}>
+          <Icon size={20} name="ellipse" type="ionicon" color="green" />
+        </View>
+        <View style={styles.viewItemCol4}>
+          <Icon size={20} name="ellipse" type="ionicon" color="gray" />
+        </View>
+      </View>
+      <View style={styles.viewItemHorizontal}>
+        <View style={styles.viewItemCol1}>
+          <Image
+            source={require('assets/img/basketball.png')}
+            style={styles.icon}
+          />
+        </View>
+        <View style={styles.viewItemCol2}>
+          <Text style={styles.textItem}>Basketball</Text>
+        </View>
+        <View style={styles.viewItemCol3}>
+          <Icon size={20} name="ellipse" type="ionicon" color="gray" />
+        </View>
+        <View style={styles.viewItemCol4}>
+          <Icon size={20} name="ellipse" type="ionicon" color="gray" />
+        </View>
+      </View>
+    </View>
+  );
+
   return (
     <>
       <View style={styles.containerFirst}>
         <TouchableOpacity
           style={{ alignSelf: 'flex-end' }}
-          onPress={() => navigation.navigate('Create Profile', {from: 'Profile Info'})}
+          onPress={() =>
+            navigation.navigate('Create Profile', { from: 'Profile Info' })
+          }
         >
           <View style={styles.viewbuttonAction}>
             <Text style={styles.textButtonAction}>Edit</Text>
@@ -70,11 +242,13 @@ const ProfileInfoScreen = () => {
         </TouchableOpacity>
         <View style={styles.viewImg}>
           {/* <View style={{ flex: 1}} /> */}
-          {photoPath != null && <Image
-            source={{ uri: photoPath }}
-            // source={require(photoPath)}
-            style={styles.image}
-          />}
+          {photoPath != null && (
+            <Image
+              source={{ uri: photoPath }}
+              // source={require(photoPath)}
+              style={styles.image}
+            />
+          )}
           {/* <View style={styles.viewIcon}>
                         <Icon size={30} name="camera-outline" type="ionicon" onPress={() => photo()} />
                     </View> */}
@@ -123,43 +297,20 @@ const ProfileInfoScreen = () => {
       </View>
       <View style={styles.viewPast}>
         <View style={styles.viewTitle}>
-          <View style={styles.viewTitleCol1}>
+          <TouchableOpacity
+            style={styles.viewTitleCol1}
+            onPress={() => setWhichTab(0)}
+          >
             <Text style={styles.textCol1}>My Activities</Text>
-          </View>
-          <View style={styles.viewTitleCol2}>
-            <Text>Joined</Text>
-          </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.viewTitleCol2}
+            onPress={() => setWhichTab(1)}
+          >
+            <Text>As A Member</Text>
+          </TouchableOpacity>
         </View>
-        <View style={styles.viewItems}>
-          <View style={styles.viewItemHorizontal}>
-            <View style={styles.viewItemCol1}>
-              <Image
-                source={require('assets/img/hiking.png')}
-                style={styles.icon}
-              />
-            </View>
-            <View style={styles.viewItemCol2}>
-              <Text style={styles.textItem}>Adım Adım Zirveye</Text>
-            </View>
-            <View style={styles.viewItemCol3}>
-              <Icon size={20} name="ellipse" type="ionicon" color="green" />
-            </View>
-          </View>
-          <View style={styles.viewItemHorizontal}>
-            <View style={styles.viewItemCol1}>
-              <Image
-                source={require('assets/img/hiking.png')}
-                style={styles.icon}
-              />
-            </View>
-            <View style={styles.viewItemCol2}>
-              <Text style={styles.textItem}>Rakibim Nerede?</Text>
-            </View>
-            <View style={styles.viewItemCol3}>
-              <Icon size={20} name="ellipse" type="ionicon" color="gray" />
-            </View>
-          </View>
-        </View>
+        {whichTab === 0 ? myActivities() : asAMember}
       </View>
       <View style={{ flex: 1 }} />
     </>
@@ -347,14 +498,14 @@ const styles = StyleSheet.create({
     borderColor: '#C4C4C4',
   },
   viewItemCol1: {
-    flex: 2,
+    flex: 1,
     // backgroundColor: 'red',
     alignItems: 'center',
     justifyContent: 'center',
   },
   viewItemCol2: {
-    flex: 5,
-    // backgroundColor: 'yellow',
+    flex: 2,
+    backgroundColor: 'orange',
     // alignItems: 'center',
     justifyContent: 'center',
   },
@@ -362,10 +513,24 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'yellow',
+  },
+  viewItemCol4: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  joinedTitle: {
+    fontWeight: 'bold',
+    fontSize: 12,
+  },
+  joinedText: {
+    fontSize: 12,
   },
   textItem: {
     fontSize: 16,
     fontWeight: 'bold',
+    textTransform: 'capitalize',
   },
   icon: {
     width: 60,
