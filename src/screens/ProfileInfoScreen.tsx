@@ -41,6 +41,7 @@ const ProfileInfoScreen = () => {
     });
 
     getMyActivities();
+    // getAsAMember();
 
     return () => {
       unsubscribe;
@@ -52,7 +53,7 @@ const ProfileInfoScreen = () => {
 
     const resultMyActivities = await firestore()
       .collection('Activities')
-      .where('owner.email', '==', user.email)
+      .where('owner.email', '==', 'resulekremcoban@gmail.com')
       .where('state', '==', false)
       .get();
 
@@ -63,82 +64,179 @@ const ProfileInfoScreen = () => {
       let resultFeedbackMembers = await firestore()
         .collection('Members')
         .where('activityId', '==', myActivity.data().id)
+        .where('memberState', '==', true)
+        .where('ownerState', '==', true)
         .get();
 
-        resultFeedbackMembers.docs.forEach(mem => {
-          members.push(mem.data())
+        resultFeedbackMembers.docs.forEach(member => {
+          console.log('member', myActivity.data().name, member.data())
+          members.push(member.data())
+// console.log('resultFeedbackMembers.docs.', resultFeedbackMembers.docs);
+      // console.log('sıralı', orderedMember[0]);
+      //   console.log('myActivity', myActivity.data().name, resultFeedbackMembers.docs)
+      if (member.data().ownerJoin != false) {
+        isJoined = 1;
+        // console.log('**********', myActivity.data().name);
+      } else {
+        isJoined = 0;
+        // console.log('------------', myActivity.data().name);
+      }
+
+    if (myJoinedActivities.length === 0) {
+      console.log('İLK', member.data(), myActivity.data().name);
+      myJoinedActivities.push({
+        type: myActivity.data().type,
+        ownerRating: member.data().ownerRating != null ? member.data().ownerRating : 0,
+        ratingCount: member.data().ownerRating != null ? 1 : 0, 
+        isJoined: isJoined,
+        count: 1,
+      });
+    } else {
+      let isThereActivity = myJoinedActivities.filter(
+        (myJoinedActivity) => myJoinedActivity.type === myActivity.data().type
+      );
+
+      if (isThereActivity.length === 0) {
+        console.log('EKLE', member.data(),myActivity.data().name);
+        myJoinedActivities.push({
+          type: myActivity.data().type,
+          ownerRating: member.data().ownerRating != null ? member.data().ownerRating : 0,
+          ratingCount: member.data().ownerRating != null ? 1 : 0, 
+          isJoined: isJoined,
+          count: 1,
+        });
+      } else {
+        // const countTemp = isThereActivity[0].count;
+        // const isJoinedTemp = isThereActivity[0].isJoined;
+        // const ratingCountTemp = isThereActivity[0].ratingCount;
+        // const ownerRatingTemp = isThereActivity[0].ownerRating;
+
+        // console.log('isJoinedTemp', isJoinedTemp)
+        // console.log('ratingCountTemp', ratingCountTemp)
+        // console.log('ownerRatingTemp', ownerRatingTemp)
+
+        // console.log('GÜNCELLE', orderedMember[0],myActivity.data().name);
+        const rating = member.data().ownerRating != null ? member.data().ownerRating : 0
+        const ratingCount = member.data().ownerRating != null ? 1  : 0;
+
+        // console.log('rating', rating);
+        // console.log('ratingCount', ratingCount);
+        // console.log('isThereActivity[0].ownerRating', ownerRatingTemp);
+        // console.log('isThereActivity[0].isJoined', isJoinedTemp);
+ 
+        isThereActivity[0].count += 1;
+        isThereActivity[0].isJoined += isJoined;
+        isThereActivity[0].ratingCount += ratingCount,
+        isThereActivity[0].ownerRating += rating;
+        // console.log('********', ownerRatingTemp)
+      }
+    }
         })        
 
         const orderedMember = members.sort((a, b) => {
           return b.createdTime - a.createdTime;
         })
 
-      // console.log('resultFeedbackMembers.docs.', resultFeedbackMembers.docs);
-      // console.log('sıralı', orderedMember[0]);
-      //   console.log('myActivity', myActivity.data().name, resultFeedbackMembers.docs)
-        if (orderedMember[0].ownerJoin != false) {
-          isJoined = 1;
-          // console.log('**********', myActivity.data().name);
-        } else {
-          isJoined = 0;
-          // console.log('------------', myActivity.data().name);
-        }
-
-      if (myJoinedActivities.length === 0) {
-        // console.log('İLK', orderedMember[0]);
-        myJoinedActivities.push({
-          type: myActivity.data().type,
-          ownerRating: orderedMember[0].ownerRating != null ? orderedMember[0].ownerRating : 0,
-          ratingCount: orderedMember[0].ownerRating != null ? 1 : 0, 
-          isJoined: isJoined,
-          count: 1,
-        });
-      } else {
-        let isThereActivity = myJoinedActivities.filter(
-          (myJoinedActivity) => myJoinedActivity.type === myActivity.data().type
-        );
-
-        if (isThereActivity.length === 0) {
-          // console.log('EKLE', orderedMember[0],myActivity.data().name);
-          myJoinedActivities.push({
-            type: myActivity.data().type,
-            ownerRating: orderedMember[0].ownerRating != null ? orderedMember[0].ownerRating : 0,
-            ratingCount: orderedMember[0].ownerRating != null ? 1 : 0, 
-            isJoined: isJoined,
-            count: 1,
-          });
-        } else {
-          // const countTemp = isThereActivity[0].count;
-          // const isJoinedTemp = isThereActivity[0].isJoined;
-          // const ratingCountTemp = isThereActivity[0].ratingCount;
-          // const ownerRatingTemp = isThereActivity[0].ownerRating;
-
-          // console.log('isJoinedTemp', isJoinedTemp)
-          // console.log('ratingCountTemp', ratingCountTemp)
-          // console.log('ownerRatingTemp', ownerRatingTemp)
-
-          // console.log('GÜNCELLE', orderedMember[0],myActivity.data().name);
-          const rating = orderedMember[0].ownerRating != null ? orderedMember[0].ownerRating : 0
-          const ratingCount = orderedMember[0].ownerRating != null ? 1  : 0;
-
-          // console.log('rating', rating);
-          // console.log('ratingCount', ratingCount);
-          // console.log('isThereActivity[0].ownerRating', ownerRatingTemp);
-          // console.log('isThereActivity[0].isJoined', isJoinedTemp);
-   
-          isThereActivity[0].count += 1;
-          isThereActivity[0].isJoined += isJoined;
-          isThereActivity[0].ratingCount += ratingCount,
-          isThereActivity[0].ownerRating += rating;
-          // console.log('********', ownerRatingTemp)
-        }
-      }
+      
       // console.log('myJoinedActivities', myJoinedActivities);
       setMyJoinedActivities([...myJoinedActivities]);
     });
  
     // console.log('myJoinedActivities', myJoinedActivities);
   };
+
+  const getAsAMember = async () => {
+    await firestore()
+      .collection('Members')
+      .where('memberEmail', '==', 'resulekremcoban@gmail.com')
+      .where('memberState', '==', true)
+      .where('ownerState', '==', true)
+      .onSnapshot((querySnapshot) => {
+
+        querySnapshot.forEach((documentSnapshot) => {
+          activityId.push(documentSnapshot.data().activityId);
+        });
+        console.log('activityId 1', activityId);
+
+        let index = 0;
+        const partion = Math.ceil(activityId.length / 10);
+
+        if (partion === 0) {
+          setSpinner(false);
+        }
+
+        for (let i = 0; i < partion; i++) {
+          let stackTen = [];
+          while (index < activityId.length) {
+            stackTen.push(activityId[index++]);
+            if (index % 10 === 0) {
+              firestore()
+                .collection('Activities')
+                .where('id', 'in', stackTen)
+                // .where('ime', '>', 1626820440000)
+                .onSnapshot((documentSnapshot) => {
+                  documentSnapshot.docs.forEach((documentSnapshot) => {
+                    firestore()
+                    .collection('ActivityAddress')
+                    .where('activityId', '==', documentSnapshot.data().id)
+                    .get()
+                    .then((items) => {
+                      address.push(items.docs[0].data());
+                      setAddressList(address);
+                    });
+                    // console.log('User data: ', s.data());
+                    const isIt = activityTemp.filter(
+                      (a) => a.id === documentSnapshot.data().id
+                    );
+
+                    if (isIt.length === 0) {
+                      activityTemp.push(documentSnapshot.data());
+                    }
+                  });
+                  console.log('activityTemp 1', activityTemp);
+                  setActivityMemberList([...activityTemp]);
+                  setSpinner(false);
+                });
+
+              stackTen = [];
+            } else {
+              if (index === activityId.length) {
+                console.log(i, 'falza', stackTen);
+                firestore()
+                  .collection('Activities')
+                  .where('id', 'in', stackTen)
+                  // .where('ime', '>', 1626820440000)
+                  .onSnapshot((documentSnapshot) => {
+                    documentSnapshot.docs.forEach((documentSnapshot) => {
+                      firestore()
+                      .collection('ActivityAddress')
+                      .where('activityId', '==', documentSnapshot.data().id)
+                      .get()
+                      .then((items) => {
+                        address.push(items.docs[0].data());
+                        setAddressList(address);
+                      });
+                      // console.log('User data: ', s.data());
+                      const isIt = activityTemp.filter(
+                        (a) => a.id === documentSnapshot.data().id
+                      );
+
+                      if (isIt.length === 0) {
+                        activityTemp.push(documentSnapshot.data());
+                      }
+                    });
+                    console.log('activityTemp 2', activityTemp);
+                    setActivityMemberList([...activityTemp]);
+                    setSpinner(false);
+                  });
+
+                stackTen = [];
+              }
+            }
+          }
+        }
+      });
+  }
 
   const photo = () => {
     ImagePickerCropper.openPicker({

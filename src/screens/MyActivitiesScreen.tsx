@@ -58,6 +58,7 @@ const MyActivitiesScreen = () => {
       await firestore()
       .collection('Members')
       .where('memberEmail', '==', user.email)
+      .where('memberState', '==', true)
       .where('ownerState', '==', true)
       .onSnapshot((querySnapshot) => {
 
