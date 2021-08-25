@@ -29,11 +29,9 @@ const ProfileInfoScreen = () => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      console.log('profil info');
 
       getData('Photo').then((res) => {
         setPhotoPath(res);
-        console.log('profil photo db', res);
         if (res == null) {
           getData('Users').then((res) => {
             setPhotoPath(res.photo);
@@ -51,48 +49,49 @@ const ProfileInfoScreen = () => {
 
   const getMyActivities = async () => {
     let myJoinedActivities = [];
-    let feedbackMyActivities = [];
 
     const resultMyActivities = await firestore()
       .collection('Activities')
-      .where('owner.email', '==', 'resulekremcoban@gmail.com')
+      .where('owner.email', '==', user.email)
       .where('state', '==', false)
       .get();
 
     resultMyActivities.docs.forEach(async (myActivity) => {
       let isJoined = 1;
-      let isSuccess = false;
+      let members = [];
+
       let resultFeedbackMembers = await firestore()
         .collection('Members')
         .where('activityId', '==', myActivity.data().id)
-        // .where('ownerJoin', '==', false)
         .get();
 
-        console.log('resultFeedbackMembers.docs.', resultFeedbackMembers.docs)
-      resultFeedbackMembers.docs.forEach((myMember) => {
-        isJoined = 1;
-        
-        if (myMember.data().ownerJoin == false) {
-          isSuccess = false;
+        resultFeedbackMembers.docs.forEach(mem => {
+          members.push(mem.data())
+        })        
+
+        const orderedMember = members.sort((a, b) => {
+          return b.createdTime - a.createdTime;
+        })
+
+      // console.log('resultFeedbackMembers.docs.', resultFeedbackMembers.docs);
+      // console.log('sıralı', orderedMember[0]);
+      //   console.log('myActivity', myActivity.data().name, resultFeedbackMembers.docs)
+        if (orderedMember[0].ownerJoin != false) {
+          isJoined = 1;
+          // console.log('**********', myActivity.data().name);
+        } else {
           isJoined = 0;
-          console.log('**********', myMember.data().ownerJoin)
+          // console.log('------------', myActivity.data().name);
         }
-        if (myMember.data().ownerJoin != undefined) {
-          isSuccess = true;
-        }
-        else {
-          isSuccess = true;
-          isJoined = 0;
-          console.log('000000000', myActivity.data().type, myActivity.data().ownerJoin)
-        }
-      });
 
       if (myJoinedActivities.length === 0) {
-        console.log('İLK')
+        // console.log('İLK', orderedMember[0]);
         myJoinedActivities.push({
           type: myActivity.data().type,
+          ownerRating: orderedMember[0].ownerRating != null ? orderedMember[0].ownerRating : 0,
+          ratingCount: orderedMember[0].ownerRating != null ? 1 : 0, 
           isJoined: isJoined,
-          count: isSuccess ? 1 : 0,
+          count: 1,
         });
       } else {
         let isThereActivity = myJoinedActivities.filter(
@@ -100,28 +99,45 @@ const ProfileInfoScreen = () => {
         );
 
         if (isThereActivity.length === 0) {
-          console.log('EKLE')
+          // console.log('EKLE', orderedMember[0],myActivity.data().name);
           myJoinedActivities.push({
             type: myActivity.data().type,
+            ownerRating: orderedMember[0].ownerRating != null ? orderedMember[0].ownerRating : 0,
+            ratingCount: orderedMember[0].ownerRating != null ? 1 : 0, 
             isJoined: isJoined,
-            count: isSuccess ? 1 : 0,
+            count: 1,
           });
         } else {
-          console.log('GÜNCELLE')
+          // const countTemp = isThereActivity[0].count;
+          // const isJoinedTemp = isThereActivity[0].isJoined;
+          // const ratingCountTemp = isThereActivity[0].ratingCount;
+          // const ownerRatingTemp = isThereActivity[0].ownerRating;
+
+          // console.log('isJoinedTemp', isJoinedTemp)
+          // console.log('ratingCountTemp', ratingCountTemp)
+          // console.log('ownerRatingTemp', ownerRatingTemp)
+
+          // console.log('GÜNCELLE', orderedMember[0],myActivity.data().name);
+          const rating = orderedMember[0].ownerRating != null ? orderedMember[0].ownerRating : 0
+          const ratingCount = orderedMember[0].ownerRating != null ? 1  : 0;
+
+          // console.log('rating', rating);
+          // console.log('ratingCount', ratingCount);
+          // console.log('isThereActivity[0].ownerRating', ownerRatingTemp);
+          // console.log('isThereActivity[0].isJoined', isJoinedTemp);
+   
           isThereActivity[0].count += 1;
-          if (isJoined === 1) {
-            isThereActivity[0].isJoined += 1;
-          }
+          isThereActivity[0].isJoined += isJoined;
+          isThereActivity[0].ratingCount += ratingCount,
+          isThereActivity[0].ownerRating += rating;
+          // console.log('********', ownerRatingTemp)
         }
       }
-      console.log('myJoinedActivities', myJoinedActivities);
+      // console.log('myJoinedActivities', myJoinedActivities);
       setMyJoinedActivities([...myJoinedActivities]);
-      // console.log('feedbackMyActivities', feedbackMyActivities)
     });
-    console.log('HAYDAA')
-    console.log('myJoinedActivities', myJoinedActivities);
-
-   
+ 
+    // console.log('myJoinedActivities', myJoinedActivities);
   };
 
   const photo = () => {
@@ -169,13 +185,15 @@ const ProfileInfoScreen = () => {
                   justifyContent: 'flex-start',
                 }}
               >
-                <Text style={styles.joinedText}>-</Text>
+                <Text style={styles.joinedText}>{item.ownerRating != null && item.ratingCount ? (item.ownerRating / item.ratingCount).toFixed(1) : '-'}</Text>
               </View>
             </View>
             <View style={styles.viewItemCol4}>
               <Text style={styles.joinedTitle}>Joined</Text>
               {myJoinedActivities != undefined && (
-                <Text style={styles.joinedText}>{item.isJoined + '/' + item.count}</Text>
+                <Text style={styles.joinedText}>
+                  {item.isJoined + '/' + item.count}
+                </Text>
               )}
             </View>
           </View>
@@ -188,44 +206,53 @@ const ProfileInfoScreen = () => {
     );
   };
 
-  const asAMember = (
-    <View style={styles.viewItems}>
-      <View style={styles.viewItemHorizontal}>
-        <View style={styles.viewItemCol1}>
-          <Image
-            source={require('assets/img/bicycle.png')}
-            style={styles.icon}
-          />
-        </View>
-        <View style={styles.viewItemCol2}>
-          <Text style={styles.textItem}>Bicycle</Text>
-        </View>
-        <View style={styles.viewItemCol3}>
-          <Icon size={20} name="ellipse" type="ionicon" color="green" />
-        </View>
-        <View style={styles.viewItemCol4}>
-          <Icon size={20} name="ellipse" type="ionicon" color="gray" />
-        </View>
+  const asAMembers = () => {
+    const showMyJoined =
+      myJoinedActivities != undefined &&
+      myJoinedActivities
+        .sort((a, b) => {
+          return b.count - a.count;
+        })
+        // .filter(item => item.count > 0)
+        .map((item) => (
+          <View style={styles.viewItemHorizontal}>
+            <View style={styles.viewItemCol1}>
+              <Image source={selectImg(item.type)} style={styles.icon} />
+            </View>
+            <View style={styles.viewItemCol2}>
+              <Text style={styles.textItem}>{item.type}</Text>
+            </View>
+            <View style={styles.viewItemCol3}>
+              <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+                <Text style={styles.joinedTitle}>Skill</Text>
+              </View>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                }}
+              >
+                <Text style={styles.joinedText}>{item.ownerRating != null && (item.ownerRating / item.ratingCount).toFixed(1)}</Text>
+              </View>
+            </View>
+            <View style={styles.viewItemCol4}>
+              <Text style={styles.joinedTitle}>Joined</Text>
+              {myJoinedActivities != undefined && (
+                <Text style={styles.joinedText}>
+                  {item.isJoined + '/' + item.count}
+                </Text>
+              )}
+            </View>
+          </View>
+        ));
+
+    return (
+      <View style={styles.viewItems}>
+        <ScrollView>{showMyJoined}</ScrollView>
       </View>
-      <View style={styles.viewItemHorizontal}>
-        <View style={styles.viewItemCol1}>
-          <Image
-            source={require('assets/img/basketball.png')}
-            style={styles.icon}
-          />
-        </View>
-        <View style={styles.viewItemCol2}>
-          <Text style={styles.textItem}>Basketball</Text>
-        </View>
-        <View style={styles.viewItemCol3}>
-          <Icon size={20} name="ellipse" type="ionicon" color="gray" />
-        </View>
-        <View style={styles.viewItemCol4}>
-          <Icon size={20} name="ellipse" type="ionicon" color="gray" />
-        </View>
-      </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <>
@@ -310,7 +337,7 @@ const ProfileInfoScreen = () => {
             <Text>As A Member</Text>
           </TouchableOpacity>
         </View>
-        {whichTab === 0 ? myActivities() : asAMember}
+        {whichTab === 0 ? myActivities() : null}
       </View>
       <View style={{ flex: 1 }} />
     </>
@@ -494,6 +521,7 @@ const styles = StyleSheet.create({
   viewItemHorizontal: {
     flex: 1,
     flexDirection: 'row',
+    height: 60,
     borderWidth: 1,
     borderColor: '#C4C4C4',
   },
@@ -533,8 +561,8 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   icon: {
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
   },
 });
 
