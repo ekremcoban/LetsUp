@@ -5,6 +5,7 @@ import {
   Text,
   Alert,
   Image,
+  ScrollView,
   TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -14,7 +15,6 @@ import { useContext } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { getData } from 'db/localDb';
 import firestore from '@react-native-firebase/firestore';
-import { ScrollView } from 'react-native-gesture-handler';
 import { selectImg } from 'utilities/constants/selectImage';
 import DisplaySpinner from '../components/spinner';
 
@@ -23,14 +23,12 @@ const ProfileInfoScreen = () => {
   const { user, userPhoto } = useContext(ContextApi);
   const [photoPath, setPhotoPath] = useState<string>(null);
   const [whichTab, setWhichTab] = useState<number>(0);
-  const [activityMemberList, setActivityMemberList] = useState(null);
   const [myJoinedActivities, setMyJoinedActivities] = useState<Object>(
     undefined
   );
   const [asAMemberActivities, setAsAMemberActivities] = useState<Object>(
     undefined
   );
-  const [addressList, setAddressList] = useState(null);
   const [spinner, setSpinner] = useState<boolean>(true);
 
   useEffect(() => {
@@ -60,6 +58,7 @@ const ProfileInfoScreen = () => {
       .collection('Activities')
       .where('owner.email', '==', user.email)
       .where('state', '==', false)
+      .where('feedbackReminder', '==', true)
       .get();
 
     resultMyActivities.docs.forEach(async (myActivity) => {
@@ -155,7 +154,6 @@ const ProfileInfoScreen = () => {
     let asAMemberActivities = [];
     let activityId = [];
     let activityTemp = [];
-    let address = [];
 
     const members = await firestore()
       .collection('Members')
@@ -188,25 +186,16 @@ const ProfileInfoScreen = () => {
                 .get();
                 
                 activity1.docs.forEach((documentSnapshot) => {
-                    firestore()
-                      .collection('ActivityAddress')
-                      .where('activityId', '==', documentSnapshot.data().id)
-                      .get()
-                      .then((items) => {
-                        address.push(items.docs[0].data());
-                        setAddressList(address);
-                      });
-                    // console.log('User data: ', s.data());
                     const isIt = activityTemp.filter(
                       (a) => a.id === documentSnapshot.data().id
+                      && documentSnapshot.data().feedbackReminder === true
                     );
 
-                    if (isIt.length === 0) {
+                    if (isIt.length === 0 && documentSnapshot.data().feedbackReminder) {
                       activityTemp.push(documentSnapshot.data());
                     }
                   });
                   // console.log('activityTemp 1', activityTemp);
-                  setActivityMemberList([...activityTemp]);
                   setSpinner(false);
 
 
@@ -220,25 +209,16 @@ const ProfileInfoScreen = () => {
                   .get();
 
                   activity2.docs.forEach((documentSnapshot) => {
-                      firestore()
-                        .collection('ActivityAddress')
-                        .where('activityId', '==', documentSnapshot.data().id)
-                        .get()
-                        .then((items) => {
-                          address.push(items.docs[0].data());
-                          setAddressList(address);
-                        });
-                      // console.log('User data: ', s.data());
                       const isIt = activityTemp.filter(
                         (a) => a.id === documentSnapshot.data().id
+                        && documentSnapshot.data().feedbackReminder === true
                       );
 
-                      if (isIt.length === 0) {
+                      if (isIt.length === 0 && documentSnapshot.data().feedbackReminder) {
                         activityTemp.push(documentSnapshot.data());
                       }
                     });
                     // console.log('activityTemp 2', activityTemp);
-                    setActivityMemberList([...activityTemp]);
                     setSpinner(false);
     
                 stackTen = [];

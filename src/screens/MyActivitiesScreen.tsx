@@ -14,6 +14,7 @@ import ContextApi from 'context/ContextApi';
 import { colors } from 'utilities/constants/globalValues';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
+import { selectImg } from 'utilities/constants/selectImage';
 
 let activityId = [];
 let activityTemp = [];
@@ -191,29 +192,7 @@ const MyActivitiesScreen = () => {
         <View style={styles.viewLeft}>
           <Image
             source={
-              item.type === 'basketball'
-                ? require('assets/img/basketball.png')
-                : item.type === 'bicycle'
-                ? require('assets/img/bicycle.png')
-                : item.type === 'hiking'
-                ? require('assets/img/hiking.png')
-                : item.type === 'jogging'
-                ? require('assets/img/jogging.png')
-                : item.type === 'table_tennis'
-                ? require('assets/img/table_tennis.png')
-                : item.type === 'tennis'
-                ? require('assets/img/tennis.png')
-                : item.type === 'volleyball'
-                ? require('assets/img/volleyball.png')
-                : item.type === 'badminton'
-                ? require('assets/img/badminton.png')
-                : item.type === 'meditation'
-                ? require('assets/img/meditation.png')
-                : item.type === 'roller_skate'
-                ? require('assets/img/roller_skate.png')
-                : item.type === 'skateboard'
-                ? require('assets/img/skateboard.png')
-                : require('assets/img/join.png')
+              selectImg(item.type)
             }
             style={styles.icon}
           />
@@ -276,30 +255,7 @@ const MyActivitiesScreen = () => {
       >
         <View style={styles.viewLeft}>
           <Image
-            source={
-              item.type === 'basketball'
-                ? require('assets/img/basketball.png')
-                : item.type === 'bicycle'
-                ? require('assets/img/bicycle.png')
-                : item.type === 'hiking'
-                ? require('assets/img/hiking.png')
-                : item.type === 'jogging'
-                ? require('assets/img/jogging.png')
-                : item.type === 'table_tennis'
-                ? require('assets/img/table_tennis.png')
-                : item.type === 'tennis'
-                ? require('assets/img/tennis.png')
-                : item.type === 'volleyball'
-                ? require('assets/img/volleyball.png')
-                : item.type === 'badminton'
-                ? require('assets/img/badminton.png')
-                : item.type === 'meditation'
-                ? require('assets/img/meditation.png')
-                : item.type === 'roller_skate'
-                ? require('assets/img/roller_skate.png')
-                : item.type === 'skateboard'
-                ? require('assets/img/skateboard.png')
-                : require('assets/img/join.png')
+            source={selectImg(item.type)
             }
             style={styles.icon}
           />
