@@ -126,7 +126,7 @@ class MemberOldActivityInfoScreen extends Component {
       </View>
     );
 
-    const showEmailIcon = (member: Object) => {
+    const showEmailIcon = (activity: Object) => {
       return (
         <View
           style={{
@@ -141,7 +141,7 @@ class MemberOldActivityInfoScreen extends Component {
             style={{ color: 'gray' }}
             onPress={() =>
               Linking.openURL(
-                `mailto:${member._data.memberEmail}?subject=${this.props.route.params.activity.name}&body=Hello ${member._data.memberName}`
+                `mailto:${activity.owner.email}?subject=${'(Lets Up) ' + activity.name}&body=Hello ${activity.owner.name}`
               )
             }
           />
@@ -248,7 +248,7 @@ class MemberOldActivityInfoScreen extends Component {
             </Text>
           </TouchableNativeFeedback>
         </View>
-        {showEmailIcon(this.props.route.params.activity.owner)}
+        {showEmailIcon(this.props.route.params.activity)}
         {showJoined(this.props.route.params.activity.owner)}
       </View>
     );

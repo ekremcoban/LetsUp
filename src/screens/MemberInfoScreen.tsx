@@ -26,7 +26,10 @@ const MemberInfoScreen = () => {
     .collection('Users')
     .doc(route.params.data.memberEmail)
     .get()
-    .then(user => setUser(user.data()));
+    .then(user => {
+      setUser(user.data())
+      console.log('user member info', user.data());
+    });
 
     const unsubscribe = navigation.addListener('focus', () => {
 
@@ -42,7 +45,7 @@ const MemberInfoScreen = () => {
       <View style={styles.containerFirst}>
         <View style={styles.viewImg}>
           <Image
-            source={{ uri: user != null && user.photo }}
+            source={{ uri: user != null ? user.photo : null}}
             style={styles.image}
           />
         </View>

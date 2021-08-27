@@ -16,20 +16,25 @@ import { getData } from 'db/localDb';
 import firestore from '@react-native-firebase/firestore';
 import { ScrollView } from 'react-native-gesture-handler';
 import { selectImg } from 'utilities/constants/selectImage';
-import { filter } from 'lodash';
+import DisplaySpinner from '../components/spinner';
 
 const ProfileInfoScreen = () => {
   const navigation = useNavigation();
   const { user, userPhoto } = useContext(ContextApi);
   const [photoPath, setPhotoPath] = useState<string>(null);
   const [whichTab, setWhichTab] = useState<number>(0);
+  const [activityMemberList, setActivityMemberList] = useState(null);
   const [myJoinedActivities, setMyJoinedActivities] = useState<Object>(
     undefined
   );
+  const [asAMemberActivities, setAsAMemberActivities] = useState<Object>(
+    undefined
+  );
+  const [addressList, setAddressList] = useState(null);
+  const [spinner, setSpinner] = useState<boolean>(true);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-
       getData('Photo').then((res) => {
         setPhotoPath(res);
         if (res == null) {
@@ -41,7 +46,7 @@ const ProfileInfoScreen = () => {
     });
 
     getMyActivities();
-    // getAsAMember();
+    getAsAMember();
 
     return () => {
       unsubscribe;
@@ -53,7 +58,7 @@ const ProfileInfoScreen = () => {
 
     const resultMyActivities = await firestore()
       .collection('Activities')
-      .where('owner.email', '==', 'resulekremcoban@gmail.com')
+      .where('owner.email', '==', user.email)
       .where('state', '==', false)
       .get();
 
@@ -68,95 +73,102 @@ const ProfileInfoScreen = () => {
         .where('ownerState', '==', true)
         .get();
 
-        resultFeedbackMembers.docs.forEach(member => {
-          console.log('member', myActivity.data().name, member.data())
-          members.push(member.data())
-// console.log('resultFeedbackMembers.docs.', resultFeedbackMembers.docs);
-      // console.log('sıralı', orderedMember[0]);
-      //   console.log('myActivity', myActivity.data().name, resultFeedbackMembers.docs)
-      if (member.data().ownerJoin != false) {
-        isJoined = 1;
-        // console.log('**********', myActivity.data().name);
-      } else {
-        isJoined = 0;
-        // console.log('------------', myActivity.data().name);
-      }
+      resultFeedbackMembers.docs.forEach((member) => {
+        // console.log('member', myActivity.data().name, member.data())
+        // members.push(member.data());
+        // console.log('resultFeedbackMembers.docs.', resultFeedbackMembers.docs);
+        // console.log('sıralı', orderedMember[0]);
+        //   console.log('myActivity', myActivity.data().name, resultFeedbackMembers.docs)
+        if (member.data().ownerJoin != false) {
+          isJoined = 1;
+          // console.log('**********', myActivity.data().name);
+        } else {
+          isJoined = 0;
+          // console.log('------------', myActivity.data().name);
+        }
 
-    if (myJoinedActivities.length === 0) {
-      console.log('İLK', member.data(), myActivity.data().name);
-      myJoinedActivities.push({
-        type: myActivity.data().type,
-        ownerRating: member.data().ownerRating != null ? member.data().ownerRating : 0,
-        ratingCount: member.data().ownerRating != null ? 1 : 0, 
-        isJoined: isJoined,
-        count: 1,
+        if (myJoinedActivities.length === 0) {
+          // console.log('İLK', member.data(), myActivity.data().name);
+          myJoinedActivities.push({
+            type: myActivity.data().type,
+            ownerRating:
+              member.data().ownerRating != null ? member.data().ownerRating : 0,
+            ratingCount: member.data().ownerRating != null ? 1 : 0,
+            isJoined: isJoined,
+            count: 1,
+          });
+        } else {
+          let isThereActivity = myJoinedActivities.filter(
+            (myJoinedActivity) =>
+              myJoinedActivity.type === myActivity.data().type
+          );
+
+          if (isThereActivity.length === 0) {
+            // console.log('EKLE', member.data(),myActivity.data().name);
+            myJoinedActivities.push({
+              type: myActivity.data().type,
+              ownerRating:
+                member.data().ownerRating != null
+                  ? member.data().ownerRating
+                  : 0,
+              ratingCount: member.data().ownerRating != null ? 1 : 0,
+              isJoined: isJoined,
+              count: 1,
+            });
+          } else {
+            // const countTemp = isThereActivity[0].count;
+            // const isJoinedTemp = isThereActivity[0].isJoined;
+            // const ratingCountTemp = isThereActivity[0].ratingCount;
+            // const ownerRatingTemp = isThereActivity[0].ownerRating;
+
+            // console.log('isJoinedTemp', isJoinedTemp)
+            // console.log('ratingCountTemp', ratingCountTemp)
+            // console.log('ownerRatingTemp', ownerRatingTemp)
+
+            // console.log('GÜNCELLE', orderedMember[0],myActivity.data().name);
+            const rating =
+              member.data().ownerRating != null ? member.data().ownerRating : 0;
+            const ratingCount = member.data().ownerRating != null ? 1 : 0;
+
+            // console.log('rating', rating);
+            // console.log('ratingCount', ratingCount);
+            // console.log('isThereActivity[0].ownerRating', ownerRatingTemp);
+            // console.log('isThereActivity[0].isJoined', isJoinedTemp);
+
+            isThereActivity[0].count += 1;
+            isThereActivity[0].isJoined += isJoined;
+            (isThereActivity[0].ratingCount += ratingCount),
+              (isThereActivity[0].ownerRating += rating);
+            // console.log('********', ownerRatingTemp)
+          }
+        }
       });
-    } else {
-      let isThereActivity = myJoinedActivities.filter(
-        (myJoinedActivity) => myJoinedActivity.type === myActivity.data().type
-      );
 
-      if (isThereActivity.length === 0) {
-        console.log('EKLE', member.data(),myActivity.data().name);
-        myJoinedActivities.push({
-          type: myActivity.data().type,
-          ownerRating: member.data().ownerRating != null ? member.data().ownerRating : 0,
-          ratingCount: member.data().ownerRating != null ? 1 : 0, 
-          isJoined: isJoined,
-          count: 1,
-        });
-      } else {
-        // const countTemp = isThereActivity[0].count;
-        // const isJoinedTemp = isThereActivity[0].isJoined;
-        // const ratingCountTemp = isThereActivity[0].ratingCount;
-        // const ownerRatingTemp = isThereActivity[0].ownerRating;
-
-        // console.log('isJoinedTemp', isJoinedTemp)
-        // console.log('ratingCountTemp', ratingCountTemp)
-        // console.log('ownerRatingTemp', ownerRatingTemp)
-
-        // console.log('GÜNCELLE', orderedMember[0],myActivity.data().name);
-        const rating = member.data().ownerRating != null ? member.data().ownerRating : 0
-        const ratingCount = member.data().ownerRating != null ? 1  : 0;
-
-        // console.log('rating', rating);
-        // console.log('ratingCount', ratingCount);
-        // console.log('isThereActivity[0].ownerRating', ownerRatingTemp);
-        // console.log('isThereActivity[0].isJoined', isJoinedTemp);
- 
-        isThereActivity[0].count += 1;
-        isThereActivity[0].isJoined += isJoined;
-        isThereActivity[0].ratingCount += ratingCount,
-        isThereActivity[0].ownerRating += rating;
-        // console.log('********', ownerRatingTemp)
-      }
-    }
-        })        
-
-        const orderedMember = members.sort((a, b) => {
-          return b.createdTime - a.createdTime;
-        })
-
-      
-      // console.log('myJoinedActivities', myJoinedActivities);
+      console.log('myJoinedActivities', myJoinedActivities);
       setMyJoinedActivities([...myJoinedActivities]);
     });
- 
+
     // console.log('myJoinedActivities', myJoinedActivities);
   };
 
   const getAsAMember = async () => {
-    await firestore()
+    let asAMemberActivities = [];
+    let activityId = [];
+    let activityTemp = [];
+    let address = [];
+
+    const members = await firestore()
       .collection('Members')
-      .where('memberEmail', '==', 'resulekremcoban@gmail.com')
+      .where('memberEmail', '==', user.email)
       .where('memberState', '==', true)
       .where('ownerState', '==', true)
-      .onSnapshot((querySnapshot) => {
-
-        querySnapshot.forEach((documentSnapshot) => {
+      .get()
+      
+      
+      members.docs.forEach((documentSnapshot) => {
           activityId.push(documentSnapshot.data().activityId);
         });
-        console.log('activityId 1', activityId);
+        // console.log('activityId 1', activityId);
 
         let index = 0;
         const partion = Math.ceil(activityId.length / 10);
@@ -170,20 +182,20 @@ const ProfileInfoScreen = () => {
           while (index < activityId.length) {
             stackTen.push(activityId[index++]);
             if (index % 10 === 0) {
-              firestore()
+              const activity1 = await firestore()
                 .collection('Activities')
                 .where('id', 'in', stackTen)
-                // .where('ime', '>', 1626820440000)
-                .onSnapshot((documentSnapshot) => {
-                  documentSnapshot.docs.forEach((documentSnapshot) => {
+                .get();
+                
+                activity1.docs.forEach((documentSnapshot) => {
                     firestore()
-                    .collection('ActivityAddress')
-                    .where('activityId', '==', documentSnapshot.data().id)
-                    .get()
-                    .then((items) => {
-                      address.push(items.docs[0].data());
-                      setAddressList(address);
-                    });
+                      .collection('ActivityAddress')
+                      .where('activityId', '==', documentSnapshot.data().id)
+                      .get()
+                      .then((items) => {
+                        address.push(items.docs[0].data());
+                        setAddressList(address);
+                      });
                     // console.log('User data: ', s.data());
                     const isIt = activityTemp.filter(
                       (a) => a.id === documentSnapshot.data().id
@@ -193,29 +205,29 @@ const ProfileInfoScreen = () => {
                       activityTemp.push(documentSnapshot.data());
                     }
                   });
-                  console.log('activityTemp 1', activityTemp);
+                  // console.log('activityTemp 1', activityTemp);
                   setActivityMemberList([...activityTemp]);
                   setSpinner(false);
-                });
+
 
               stackTen = [];
             } else {
               if (index === activityId.length) {
-                console.log(i, 'falza', stackTen);
-                firestore()
+                // console.log(i, 'falza', stackTen);
+                const activity2 = await firestore()
                   .collection('Activities')
                   .where('id', 'in', stackTen)
-                  // .where('ime', '>', 1626820440000)
-                  .onSnapshot((documentSnapshot) => {
-                    documentSnapshot.docs.forEach((documentSnapshot) => {
+                  .get();
+
+                  activity2.docs.forEach((documentSnapshot) => {
                       firestore()
-                      .collection('ActivityAddress')
-                      .where('activityId', '==', documentSnapshot.data().id)
-                      .get()
-                      .then((items) => {
-                        address.push(items.docs[0].data());
-                        setAddressList(address);
-                      });
+                        .collection('ActivityAddress')
+                        .where('activityId', '==', documentSnapshot.data().id)
+                        .get()
+                        .then((items) => {
+                          address.push(items.docs[0].data());
+                          setAddressList(address);
+                        });
                       // console.log('User data: ', s.data());
                       const isIt = activityTemp.filter(
                         (a) => a.id === documentSnapshot.data().id
@@ -225,18 +237,81 @@ const ProfileInfoScreen = () => {
                         activityTemp.push(documentSnapshot.data());
                       }
                     });
-                    console.log('activityTemp 2', activityTemp);
+                    // console.log('activityTemp 2', activityTemp);
                     setActivityMemberList([...activityTemp]);
                     setSpinner(false);
-                  });
-
+    
                 stackTen = [];
               }
             }
           }
         }
-      });
-  }
+
+        // console.log('members count', members.docs.length);
+    console.log('activityTemp 3', activityTemp);
+ 
+    activityTemp.forEach(async (myActivity, index) => {
+      // console.log('resultFeedbackMembers.docs', myActivity[index])
+      
+      let isJoined = 1;
+
+      const selectedMember = members.docs.filter(member => 
+        member.data().activityId === myActivity.id &&
+        member.data().memberEmail === user.email)[0].data();
+      // console.log('selectedMember', selectedMember)
+
+      if (selectedMember.memberJoin != false) {
+        isJoined = 1;
+        // console.log('**********q', myActivity.name);
+      } else {
+        isJoined = 0;
+        // console.log('------------q', myActivity.name);
+      }
+
+      if (asAMemberActivities.length === 0) {
+        // console.log('İLK', selectedMember, myActivity.name);
+        asAMemberActivities.push({
+          type: myActivity.type,
+          memberRating:
+          selectedMember.memberRating != null ? selectedMember.memberRating : 0,
+          ratingCount: selectedMember.memberRating != null ? 1 : 0,
+          isJoined: isJoined,
+          count: 1,
+        });
+      } else {
+        let isThereActivity = asAMemberActivities.filter(
+          (asAMemberActivity) => asAMemberActivity.type === myActivity.type
+        );
+        if (isThereActivity.length === 0) {
+          // console.log('EKLE', selectedMember, myActivity.name);
+          asAMemberActivities.push({
+            type: myActivity.type,
+            memberRating:
+            selectedMember.memberRating != null
+                ? selectedMember.memberRating
+                : 0,
+            ratingCount: selectedMember.memberRating != null ? 1 : 0,
+            isJoined: isJoined,
+            count: 1,
+          });
+        } else {
+          // console.log('GÜNCELLE', selectedMember, myActivity.name);
+          const rating =
+          selectedMember.memberRating != null ? selectedMember.memberRating : 0;
+          const ratingCount = selectedMember.memberRating != null ? 1 : 0;
+
+          isThereActivity[0].count += 1;
+          isThereActivity[0].isJoined += isJoined;
+          (isThereActivity[0].ratingCount += ratingCount),
+            (isThereActivity[0].memberRating += rating);
+          // console.log('********', ownerRatingTemp)
+        }
+      }
+
+    });
+    console.log('asAMemberActivities', asAMemberActivities);
+      setAsAMemberActivities([...asAMemberActivities]);
+  };
 
   const photo = () => {
     ImagePickerCropper.openPicker({
@@ -283,7 +358,11 @@ const ProfileInfoScreen = () => {
                   justifyContent: 'flex-start',
                 }}
               >
-                <Text style={styles.joinedText}>{item.ownerRating != null && item.ratingCount ? (item.ownerRating / item.ratingCount).toFixed(1) : '-'}</Text>
+                <Text style={styles.joinedText}>
+                  {item.ownerRating != null && item.ratingCount
+                    ? (item.ownerRating / item.ratingCount).toFixed(1)
+                    : '-'}
+                </Text>
               </View>
             </View>
             <View style={styles.viewItemCol4}>
@@ -306,8 +385,8 @@ const ProfileInfoScreen = () => {
 
   const asAMembers = () => {
     const showMyJoined =
-      myJoinedActivities != undefined &&
-      myJoinedActivities
+      asAMemberActivities != undefined &&
+      asAMemberActivities
         .sort((a, b) => {
           return b.count - a.count;
         })
@@ -331,7 +410,11 @@ const ProfileInfoScreen = () => {
                   justifyContent: 'flex-start',
                 }}
               >
-                <Text style={styles.joinedText}>{item.ownerRating != null && (item.ownerRating / item.ratingCount).toFixed(1)}</Text>
+                <Text style={styles.joinedText}>
+                {item.memberRating != null && item.ratingCount
+                    ? (item.memberRating / item.ratingCount).toFixed(1)
+                    : '-'}
+                </Text>
               </View>
             </View>
             <View style={styles.viewItemCol4}>
@@ -421,21 +504,21 @@ const ProfileInfoScreen = () => {
                 </View> */}
       </View>
       <View style={styles.viewPast}>
-        <View style={styles.viewTitle}>
+        {!spinner && <View style={styles.viewTitle}>
           <TouchableOpacity
-            style={styles.viewTitleCol1}
+            style={whichTab === 0 ? styles.viewTitleCol1 : [styles.viewTitleCol1, {borderBottomWidth: 0, }]}
             onPress={() => setWhichTab(0)}
           >
-            <Text style={styles.textCol1}>My Activities</Text>
+            <Text style={whichTab === 0 ? styles.textCol1 : [styles.textCol1, {color: 'gray'}]}>My Activities</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.viewTitleCol2}
+            style={whichTab === 1 ? styles.viewTitleCol2 : [styles.viewTitleCol2, {borderBottomWidth: 0, }]}
             onPress={() => setWhichTab(1)}
           >
-            <Text>As A Member</Text>
+            <Text  style={whichTab === 1 ? styles.textCol1 : [styles.textCol1, {color: 'gray'}]}>As A Member</Text>
           </TouchableOpacity>
-        </View>
-        {whichTab === 0 ? myActivities() : null}
+        </View>}
+        {spinner ? <DisplaySpinner /> : whichTab === 0 ? myActivities() : asAMembers()}
       </View>
       <View style={{ flex: 1 }} />
     </>
@@ -613,8 +696,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    borderBottomWidth: 1,
-    borderColor: '#C4C4C4',
+    borderBottomWidth: 2,
+    borderColor: '#37CC4A',
   },
   viewItemHorizontal: {
     flex: 1,
@@ -631,7 +714,7 @@ const styles = StyleSheet.create({
   },
   viewItemCol2: {
     flex: 2,
-    backgroundColor: 'orange',
+    // backgroundColor: 'orange',
     // alignItems: 'center',
     justifyContent: 'center',
   },
@@ -639,7 +722,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'yellow',
+    // backgroundColor: 'yellow',
   },
   viewItemCol4: {
     flex: 1,

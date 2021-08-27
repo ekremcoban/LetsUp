@@ -166,7 +166,7 @@ class OwnerOldActivityInfoScreen extends Component {
             style={{ color: 'gray' }}
             onPress={() =>
               Linking.openURL(
-                `mailto:${member._data.memberEmail}?subject=${this.props.route.params.activity.name}&body=Hello ${member._data.memberName}`
+                `mailto:${member._data.memberEmail}?subject=${'(Lets Up) ' + this.props.route.params.activity.name}&body=Hello ${member._data.memberName}`
               )
             }
           />
