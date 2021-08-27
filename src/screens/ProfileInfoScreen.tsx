@@ -58,7 +58,6 @@ const ProfileInfoScreen = () => {
       .collection('Activities')
       .where('owner.email', '==', user.email)
       .where('state', '==', false)
-      .where('feedbackReminder', '==', true)
       .get();
 
     resultMyActivities.docs.forEach(async (myActivity) => {
@@ -188,10 +187,9 @@ const ProfileInfoScreen = () => {
                 activity1.docs.forEach((documentSnapshot) => {
                     const isIt = activityTemp.filter(
                       (a) => a.id === documentSnapshot.data().id
-                      && documentSnapshot.data().feedbackReminder === true
                     );
 
-                    if (isIt.length === 0 && documentSnapshot.data().feedbackReminder) {
+                    if (isIt.length === 0) {
                       activityTemp.push(documentSnapshot.data());
                     }
                   });
@@ -211,10 +209,9 @@ const ProfileInfoScreen = () => {
                   activity2.docs.forEach((documentSnapshot) => {
                       const isIt = activityTemp.filter(
                         (a) => a.id === documentSnapshot.data().id
-                        && documentSnapshot.data().feedbackReminder === true
                       );
 
-                      if (isIt.length === 0 && documentSnapshot.data().feedbackReminder) {
+                      if (isIt.length === 0) {
                         activityTemp.push(documentSnapshot.data());
                       }
                     });
@@ -349,7 +346,8 @@ const ProfileInfoScreen = () => {
               <Text style={styles.joinedTitle}>Joined</Text>
               {myJoinedActivities != undefined && (
                 <Text style={styles.joinedText}>
-                  {item.isJoined + '/' + item.count}
+                  {item.count != 0 ? item.isJoined + '/' + item.count
+                    : '-'}
                 </Text>
               )}
             </View>
@@ -399,11 +397,10 @@ const ProfileInfoScreen = () => {
             </View>
             <View style={styles.viewItemCol4}>
               <Text style={styles.joinedTitle}>Joined</Text>
-              {myJoinedActivities != undefined && (
                 <Text style={styles.joinedText}>
-                  {item.isJoined + '/' + item.count}
+                  {item.count != 0 ? item.isJoined + '/' + item.count
+                    : '-'}
                 </Text>
-              )}
             </View>
           </View>
         ));

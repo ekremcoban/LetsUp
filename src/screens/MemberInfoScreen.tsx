@@ -55,7 +55,6 @@ const MemberInfoScreen = () => {
         .collection('Activities')
         .where('owner.email', '==', route.params.data.memberEmail)
         .where('state', '==', false)
-        .where('feedbackReminder', '==', true)
         .get();
   
       resultMyActivities.docs.forEach(async (myActivity) => {
@@ -163,10 +162,9 @@ const MemberInfoScreen = () => {
                   activity1.docs.forEach((documentSnapshot) => {
                       const isIt = activityTemp.filter(
                         (a) => a.id === documentSnapshot.data().id
-                        && documentSnapshot.data().feedbackReminder === true
                       );
   
-                      if (isIt.length === 0 && documentSnapshot.data().feedbackReminder) {
+                      if (isIt.length === 0) {
                         activityTemp.push(documentSnapshot.data());
                       }
                     });
@@ -186,10 +184,9 @@ const MemberInfoScreen = () => {
                     activity2.docs.forEach((documentSnapshot) => {
                         const isIt = activityTemp.filter(
                           (a) => a.id === documentSnapshot.data().id
-                          && documentSnapshot.data().feedbackReminder === true
                         );
   
-                        if (isIt.length === 0 && documentSnapshot.data().feedbackReminder) {
+                        if (isIt.length === 0) {
                           activityTemp.push(documentSnapshot.data());
                         }
                       });
@@ -306,7 +303,7 @@ const MemberInfoScreen = () => {
                 <Text style={styles.joinedTitle}>Joined</Text>
                 {myJoinedActivities != undefined && (
                   <Text style={styles.joinedText}>
-                    {item.count != null ? item.isJoined + '/' + item.count
+                    {item.count != 0 ? item.isJoined + '/' + item.count
                     : '-'}
                   </Text>
                 )}
@@ -357,12 +354,10 @@ const MemberInfoScreen = () => {
               </View>
               <View style={styles.viewItemCol4}>
                 <Text style={styles.joinedTitle}>Joined</Text>
-                {myJoinedActivities != undefined && (
                   <Text style={styles.joinedText}>
-                    {item.count != null ? item.isJoined + '/' + item.count
+                    {item.count != 0 ? item.isJoined + '/' + item.count
                     : '-'}
                   </Text>
-                )}
               </View>
             </View>
           ));
@@ -427,7 +422,7 @@ const MemberInfoScreen = () => {
             style={whichTab === 0 ? styles.viewTitleCol1 : [styles.viewTitleCol1, {borderBottomWidth: 0, }]}
             onPress={() => setWhichTab(0)}
           >
-            <Text style={whichTab === 0 ? styles.textCol1 : [styles.textCol1, {color: 'gray'}]}>My Activities</Text>
+            <Text style={whichTab === 0 ? styles.textCol1 : [styles.textCol1, {color: 'gray'}]}>Own Activities</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={whichTab === 1 ? styles.viewTitleCol2 : [styles.viewTitleCol2, {borderBottomWidth: 0, }]}
