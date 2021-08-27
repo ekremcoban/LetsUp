@@ -30,6 +30,7 @@ import Geolocation from '@react-native-community/geolocation';
 import { Rating, AirbnbRating } from 'react-native-ratings';
 import { colors } from 'utilities/constants/globalValues';
 import DisplaySpinner from '../components/spinner';
+import { selectImg } from 'utilities/constants/selectImage';
 
 const IconStart = locationTag['start'];
 const IconJoin = locationTag['join'];
@@ -1188,34 +1189,7 @@ class ActivityInfoScreen extends Component {
         {this.state.clickChooseMap && popUp}
         <View style={styles.viewTitle}>
           <Image
-            source={
-              this.props.route.params.activity.type === 'basketball'
-                ? require('assets/img/basketball.png')
-                : this.props.route.params.activity.type === 'bicycle'
-                ? require('assets/img/bicycle.png')
-                : this.props.route.params.activity.type === 'hiking'
-                ? require('assets/img/hiking.png')
-                : this.props.route.params.activity.type === 'frisbee'
-                ? require('assets/img/frisbee.png')
-                : this.props.route.params.activity.type === 'jogging'
-                ? require('assets/img/jogging.png')
-                : this.props.route.params.activity.type === 'bowling'
-                ? require('assets/img/bowling.png')
-                : this.props.route.params.activity.type === 'table_tennis'
-                ? require('assets/img/table_tennis.png')
-                : this.props.route.params.activity.type === 'tennis'
-                ? require('assets/img/tennis.png')
-                : this.props.route.params.activity.type === 'volleyball'
-                ? require('assets/img/volleyball.png')
-                : this.props.route.params.activity.type === 'badminton'
-                ? require('assets/img/badminton.png')
-                : this.props.route.params.activity.type === 'meditation'
-                ? require('assets/img/meditation.png')
-                : this.props.route.params.activity.type === 'roller_skate'
-                ? require('assets/img/roller_skate.png')
-                : this.props.route.params.activity.type === 'skateboard'
-                ? require('assets/img/skateboard.png')
-                : require('assets/img/join.png')
+            source={selectImg(this.props.route.params.activity.type)  
             }
             style={styles.icon}
           />
