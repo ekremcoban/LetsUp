@@ -38,7 +38,6 @@ import { convertLowerString } from 'components/functions/common';
 import messaging from '@react-native-firebase/messaging';
 import MemberInfoScreen from 'screens/MemberInfoScreen';
 import OwnerInfoScreen from 'screens/OwnerInfoScreen';
-import { Alert } from 'react-native';
 import FeedbackScreen from 'screens/FeedbackScreen';
 import UsageTipsScreen from 'screens/UsageTipsScreen';
 import WhoAreWeScreen from 'screens/WhoAreWeScreen';

@@ -23,7 +23,6 @@ import {
   activityTypes,
   IActivityType,
 } from 'components/activity-type-selector/models';
-import { IActivity } from './models';
 import { colors } from 'styles/colors';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect } from 'react';
@@ -52,7 +51,6 @@ let activityListTemp;
 export const ActivityListScreen = () => {
   const { location, user, isSameCity } = useContext(ContextApi);
   const navigation = useNavigation();
-  const route = useRoute();
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
   const [spinner, setSpinner] = useState<boolean>(true);
   const [activityList, setActivityList] = useState(null);
@@ -65,7 +63,8 @@ export const ActivityListScreen = () => {
   let activityTemp = [];
 
   useEffect(() => {
-    console.log('Burda');
+    checkToken();
+
     LogBox.ignoreAllLogs();
     setTimeout(() => {
       SplashScreen.hide();
@@ -93,6 +92,36 @@ export const ActivityListScreen = () => {
     // Return the function to unsubscribe from the event so it gets removed on unmount
     return unsubscribe;
   }, [navigation, isSameCity]);
+
+  const checkToken = async () => {
+    const token = await messaging().getToken();
+
+    if (user != undefined) {
+      const refreshToken = await firestore()
+      .collection('Users')
+      .where('email', '==', user.email)
+      .get();
+
+      let refreshUser = refreshToken.docs[0].data();
+
+      if (token == refreshUser.token) {
+      }
+      else {
+        refreshUser.token = token;
+
+        await firestore()
+        .collection('Users')
+        .doc(user.email)
+        .update(refreshUser)
+        .then(() => {
+          console.log('User updated!');
+        })
+        .catch((e) => {
+          console.log('update users', e);
+        });
+      }
+    }
+  }
 
   const preparingData = async (location: any) => {
     const trace = await perf().startTrace('Activity_List');

@@ -10,6 +10,8 @@ import { useState } from 'react';
 import { firebase } from '@react-native-firebase/auth';
 import messaging from '@react-native-firebase/messaging';
 
+let userTemp;
+
 const LoginScreen = ({ navigation }: any) => {
   const { user, setUser, setUserPhoto,
   setNewNotifications, setNotifications } = useContext(ContextApi);
@@ -80,7 +82,7 @@ const LoginScreen = ({ navigation }: any) => {
               newNotificationArray.push(item.data());
             }
           });
-          console.log('BURDAAAAA')
+
           setNewNotifications(newNotificationArray.length);
           setNotifications([...notificationArray]);
         });
@@ -106,7 +108,6 @@ const LoginScreen = ({ navigation }: any) => {
 
   // Kayitli ise vt den, kayit yoksa google dan bilgileri alir.
   const retrieveData = async (user: Object, usersCollection: any, data: any, userInfo: any) => {
-    let userTemp;
     const token = await messaging().getToken();
 
     try {

@@ -75,6 +75,7 @@ class ActivityInfoScreen extends Component {
     this.isMember();
     LogBox.ignoreAllLogs();
 
+    console.log('--------', this.props.route.params.activity)
     this.getMembers();
 
     let selectedAddress = this.props.route.params.addressList.filter(
