@@ -5,7 +5,7 @@ admin.initializeApp(functions.config());
 const db = admin.firestore();
 
 // Servis her 10 dk da 1 aktivitelerin ve adreslerinin baslangic zamanini kontrol eder. 2 saatten az kaldiya state false yapar.
-exports.scheduledFunction = functions.pubsub.schedule('*/10 * * * *').onRun(async (context) => {
+exports.scheduledFunction = functions.pubsub.schedule('*/1 * * * *').onRun(async (context) => {
     db.collection('Timers').doc('Timer').set({time: admin.firestore.Timestamp.now()});
 
     const activeActivities = await db.collection('Activities')
@@ -52,12 +52,15 @@ exports.scheduledFunction = functions.pubsub.schedule('*/10 * * * *').onRun(asyn
 
 
     const activitiesFeedback = await db.collection('Activities')
-    .where('feedbackReminder', '!=', true)
+    .where('feedbackReminder', '==', null)
     .get();
+
+    console.log('activitiesFeedback', activitiesFeedback)
 
     // Feedbacke uygun aktiviteler(Bitis suresi gecmis ve daha once notification gonderilmemis olanlar)
     const convinientFeedback = activitiesFeedback.docs.filter(item => item.data().finishTime <= admin.firestore.Timestamp.now().toMillis() - 60000);
 
+    console.log('convinientFeedback', convinientFeedback)
     convinientFeedback.forEach(async item => {
         let inactive = item.data();
         inactive.feedbackReminder = true;

@@ -14,6 +14,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ScrollView } from 'react-native-gesture-handler';
 import DisplaySpinner from '../components/spinner';
 import { useNavigation } from '@react-navigation/native';
+import { selectImg } from 'utilities/constants/selectImage';
 
 let activityId = [];
 let activityTemp = [];
@@ -32,34 +33,6 @@ const NotificationScreen = () => {
     getFirebase();
   }, []);
 
-  const findPicture = (type: string) => {
-    switch (type) {
-      case 'basketball':
-        return require('assets/img/basketball.png');
-      case 'bicycle':
-        return require('assets/img/bicycle.png');
-      case 'hiking':
-        return require('assets/img/hiking.png');
-      case 'jogging':
-        return require('assets/img/jogging.png');
-      case 'table_tennis':
-        return require('assets/img/table_tennis.png');
-      case 'tennis':
-        return require('assets/img/tennis.png');
-      case 'volleyball':
-        return require('assets/img/volleyball.png');
-      case 'badminton':
-        return require('assets/img/badminton.png');
-      case 'meditation':
-        return require('assets/img/meditation.png');
-      case 'roller_skate':
-        return require('assets/img/roller_skate.png');
-      case 'skateboard':
-        return require('assets/img/skateboard.png');
-      default:
-        return require('assets/img/join.png');
-    }
-  };
 
   const isReadNotification = async (item: Object) => {
     let temp = item;
@@ -338,7 +311,7 @@ const NotificationScreen = () => {
                   >
                     <View style={styles.viewLeft}>
                       <Image
-                        source={findPicture(item.branch)}
+                        source={selectImg(item.branch)}
                         style={styles.icon}
                       />
                     </View>
