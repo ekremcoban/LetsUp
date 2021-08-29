@@ -11,6 +11,7 @@ import {
   StyleSheet,
   ScrollView,
   Text,
+  Image,
   View,
 } from 'react-native';
 import { Divider, ListItem } from 'react-native-elements';
@@ -560,6 +561,14 @@ export const ActivityListScreen = () => {
           <Text>There is not any activity in the city now</Text>
           <Text></Text>
           <Text>Let's create first activity</Text>
+          <Image
+            style={{
+              marginTop: 50,
+              width: 100,
+              height: 100
+            }} 
+            source={require('../../assets/images/logo/vector.png')}
+            />
         </View>
       )}
       <AgeActionSheet
