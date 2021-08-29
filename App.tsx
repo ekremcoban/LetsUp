@@ -39,8 +39,8 @@ import messaging from '@react-native-firebase/messaging';
 import MemberInfoScreen from 'screens/MemberInfoScreen';
 import OwnerInfoScreen from 'screens/OwnerInfoScreen';
 import FeedbackScreen from 'screens/FeedbackScreen';
-import UsageTipsScreen from 'screens/UsageTipsScreen';
-import WhoAreWeScreen from 'screens/WhoAreWeScreen';
+import HowToUseScreen from 'screens/HowToUse';
+import WhatIsLetsUpScreen from 'screens/WhatIsLetsUpScreen';
 import { Badge } from 'react-native-elements';
 
 let App = () => {
@@ -524,10 +524,10 @@ let App = () => {
                 }}
               />
               <Stack.Screen
-                name="Usage Tips"
-                component={UsageTipsScreen}
+                name="How To Use"
+                component={HowToUseScreen}
                 options={{
-                  title: 'Usage Tips',
+                  title: 'How To Use',
                   headerStyle: {
                     backgroundColor: colors.bar,
                   },
@@ -538,10 +538,10 @@ let App = () => {
                 }}
               />
               <Stack.Screen
-                name="Who Are We"
-                component={WhoAreWeScreen}
+                name="What Is Lets Up"
+                component={WhatIsLetsUpScreen}
                 options={{
-                  title: 'Who Are We',
+                  title: 'What Is Let\'s Up',
                   headerStyle: {
                     backgroundColor: colors.bar,
                   },

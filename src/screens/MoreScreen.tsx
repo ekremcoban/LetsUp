@@ -30,24 +30,24 @@ const MoreScreen = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.viewContainer}
-          onPress={() => navigation.navigate('Usage Tips')}
+          onPress={() => navigation.navigate('How To Use')}
         >
           <View style={styles.viewLeft}>
           <MaterialIcon size={30} name="lightbulb" color='gray' />
           </View>
           <View style={styles.viewRight}>
-            <Text style={styles.textBold}>Usage Tips</Text>
+            <Text style={styles.textBold}>How To Use</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.viewContainer}
-          onPress={() => navigation.navigate('Who Are We')}
+          onPress={() => navigation.navigate('What Is Lets Up')}
         >
           <View style={styles.viewLeft}>
           <MaterialIcon size={30} name="help" color='gray' />
           </View>
           <View style={styles.viewRight}>
-            <Text style={styles.textBold}>What's This App?</Text>
+            <Text style={styles.textBold}>What's Is Let's Up?</Text>
           </View>
           </TouchableOpacity>
 
