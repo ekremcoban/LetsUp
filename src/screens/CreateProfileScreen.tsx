@@ -8,6 +8,8 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Alert,
+  PixelRatio,
+  Platform,
 } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { Selector } from 'components/selector/selector';
@@ -41,6 +43,29 @@ const genderActionSheetRef = createRef<IActionSheet>();
 const ageActionSheetRef = createRef<IActionSheet>();
 const heightActionSheetRef = createRef<IActionSheet>();
 const weightActionSheetRef = createRef<IActionSheet>();
+
+const deviceType = 
+PixelRatio.get() === 1.5 
+? 'hdpi'
+: PixelRatio.get() === 2
+? 'xhdpi'
+: PixelRatio.get() === 3
+? 'xxhdpi'
+: PixelRatio.get() === 3.5
+? 'xxxhdpi'
+: 'hdpi'
+
+const imageSize = 
+Platform.OS === 'android' && deviceType === 'hdpi' && window.height > 600 ? 140
+: Platform.OS === 'android' && deviceType === 'hdpi' && window.height < 700 ? 120
+: Platform.OS === 'android' && deviceType === 'hdpi' ? 100
+: Platform.OS === 'android' && deviceType === 'xhdpi' && window.height > 600 ? 120 
+: Platform.OS === 'android' && deviceType === 'xhdpi' ? 110 
+: Platform.OS === 'android' && deviceType === 'xxhdpi' ? 120
+: Platform.OS === 'android' && deviceType === 'xxxhdpi' ? 140
+: Platform.OS === 'ios' && deviceType === 'xhdpi' ? 120 
+: Platform.OS === 'ios' && deviceType === 'xxhdpi' ? 150 
+: 150
 
 const CreateProfilScreen = () => {
   const { user, setUser, location, setUserPhoto } = useContext(ContextApi);
@@ -626,8 +651,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   image: {
-    width: 140,
-    height: 140,
+    width: imageSize,
+    height: imageSize,
     borderRadius: 75,
   },
   viewIcon: {
@@ -667,7 +692,7 @@ const styles = StyleSheet.create({
 
   viewAgeGender: {
     flex: 1,
-    marginTop: 5,
+    paddingTop: Platform.OS === 'android' && deviceType === 'xhdpi' ? 30 : Platform.OS === 'android' && deviceType === 'hdpi' ? 55 : 5,
     paddingLeft: 5,
     paddingEnd: 5,
     alignItems: 'center',
@@ -703,7 +728,7 @@ const styles = StyleSheet.create({
 
   viewHeightWeight: {
     flex: 1,
-    marginTop: 5,
+    paddingTop: Platform.OS === 'android' && deviceType === 'xhdpi' ? 20 : Platform.OS === 'android' && deviceType === 'hdpi' ? 35: 5,
     paddingLeft: 5,
     paddingEnd: 5,
     alignItems: 'center',

@@ -7,6 +7,8 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  PixelRatio,
+  Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ImagePickerCropper from 'react-native-image-crop-picker';
@@ -17,6 +19,29 @@ import { getData } from 'db/localDb';
 import firestore from '@react-native-firebase/firestore';
 import { selectImg } from 'utilities/constants/selectImage';
 import DisplaySpinner from '../components/spinner';
+
+const deviceType = 
+PixelRatio.get() === 1.5 
+? 'hdpi'
+: PixelRatio.get() === 2
+? 'xhdpi'
+: PixelRatio.get() === 3
+? 'xxhdpi'
+: PixelRatio.get() === 3.5
+? 'xxxhdpi'
+: 'hdpi'
+
+const imageSize = 
+Platform.OS === 'android' && deviceType === 'hdpi' && window.height > 600 ? 120
+: Platform.OS === 'android' && deviceType === 'hdpi' && window.height < 700 ? 120
+: Platform.OS === 'android' && deviceType === 'hdpi' ? 80
+: Platform.OS === 'android' && deviceType === 'xhdpi' && window.height > 600 ? 100 
+: Platform.OS === 'android' && deviceType === 'xhdpi' ? 90 
+: Platform.OS === 'android' && deviceType === 'xxhdpi' ? 100
+: Platform.OS === 'android' && deviceType === 'xxxhdpi' ? 120
+: Platform.OS === 'ios' && deviceType === 'xhdpi' ? 120 
+: Platform.OS === 'ios' && deviceType === 'xxhdpi' ? 150 
+: 140
 
 const ProfileInfoScreen = () => {
   const navigation = useNavigation();
@@ -32,6 +57,7 @@ const ProfileInfoScreen = () => {
   const [spinner, setSpinner] = useState<boolean>(true);
 
   useEffect(() => {
+    console.log('hhhh', window.height)
     const unsubscribe = navigation.addListener('focus', () => {
       getData('Photo').then((res) => {
         setPhotoPath(res);
@@ -58,6 +84,9 @@ const ProfileInfoScreen = () => {
       .collection('Activities')
       .where('owner.email', '==', user.email)
       .where('state', '==', false)
+      .where('isCanceled', '==', null)
+      .where('isDeleted', '==', null)
+      .where('feedbackReminder', '==', true)
       .get();
 
     resultMyActivities.docs.forEach(async (myActivity) => {
@@ -189,7 +218,8 @@ const ProfileInfoScreen = () => {
                       (a) => a.id === documentSnapshot.data().id
                     );
 
-                    if (isIt.length === 0) {
+                    if (isIt.length === 0 && documentSnapshot.data().isCanceled == null 
+                    && documentSnapshot.data().isDeleted == null && documentSnapshot.data().feedbackReminder == true) {
                       activityTemp.push(documentSnapshot.data());
                     }
                   });
@@ -211,7 +241,8 @@ const ProfileInfoScreen = () => {
                         (a) => a.id === documentSnapshot.data().id
                       );
 
-                      if (isIt.length === 0) {
+                      if (isIt.length === 0 && documentSnapshot.data().isCanceled == null 
+                      && documentSnapshot.data().isDeleted == null && documentSnapshot.data().feedbackReminder == true) {
                         activityTemp.push(documentSnapshot.data());
                       }
                     });
@@ -337,7 +368,7 @@ const ProfileInfoScreen = () => {
               >
                 <Text style={styles.joinedText}>
                   {item.ownerRating != null && item.ratingCount
-                    ? (item.ownerRating / item.ratingCount).toFixed(1)
+                    ? (item.ownerRating / item.ratingCount).toFixed(1) + ' / 5'
                     : '-'}
                 </Text>
               </View>
@@ -390,7 +421,7 @@ const ProfileInfoScreen = () => {
               >
                 <Text style={styles.joinedText}>
                 {item.memberRating != null && item.ratingCount
-                    ? (item.memberRating / item.ratingCount).toFixed(1)
+                    ? (item.memberRating / item.ratingCount).toFixed(1) + ' / 5'
                     : '-'}
                 </Text>
               </View>
@@ -535,8 +566,8 @@ const styles = StyleSheet.create({
     // backgroundColor: 'orange'
   },
   image: {
-    width: 140,
-    height: 140,
+    width: imageSize,
+    height: imageSize,
     borderRadius: 75,
   },
 

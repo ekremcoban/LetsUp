@@ -6,6 +6,8 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  Platform,
+  PixelRatio,
 } from 'react-native';
 import ContextApi from 'context/ContextApi';
 import { useContext } from 'react';
@@ -13,6 +15,27 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import { selectImg } from 'utilities/constants/selectImage';
 import DisplaySpinner from '../components/spinner';
+
+const deviceType = 
+PixelRatio.get() === 1.5 
+? 'hdpi'
+: PixelRatio.get() === 2
+? 'xhdpi'
+: PixelRatio.get() === 3
+? 'xxhdpi'
+: PixelRatio.get() === 3.5
+? 'xxxhdpi'
+: 'hdpi'
+
+const imageSize = 
+Platform.OS === 'android' && deviceType === 'hdpi' && window.height <= 600 ? 95
+: Platform.OS === 'android' && deviceType === 'xhdpi' && window.height > 600 ? 110 
+: Platform.OS === 'android' && deviceType === 'xhdpi' ? 110 
+: Platform.OS === 'android' && deviceType === 'xxhdpi' ? 120
+: Platform.OS === 'android' && deviceType === 'xxxhdpi' ? 140
+: Platform.OS === 'ios' && deviceType === 'xhdpi' ? 120 
+: Platform.OS === 'ios' && deviceType === 'xxhdpi' ? 150 
+: 140
 
 const OwnerInfoScreen = () => {
   const navigation = useNavigation();
@@ -48,6 +71,9 @@ const OwnerInfoScreen = () => {
         .collection('Activities')
         .where('owner.email', '==', route.params.data.email)
         .where('state', '==', false)
+        .where('isCanceled', '==', null)
+        .where('isDeleted', '==', null)
+        .where('feedbackReminder', '==', true)
         .get();
   
       resultMyActivities.docs.forEach(async (myActivity) => {
@@ -156,7 +182,8 @@ const OwnerInfoScreen = () => {
                         (a) => a.id === documentSnapshot.data().id
                       );
   
-                      if (isIt.length === 0) {
+                      if (isIt.length === 0 && documentSnapshot.data().isCanceled == null 
+                      && documentSnapshot.data().isDeleted == null && documentSnapshot.data().feedbackReminder == true) {
                         activityTemp.push(documentSnapshot.data());
                       }
                     });
@@ -178,7 +205,8 @@ const OwnerInfoScreen = () => {
                           (a) => a.id === documentSnapshot.data().id
                         );
   
-                        if (isIt.length === 0) {
+                        if (isIt.length === 0 && documentSnapshot.data().isCanceled == null 
+                        && documentSnapshot.data().isDeleted == null && documentSnapshot.data().feedbackReminder == true) {
                           activityTemp.push(documentSnapshot.data());
                         }
                       });
@@ -286,7 +314,7 @@ const OwnerInfoScreen = () => {
                 >
                   <Text style={styles.joinedText}>
                     {item.ownerRating != null && item.ratingCount
-                      ? (item.ownerRating / item.ratingCount).toFixed(1)
+                      ? (item.ownerRating / item.ratingCount).toFixed(1) + ' / 5'
                       : '-'}
                   </Text>
                 </View>
@@ -339,7 +367,7 @@ const OwnerInfoScreen = () => {
                 >
                   <Text style={styles.joinedText}>
                   {item.memberRating != null && item.ratingCount
-                      ? (item.memberRating / item.ratingCount).toFixed(1)
+                      ? (item.memberRating / item.ratingCount).toFixed(1) + ' / 5'
                       : '-'}
                   </Text>
                 </View>
@@ -454,7 +482,7 @@ const styles = StyleSheet.create({
   viewImg: {
     flex: 1,
     padding: 10,
-    marginTop: 50,
+    marginTop: 30,
     flexDirection: 'row',
     justifyContent: 'center',
     // backgroundColor: 'red'
@@ -465,8 +493,8 @@ const styles = StyleSheet.create({
     // backgroundColor: 'orange'
   },
   image: {
-    width: 140,
-    height: 140,
+    width: imageSize,
+    height: imageSize,
     borderRadius: 75,
   },
 

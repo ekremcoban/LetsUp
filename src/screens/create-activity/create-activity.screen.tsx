@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Alert,
   Image,
+  PixelRatio,
+  Platform,
 } from 'react-native';
 import Popover from '../../components/popover';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
@@ -43,6 +45,17 @@ const activityNameActionSheetRef = createRef<IActionSheet>();
 const ageRangeActionSheetRef = createRef<IActionSheet>();
 const quotaActionSheetRef = createRef<IActionSheet>();
 const genderActionSheetRef = createRef<IActionSheet>();
+
+const deviceType = 
+PixelRatio.get() === 1.5 
+? 'hdpi'
+: PixelRatio.get() === 2
+? 'xhdpi'
+: PixelRatio.get() === 3
+? 'xxhdpi'
+: PixelRatio.get() === 3.5
+? 'xxxhdpi'
+: 'hdpi'
 
 const CreateActivityScreen2 = () => {
   const navigation = useNavigation();
@@ -1136,6 +1149,7 @@ const CreateActivityScreen2 = () => {
 
   return (
     <MenuProvider>
+      <ScrollView>
       <View style={styles.container}>
         <View style={styles.firstRow}>
           <ActivityTypeSelector>
@@ -1489,13 +1503,14 @@ const CreateActivityScreen2 = () => {
           }}
         />
       </View>
+      </ScrollView>
     </MenuProvider>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: window.height < 600 ? window.height * 0.9 : '100%',
     backgroundColor: '#EEE',
   },
   row: {
@@ -1565,11 +1580,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   firstRow: {
-    flex: 5,
+    flex: deviceType === 'hdpi' ? 0.75 
+    : deviceType === 'xhdpi' && Platform.OS === 'ios' ? 0.7 : Platform.OS === 'android' && window.height < 600 ? 0.9 : Platform.OS === 'android' ? 0.70
+    : deviceType === 'xxhdpi' ? 0.75 
+    : deviceType === 'xxxhdpi' ? 0.75 
+    : 6,
     // backgroundColor: 'purple'
   },
   secondRow: {
-    flex: 2,
+    flex: deviceType === 'hdpi' ? 0.25 
+    : deviceType === 'xhdpi' ? 0.3 
+    : deviceType === 'xxhdpi' ? 0.5 
+    : deviceType === 'xxxhdpi' ? 0.4 
+    : 2,
     justifyContent: 'flex-start',
     // backgroundColor: 'yellow'
   },

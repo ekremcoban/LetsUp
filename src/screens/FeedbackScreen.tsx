@@ -1,5 +1,5 @@
 import React, { useState, createRef } from 'react';
-import { StyleSheet, View, Text, Alert } from 'react-native';
+import { StyleSheet, View, Text, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { Selector } from 'components/selector/selector';
 import { activityNames, getSelectedActivityName } from 'models/activity-names';
 import { IActionSheet } from 'components/action-sheet/action-sheet';
@@ -77,7 +77,10 @@ const FeedbackScreen = () => {
   };
 
   return (
-    <View style={{ flex: 1, marginHorizontal: 10}}>
+    <KeyboardAvoidingView
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+    style={{flex: 1}}
+  >
       {spinner && <DisplaySpinner />}
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
         <Selector
@@ -132,7 +135,7 @@ const FeedbackScreen = () => {
           <CustomButton onPress={() => sendingAlert()} title="Send" />
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

@@ -5,7 +5,7 @@ admin.initializeApp(functions.config());
 const db = admin.firestore();
 
 // Servis her 10 dk da 1 aktivitelerin ve adreslerinin baslangic zamanini kontrol eder. 2 saatten az kaldiya state false yapar.
-exports.scheduledFunction = functions.pubsub.schedule('*/1 * * * *').onRun(async (context) => {
+exports.scheduledFunction = functions.pubsub.schedule('*/10 * * * *').onRun(async (context) => {
     db.collection('Timers').doc('Timer').set({time: admin.firestore.Timestamp.now()});
 
     const activeActivities = await db.collection('Activities')

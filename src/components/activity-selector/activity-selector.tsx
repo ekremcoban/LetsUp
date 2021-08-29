@@ -5,6 +5,7 @@ import { Icon } from 'react-native-elements';
 
 import { colors } from 'styles/colors';
 import { normalize } from 'globals/helpers';
+import { selectImg } from 'utilities/constants/selectImage';
 
 interface IAcivitySelectorProps {
   children:
@@ -58,20 +59,7 @@ const ActivitySelectorCard: FC<IActivitySelectorCardProps> = (
     <TouchableOpacity onPress={props.onPress}>
       <View style={cardStyles.wrapper}>
         <Image
-          source={props.branchType === 'basketball' ? require('assets/img/basketball.png')
-          : props.branchType === 'bicycle' ? require('assets/img/bicycle.png')
-          : props.branchType === 'hiking' ? require('assets/img/hiking.png')
-          : props.branchType === 'frisbee' ? require('assets/img/frisbee.png')
-          : props.branchType === 'running' ? require('assets/img/running.png')
-          : props.branchType === 'bowling' ? require('assets/img/bowling.png')
-          : props.branchType === 'table_tennis' ? require('assets/img/table_tennis.png')
-          : props.branchType === 'tennis' ? require('assets/img/tennis.png')
-          : props.branchType === 'volleyball' ? require('assets/img/volleyball.png')
-          : props.branchType === 'badminton' ? require('assets/img/badminton.png')
-          : props.branchType === 'yoga' ? require('assets/img/yoga.png')
-          : props.branchType === 'roller_skate' ? require('assets/img/roller_skate.png')
-          : props.branchType === 'skateboard' ? require('assets/img/skateboard.png')
-        : require('assets/img/join.png')}
+          source={selectImg(props.branchType)}
           style={cardStyles.icon}
         />
         <View style={cardStyles.content}>
