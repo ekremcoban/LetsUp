@@ -8,8 +8,8 @@ export const selectImg = (value: string) => {
       return require(`../../assets/img/hiking.png`);
     case 'frisbee':
       return require(`../../assets/img/frisbee.png`);
-    case 'jogging':
-      return require(`../../assets/img/jogging.png`);
+    case 'running':
+      return require(`../../assets/img/running.png`);
     case 'bowling':
       return require(`../../assets/img/bowling.png`);
     case 'table_tennis':
@@ -20,8 +20,8 @@ export const selectImg = (value: string) => {
       return require(`../../assets/img/volleyball.png`);
     case 'badminton':
       return require(`../../assets/img/badminton.png`);
-    case 'meditation':
-      return require(`../../assets/img/meditation.png`);
+    case 'yoga':
+      return require(`../../assets/img/yoga.png`);
     case 'roller_skate':
       return require(`../../assets/img/roller_skate.png`);
     case 'skateboard':

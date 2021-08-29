@@ -21,7 +21,7 @@ export const ActivityNameActionSheet = forwardRef<
   const [selectedValue, setSelectedValue] = useState(0);
 
   const items = () => {
-    if (props.branchName === 'jogging') {
+    if (props.branchName === 'running') {
       return activityNames.filter(a => a.value >= 0 && a.value < 6).map((activityName) => ({
         value: activityName.value,
         text: polyglot.t(activityName.text),
@@ -49,7 +49,7 @@ export const ActivityNameActionSheet = forwardRef<
       }))
     }
 
-    else if (props.branchName === 'table_tennis') {
+    else if (props.branchName === 'tennis') {
       return activityNames.filter(a => a.value >= 24 && a.value < 30).map((activityName) => ({
         value: activityName.value,
         text: polyglot.t(activityName.text),
@@ -84,7 +84,7 @@ export const ActivityNameActionSheet = forwardRef<
       }))
     }
 
-    else  if (props.branchName === 'meditation') {
+    else  if (props.branchName === 'yoga') {
       return activityNames.filter(a => a.value >= 54 && a.value < 60).map((activityName) => ({
         value: activityName.value,
         text: polyglot.t(activityName.text),
@@ -105,7 +105,7 @@ export const ActivityNameActionSheet = forwardRef<
       }))
     }
 
-    else if (props.branchName === 'tennis') {
+    else if (props.branchName === 'table_tennis') {
       return activityNames.filter(a => a.value >= 72 && a.value < 78).map((activityName) => ({
         value: activityName.value,
         text: polyglot.t(activityName.text),

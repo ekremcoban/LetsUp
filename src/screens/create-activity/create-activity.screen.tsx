@@ -998,7 +998,7 @@ const CreateActivityScreen2 = () => {
 
   const locationArea0 = (
     <View style={[styles.row, styles.rowLocation]}>
-      {(branchName === 'jogging' ||
+      {(branchName === 'running' ||
         branchName === 'bicycle' ||
         branchName === 'roller_skate' ||
         branchName === 'bicycle' ||
@@ -1149,7 +1149,7 @@ const CreateActivityScreen2 = () => {
                   setSelectedActivityNameValue(null);
                   setBranchName(activityType.image);
                   if (
-                    activityType.image !== 'jogging' &&
+                    activityType.image !== 'running' &&
                     activityType.image !== 'bicycle' &&
                     activityType.image !== 'roller_skate' &&
                     activityType.image !== 'skateboard' &&
@@ -1209,14 +1209,14 @@ const CreateActivityScreen2 = () => {
                 )}*`}
               </Text>
               {
-                branchName === 'jogging' ||
+                branchName === 'running' ||
                   branchName === 'bicycle' ||
                   branchName === 'roller_skate' ||
                   branchName === 'skateboard' ||
                   branchName === 'hiking'
                 // && addMoreButton
               }
-              <Text style={{color: 'red', paddingEnd: 10}}>{convertLowerString(location.city) != convertLowerString(city) && city}</Text>
+              <Text style={{color: 'red', paddingEnd: 10}}>{location.city != undefined && city != undefined && convertLowerString(location.city) != convertLowerString(city) && city}</Text>
             </View>
             <View style={styles.locationWrapper}>
               {locationArea0}

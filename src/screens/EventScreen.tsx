@@ -43,7 +43,7 @@ const EventScreen = () => {
                 title: title,
                 place: place,
                 date: day + '.' + mounth + '.' + dateTemp.getFullYear(),
-                icon: Number(day) % 2 === 0 ? require(`../assets/img/basketball.png`) : require(`../assets/img/jogging.png`),
+                icon: Number(day) % 2 === 0 ? require(`../assets/img/basketball.png`) : require(`../assets/img/running.png`),
             }
             tempData.push(userArr)
         })
