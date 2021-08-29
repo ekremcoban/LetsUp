@@ -274,15 +274,15 @@ const NotificationScreen = () => {
     console.log('item', item)
     console.log('activityOwnerList', activityOwnerList)
     console.log('activityMemberList', activityMemberList)
-    const activityOwner = activityOwnerList.filter(activity => activity.id === item.activityId);
-    const activityMember = activityMemberList.filter(activity => activity.id === item.activityId);
+    let activityOwner = activityOwnerList.filter(activity => activity.id === item.activityId);
+    let activityMember = activityMemberList.filter(activity => activity.id === item.activityId);
 
-    if (activityOwner.length > 0 && user.email == activityOwner[0].owner.email && (activityOwner[0].isCanceled != true && activityOwner[0].isDeleted != true)) {
+    if (activityOwner.length > 0 && user.email == activityOwner[0].owner.email && activityOwner[0].type != 6) {
       console.log('AKTİVİTE SAHİBİ')
       navigation.navigate('Owner Old Activity Info', {
         activity: activityOwnerList.filter(activity => activity.id === item.activityId)[0],
       });
-    } else if (activityMember[0].isCanceled != true && activityMember[0].isDeleted != true) {
+    } else if (activityOwner[0].type != 6) {
       console.log('AKTİVİTE ÜYESİ')
       navigation.navigate('Member Old Activity Info', {
         activity: activityMemberList.filter(activity => activity.id === item.activityId)[0],

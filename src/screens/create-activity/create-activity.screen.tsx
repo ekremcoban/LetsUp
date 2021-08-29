@@ -66,6 +66,7 @@ const CreateActivityScreen2 = () => {
   const [showLocation4, setShowLocation4] = useState(null);
   const [numberShowLocation, setNumberShowLocation] = useState(1);
   const [isMounted, setIsMounted] = useState(false);
+  const [city, setCity] = useState(null);
 
   const [activityDate, setActivityDate] = useState<Date>(new Date());
   const [activityStartTime, setActivityStartTime] = useState<Date>(undefined);
@@ -896,6 +897,7 @@ const CreateActivityScreen2 = () => {
 
   const openLocationModal = (itemNo: number) => {
     console.log('itemNo', itemNo);
+    console.log('location', location);
     RNGooglePlaces.openAutocompleteModal({
       country: location.country_code,
     })
@@ -967,6 +969,7 @@ const CreateActivityScreen2 = () => {
             break;
         }
 
+        setCity(city);
         console.log('country', country);
         console.log('city', city);
         console.log('district', district);
@@ -999,6 +1002,7 @@ const CreateActivityScreen2 = () => {
         branchName === 'bicycle' ||
         branchName === 'roller_skate' ||
         branchName === 'bicycle' ||
+        branchName === 'hiking' ||
         branchName === 'skateboard') && (
         <View style={styles.locationTitle}>
           <Text>START</Text>
@@ -1212,6 +1216,7 @@ const CreateActivityScreen2 = () => {
                   branchName === 'hiking'
                 // && addMoreButton
               }
+              <Text style={{color: 'red', paddingEnd: 10}}>{convertLowerString(location.city) != convertLowerString(city) && city}</Text>
             </View>
             <View style={styles.locationWrapper}>
               {locationArea0}

@@ -5,7 +5,7 @@ admin.initializeApp(functions.config());
 const db = admin.firestore();
 
 // Servis her 10 dk da 1 aktivitelerin ve adreslerinin baslangic zamanini kontrol eder. 2 saatten az kaldiya state false yapar.
-exports.scheduledFunction = functions.pubsub.schedule('*/10 * * * *').onRun(async (context) => {
+exports.scheduledFunction = functions.pubsub.schedule('*/1 * * * *').onRun(async (context) => {
     db.collection('Timers').doc('Timer').set({time: admin.firestore.Timestamp.now()});
 
     const activeActivities = await db.collection('Activities')
@@ -460,11 +460,14 @@ exports.activityNotifications=functions.firestore.document('Activities/{id}').on
        .where('ownerState', '==', true)
        .where('ownerJoin', '==', null)
        .where('memberJoin', '==', null)
+       .where('isCanceled', '==', null)
+       .where('isDeleted', '==', null)
        .get();
 
        membersFeedback.docs.forEach(async item => {
         let collectionRef = await db.collection('Notifications').doc();
 
+        // Uyeye notification
         await db.collection('Notifications')
         .doc(collectionRef.id)
         .set({
@@ -489,6 +492,8 @@ exports.activityNotifications=functions.firestore.document('Activities/{id}').on
         })
     });
 
+    // Aktivite sahibine notification
+    if (membersFeedback.docs[0].data().isCanceled == null && membersFeedback.docs[0].data().isDeleted == null) {
     let collectionRef = await db.collection('Notifications').doc();
 
     await db.collection('Notifications')
@@ -513,6 +518,7 @@ exports.activityNotifications=functions.firestore.document('Activities/{id}').on
     }).catch(e => {
         console.log('Feedback Time is error --> ', e)
     })
+    }
 
     }
 });
