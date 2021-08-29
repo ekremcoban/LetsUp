@@ -18,6 +18,7 @@ import firestore from '@react-native-firebase/firestore';
 import ContextApi from 'context/ContextApi';
 import { Alert } from 'react-native';
 import { AirbnbRating } from 'react-native-ratings';
+import { selectImg } from 'utilities/constants/selectImage';
 
 const heightView =
   PixelRatio.get() === 1
@@ -340,31 +341,7 @@ class OwnerOldActivityInfoScreen extends Component {
         {modal}
         <View style={styles.viewTitle}>
           <Image
-            source={
-              this.props.route.params.activity.type === 'basketball'
-                ? require('assets/img/basketball.png')
-                : this.props.route.params.activity.type === 'bicycle'
-                ? require('assets/img/bicycle.png')
-                : this.props.route.params.activity.type === 'hiking'
-                ? require('assets/img/hiking.png')
-                : this.props.route.params.activity.type === 'jogging'
-                ? require('assets/img/jogging.png')
-                : this.props.route.params.activity.type === 'table_tennis'
-                ? require('assets/img/table_tennis.png')
-                : this.props.route.params.activity.type === 'tennis'
-                ? require('assets/img/tennis.png')
-                : this.props.route.params.activity.type === 'volleyball'
-                ? require('assets/img/volleyball.png')
-                : this.props.route.params.activity.type === 'badminton'
-                ? require('assets/img/badminton.png')
-                : this.props.route.params.activity.type === 'meditation'
-                ? require('assets/img/meditation.png')
-                : this.props.route.params.activity.type === 'roller_skate'
-                ? require('assets/img/roller_skate.png')
-                : this.props.route.params.activity.type === 'skateboard'
-                ? require('assets/img/skateboard.png')
-                : require('assets/img/join.png')
-            }
+            source={selectImg(this.props.route.params.activity.type)}
             style={styles.icon}
           />
           <View style={styles.viewTitleText}>

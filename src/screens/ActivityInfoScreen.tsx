@@ -462,7 +462,7 @@ class ActivityInfoScreen extends Component {
       if (request.ownerState != null) {
         request.memberIsCanceled = false;
       }
-
+      
       request.memberState = true;
 
       this.fireStoreUpdateFunction(
@@ -534,6 +534,15 @@ class ActivityInfoScreen extends Component {
           } else {
             request.isDeleted = true;
           }
+
+          // let memberUpdate = this.state.members[0].data();
+          // memberUpdate.createdTime = new Date().getTime();
+
+          // this.fireStoreUpdateFunction(
+          //   'Members',
+          //   memberUpdate.id,
+          //   memberUpdate
+          // );
 
           request.state = false;
           this.fireStoreUpdateFunction(

@@ -40,6 +40,7 @@ const MyActivitiesScreen = () => {
       .collection('Activities')
       .where('owner.email', '==', user.email)
       .where('isDeleted', '==', null)
+      .where('isCanceled', '==', null)
       .onSnapshot((querySnapshot) => {
         ownerActivity = [];
         querySnapshot.forEach((documentSnapshot) => {
@@ -66,7 +67,6 @@ const MyActivitiesScreen = () => {
         querySnapshot.forEach((documentSnapshot) => {
           activityId.push(documentSnapshot.data().activityId);
         });
-        console.log('activityId 1', activityId);
 
         let index = 0;
         const partion = Math.ceil(activityId.length / 10);
@@ -86,24 +86,26 @@ const MyActivitiesScreen = () => {
                 // .where('ime', '>', 1626820440000)
                 .onSnapshot((documentSnapshot) => {
                   documentSnapshot.docs.forEach((documentSnapshot) => {
-                    firestore()
-                    .collection('ActivityAddress')
-                    .where('activityId', '==', documentSnapshot.data().id)
-                    .get()
-                    .then((items) => {
-                      address.push(items.docs[0].data());
-                      setAddressList(address);
-                    });
-                    // console.log('User data: ', s.data());
-                    const isIt = activityTemp.filter(
-                      (a) => a.id === documentSnapshot.data().id
-                    );
-
-                    if (isIt.length === 0) {
-                      activityTemp.push(documentSnapshot.data());
+                    if (documentSnapshot.data().isCanceled == null && documentSnapshot.data().isDeleted == null) {
+                      firestore()
+                      .collection('ActivityAddress')
+                      .where('activityId', '==', documentSnapshot.data().id)
+                      .get()
+                      .then((items) => {
+                        address.push(items.docs[0].data());
+                        setAddressList(address);
+                      });
+                      // console.log('User data: ', s.data());
+                      const isIt = activityTemp.filter(
+                        (a) => a.id === documentSnapshot.data().id
+                      );
+  
+                      if (isIt.length === 0) {
+                        activityTemp.push(documentSnapshot.data());
+                      }
                     }
                   });
-                  console.log('activityTemp 1', activityTemp);
+                  // console.log('activityTemp 1', activityTemp);
                   setActivityMemberList([...activityTemp]);
                   setSpinner(false);
                 });
@@ -118,24 +120,26 @@ const MyActivitiesScreen = () => {
                   // .where('ime', '>', 1626820440000)
                   .onSnapshot((documentSnapshot) => {
                     documentSnapshot.docs.forEach((documentSnapshot) => {
-                      firestore()
-                      .collection('ActivityAddress')
-                      .where('activityId', '==', documentSnapshot.data().id)
-                      .get()
-                      .then((items) => {
-                        address.push(items.docs[0].data());
-                        setAddressList(address);
-                      });
-                      // console.log('User data: ', s.data());
-                      const isIt = activityTemp.filter(
-                        (a) => a.id === documentSnapshot.data().id
-                      );
-
-                      if (isIt.length === 0) {
-                        activityTemp.push(documentSnapshot.data());
+                      if (documentSnapshot.data().isCanceled == null && documentSnapshot.data().isDeleted == null) {
+                        firestore()
+                        .collection('ActivityAddress')
+                        .where('activityId', '==', documentSnapshot.data().id)
+                        .get()
+                        .then((items) => {
+                          address.push(items.docs[0].data());
+                          setAddressList(address);
+                        });
+                        // console.log('User data: ', s.data());
+                        const isIt = activityTemp.filter(
+                          (a) => a.id === documentSnapshot.data().id
+                        );
+  
+                        if (isIt.length === 0) {
+                          activityTemp.push(documentSnapshot.data());
+                        }
                       }
                     });
-                    console.log('activityTemp 2', activityTemp);
+                    // console.log('activityTemp 2', activityTemp);
                     setActivityMemberList([...activityTemp]);
                     setSpinner(false);
                   });
@@ -292,7 +296,7 @@ const MyActivitiesScreen = () => {
       </TouchableOpacity>
     ));
   return (
-    <View style={{ marginTop: 10 }}>
+    <View style={{ flex: 1, paddingTop: 10 }}>
       <View
         style={{
           flexDirection: 'row',

@@ -185,7 +185,7 @@ const NotificationScreen = () => {
           querySnapshot.forEach((documentSnapshot) => {
             activityId.push(documentSnapshot.data().activityId);
           });
-          console.log('activityId 1', activityId);
+          // console.log('activityId 1', activityId);
 
           let index = 0;
           const partion = Math.ceil(activityId.length / 10);
@@ -222,7 +222,7 @@ const NotificationScreen = () => {
                         activityTemp.push(documentSnapshot.data());
                       }
                     });
-                    console.log('activityTemp 1', activityTemp);
+                    // console.log('activityTemp 1', activityTemp);
                     setActivityMemberList([...activityTemp]);
                     setSpinner(false);
                   });
@@ -254,7 +254,7 @@ const NotificationScreen = () => {
                           activityTemp.push(documentSnapshot.data());
                         }
                       });
-                      console.log('activityTemp 2', activityTemp);
+                      // console.log('activityTemp 2', activityTemp);
                       setActivityMemberList([...activityTemp]);
                       setSpinner(false);
                     });
@@ -275,13 +275,14 @@ const NotificationScreen = () => {
     console.log('activityOwnerList', activityOwnerList)
     console.log('activityMemberList', activityMemberList)
     const activityOwner = activityOwnerList.filter(activity => activity.id === item.activityId);
+    const activityMember = activityMemberList.filter(activity => activity.id === item.activityId);
 
-    if (activityOwner.length > 0 && user.email == activityOwner[0].owner.email) {
+    if (activityOwner.length > 0 && user.email == activityOwner[0].owner.email && (activityOwner[0].isCanceled != true && activityOwner[0].isDeleted != true)) {
       console.log('AKTİVİTE SAHİBİ')
       navigation.navigate('Owner Old Activity Info', {
         activity: activityOwnerList.filter(activity => activity.id === item.activityId)[0],
       });
-    } else {
+    } else if (activityMember[0].isCanceled != true && activityMember[0].isDeleted != true) {
       console.log('AKTİVİTE ÜYESİ')
       navigation.navigate('Member Old Activity Info', {
         activity: activityMemberList.filter(activity => activity.id === item.activityId)[0],

@@ -123,19 +123,19 @@ let App = () => {
       }
     });
 
-    const subscriber3 = messaging().onMessage(async (remoteMessage) => {
-      console.log(remoteMessage);
-      setNewNotifications(prevCount => prevCount + 1);
-      // Alert.alert(
-      //   remoteMessage.notification.title,
-      //   remoteMessage.notification.body
-      // );
-    });
+    // const subscriber3 = messaging().onMessage(async (remoteMessage) => {
+    //   console.log(remoteMessage);
+    //   setNewNotifications(prevCount => prevCount + 1);
+    //   // Alert.alert(
+    //   //   remoteMessage.notification.title,
+    //   //   remoteMessage.notification.body
+    //   // );
+    // });
 
     return {
       subscriber1,
       subscriber2,
-      subscriber3,
+      // subscriber3,
     };
   }, []);
 
@@ -176,7 +176,9 @@ let App = () => {
               newNotificationArray.push(item.data());
             }
           });
-          console.log('BURDAAAAA')
+          console.log('BURDAAAAA 1', newNotificationArray)
+          console.log('BURDAAAAA 2', notificationArray)
+          console.log('BURDAAAAA 3', newNotificationArray.length)
           setNewNotifications(newNotificationArray.length);
           setNotifications([...notificationArray]);
         });
