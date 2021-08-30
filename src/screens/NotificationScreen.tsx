@@ -254,7 +254,7 @@ const NotificationScreen = () => {
                           activityTemp.push(documentSnapshot.data());
                         }
                       });
-                      // console.log('activityTemp 2', activityTemp);
+                      console.log('activityTemp 2', activityTemp);
                       setActivityMemberList([...activityTemp]);
                       setSpinner(false);
                     });
@@ -282,10 +282,10 @@ const NotificationScreen = () => {
       navigation.navigate('Owner Old Activity Info', {
         activity: activityOwnerList.filter(activity => activity.id === item.activityId)[0],
       });
-    } else if (activityOwner[0].type != 6) {
+    } else if (activityMember[0].type != 6) {
       console.log('AKTİVİTE ÜYESİ')
       navigation.navigate('Member Old Activity Info', {
-        activity: activityMemberList.filter(activity => activity.id === item.activityId)[0],
+        activity: activityMember.filter(activity => activity.id === item.activityId)[0],
       })
     }
   };

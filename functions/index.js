@@ -4,8 +4,8 @@ const admin = require('firebase-admin');
 admin.initializeApp(functions.config());
 const db = admin.firestore();
 
-// Servis her 10 dk da 1 aktivitelerin ve adreslerinin baslangic zamanini kontrol eder. 2 saatten az kaldiya state false yapar.
-exports.scheduledFunction = functions.pubsub.schedule('*/10 * * * *').onRun(async (context) => {
+// Servis her 10 dk da 1 aktivitelerin ve adreslerinin baslangic zamanini kontrol eder. 2 saatten az kaldiysa state false yapar.
+exports.scheduledFunction = functions.pubsub.schedule('*/1 * * * *').onRun(async (context) => {
     db.collection('Timers').doc('Timer').set({time: admin.firestore.Timestamp.now()});
 
     const activeActivities = await db.collection('Activities')
@@ -414,7 +414,7 @@ exports.activityNotifications=functions.firestore.document('Activities/{id}').on
         },
    }
         
-    if (state == false && (isCanceled || isDeleted) && !afterFeedback) {
+    if (state == false && isCanceled == null && isDeleted == null && afterFeedback == false) {
         const members = await db.collection('Members')
         .where('activityId', '==', id)
         .where('memberState', '==', true)
@@ -446,7 +446,7 @@ exports.activityNotifications=functions.firestore.document('Activities/{id}').on
     }
 
     //Aktivite feedback notification gonderilir
-    if (beforeFeedback != true && afterFeedback) {
+    if (beforeFeedback == null && afterFeedback == true) {
         let message = {
             notification: {
                 title: 'Feedback Time',
@@ -460,8 +460,6 @@ exports.activityNotifications=functions.firestore.document('Activities/{id}').on
        .where('ownerState', '==', true)
        .where('ownerJoin', '==', null)
        .where('memberJoin', '==', null)
-       .where('isCanceled', '==', null)
-       .where('isDeleted', '==', null)
        .get();
 
        membersFeedback.docs.forEach(async item => {
