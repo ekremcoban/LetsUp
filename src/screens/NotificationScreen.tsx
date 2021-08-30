@@ -20,6 +20,8 @@ let activityId = [];
 let activityTemp = [];
 let ownerActivity = [];
 let address = [];
+let acceptButton = false;
+let denyButton = false;
 
 const NotificationScreen = () => {
   const navigation = useNavigation();
@@ -70,68 +72,76 @@ const NotificationScreen = () => {
 
   const accept = (title: string, content: string, item: Object) => {
     console.log('item', item);
+    
+    if (acceptButton == false) {
+      acceptButton = true;
 
-    Alert.alert(title, content, [
-      {
-        text: 'No',
-        onPress: () => console.log('Cancel Pressed'),
-        style: 'cancel',
-      },
-      {
-        text: 'Yes',
-        onPress: async () => {
-          setSpinner(true);
-          isReadNotification(item);
-          const member = await firestore()
-            .collection('Members')
-            .doc(item.membersId)
-            .get();
-
-          console.log('mem', member.data());
-          let temp = member.data();
-          temp.ownerState = true;
-          temp.isRead = true;
-
-          const result = await firestore()
-            .collection('Members')
-            .doc(item.membersId)
-            .set(temp);
+      Alert.alert(title, content, [
+        {
+          text: 'No',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
         },
-      },
-    ]);
+        {
+          text: 'Yes',
+          onPress: async () => {
+            setSpinner(true);
+            isReadNotification(item);
+            const member = await firestore()
+              .collection('Members')
+              .doc(item.membersId)
+              .get();
+  
+            console.log('mem', member.data());
+            let temp = member.data();
+            temp.ownerState = true;
+            temp.isRead = true;
+  
+            const result = await firestore()
+              .collection('Members')
+              .doc(item.membersId)
+              .set(temp);
+          },
+        },
+      ]);
+    }
   };
 
   const denied = (title: string, content: string, item: Object) => {
     console.log('item', item);
 
-    Alert.alert(title, content, [
-      {
-        text: 'No',
-        onPress: () => console.log('Cancel Pressed'),
-        style: 'cancel',
-      },
-      {
-        text: 'Yes',
-        onPress: async () => {
-          isReadNotification(item);
-          setSpinner(true);
-          const member = await firestore()
-            .collection('Members')
-            .doc(item.membersId)
-            .get();
+    if (denyButton == false) {
+      denyButton = true;
 
-          console.log('mem', member.data());
-          let temp = member.data();
-          temp.ownerState = false;
-          temp.isRead = true;
-
-          const result = await firestore()
-            .collection('Members')
-            .doc(item.membersId)
-            .set(temp);
+      Alert.alert(title, content, [
+        {
+          text: 'No',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
         },
-      },
-    ]);
+        {
+          text: 'Yes',
+          onPress: async () => {
+            isReadNotification(item);
+            setSpinner(true);
+            const member = await firestore()
+              .collection('Members')
+              .doc(item.membersId)
+              .get();
+  
+            console.log('mem', member.data());
+            let temp = member.data();
+            temp.ownerState = false;
+            temp.isRead = true;
+  
+            const result = await firestore()
+              .collection('Members')
+              .doc(item.membersId)
+              .set(temp);
+          },
+        },
+      ]);
+    }
   };
 
   const showButton = (item: Object) => {
@@ -254,7 +264,7 @@ const NotificationScreen = () => {
                           activityTemp.push(documentSnapshot.data());
                         }
                       });
-                      console.log('activityTemp 2', activityTemp);
+                      // console.log('activityTemp 2', activityTemp);
                       setActivityMemberList([...activityTemp]);
                       setSpinner(false);
                     });
